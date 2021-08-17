@@ -4,3 +4,6 @@
 [submodule "rqg"]
 	path = rqg
 	url = https://github.com/yoshinorim/rqg.git
+[submodule "rocksdb-rpc-client"]
+	path = rocksdb-rpc-client
+	url = http://gitlab.alibaba-inc.com/baijiadong.bjd/rocksdb-rpc-client.git
