@@ -372,7 +372,9 @@ std::shared_ptr<rocksdb::MergeOperator> *Rdb_cf_options::get_cf_merge_operator(
 
 void Rdb_cf_options::get_cf_options(const std::string &cf_name,
                                     rocksdb::ColumnFamilyOptions *const opts) {
-  *opts = m_default_cf_opts;
+  // ALTER
+  // *opts = m_default_cf_opts;
+  rocksdb_ColumnFamilyOptions_Copy(opts, m_default_cf_opts);
   get(cf_name, opts);
 
   // ALTER
