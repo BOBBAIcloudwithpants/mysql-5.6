@@ -32,6 +32,8 @@
 #include "./rdb_datadic.h"
 #include "./rdb_psi.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 /* Check if ColumnFamily name says it's a reverse-ordered CF */
@@ -55,9 +57,12 @@ void Rdb_cf_manager::init(
   for (auto cfh_ptr : *handles) {
     DBUG_ASSERT(cfh_ptr != nullptr);
 
-    std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh(cfh_ptr);
-    m_cf_name_map[cfh_ptr->GetName()] = cfh;
-    m_cf_id_map[cfh_ptr->GetID()] = cfh;
+    // ALTER
+    // std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh(cfh_ptr);
+    // m_cf_name_map[cfh_ptr->GetName()] = cfh;
+    // m_cf_id_map[cfh_ptr->GetID()] = cfh;
+    m_cf_name_map[rocksdb_ColumnFamilyHandle__GetName(cfh_ptr)] = cfh_ptr;
+    m_cf_id_map[rocksdb_ColumnFamilyHandle__GetID(cfh_ptr)] = cfh_ptr;
   }
 }
 
@@ -75,16 +80,19 @@ void Rdb_cf_manager::cleanup() {
   @detail
     See Rdb_cf_manager::get_cf
 */
-std::shared_ptr<rocksdb::ColumnFamilyHandle> Rdb_cf_manager::get_or_create_cf(
+rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
     rocksdb::DB *const rdb, const std::string &cf_name) {
   DBUG_ASSERT(rdb != nullptr);
   DBUG_ASSERT(!cf_name.empty());
   std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle;
+  rocksdb::ColumnFamilyHandle *cf_handle_ptr;
 
   if (cf_name == PER_INDEX_CF_NAME) {
     // per-index column families is no longer supported.
     my_error(ER_PER_INDEX_CF_DEPRECATED, MYF(0));
-    return cf_handle;
+    // ALTER
+    // return cf_handle;
+    return cf_handle_ptr;
   }
 
   RDB_MUTEX_LOCK_CHECK(m_mutex);
@@ -92,10 +100,14 @@ std::shared_ptr<rocksdb::ColumnFamilyHandle> Rdb_cf_manager::get_or_create_cf(
   const auto it = m_cf_name_map.find(cf_name);
 
   if (it != m_cf_name_map.end()) {
-    cf_handle = it->second;
+    // ALTER
+    // cf_handle = it->second;
+    cf_handle_ptr = it->second;
   } else {
     /* Create a Column Family. */
     rocksdb::ColumnFamilyOptions opts;
+    ColumnFamilyOptions_ cfopt =
+        rocksdb_ColumnFamilyOptions__ColumnFamilyOptions();
     m_cf_options->get_cf_options(cf_name, &opts);
 
     // NO_LINT_DEBUG

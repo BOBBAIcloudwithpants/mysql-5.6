@@ -41,24 +41,38 @@ Rdb_pk_comparator Rdb_cf_options::s_pk_comparator;
 Rdb_rev_comparator Rdb_cf_options::s_rev_pk_comparator;
 
 bool Rdb_cf_options::init(
-    const rocksdb::BlockBasedTableOptions &table_options,
-    std::shared_ptr<rocksdb::TablePropertiesCollectorFactory> prop_coll_factory,
+    /* ALTER*/
+    rocksdb::BlockBasedTableOptions *table_options,
+    std::shared_ptr<rocksdb::TablePropertiesCollectorFactory>
+        *prop_coll_factory,
     const char *const default_cf_options,
     const char *const override_cf_options) {
   DBUG_ASSERT(default_cf_options != nullptr);
   DBUG_ASSERT(override_cf_options != nullptr);
 
-  m_default_cf_opts.comparator = &s_pk_comparator;
+  // ALTER
+  // m_default_cf_opts.comparator = &s_pk_comparator;
+  rocksdb::Comparator *cmp = myrocks_SPkComparator();
+  rocksdb_ColumnFamilyOptions__SetComparator(m_default_cf_opts, cmp);
+
+  // TODO: ALTER
   m_default_cf_opts.compaction_filter_factory.reset(
       new Rdb_compact_filter_factory);
 
-  m_default_cf_opts.table_factory.reset(
-      rocksdb::NewBlockBasedTableFactory(table_options));
+  // ALTER
+  // m_default_cf_opts.table_factory.reset(
+  //     rocksdb::NewBlockBasedTableFactory(table_options));
+  std::shared_ptr<rocksdb::TableFactory *> *tf =
+      rocksdb_NewBlockBasedTableFactoryWithOption(table_options);
+  rocksdb_ColumnFamilyOptions__SetTableFactory(m_default_cf_opts, tf);
 
-  if (prop_coll_factory) {
-    m_default_cf_opts.table_properties_collector_factories.push_back(
-        prop_coll_factory);
-  }
+  // ALTER
+  // if (prop_coll_factory) {
+  //   m_default_cf_opts.table_properties_collector_factories.push_back(
+  //       prop_coll_factory);
+  // }
+  rocksdb_ColumnFamilyOptions__SetTablePropCollectorFactory(m_default_cf_opts,
+                                                            prop_coll_factory);
 
   if (!set_default(std::string(default_cf_options)) ||
       !set_override(std::string(override_cf_options))) {
@@ -72,14 +86,18 @@ void Rdb_cf_options::get(const std::string &cf_name,
                          rocksdb::ColumnFamilyOptions *const opts) {
   DBUG_ASSERT(opts != nullptr);
 
+  // ALTER
   // Get defaults.
-  rocksdb::GetColumnFamilyOptionsFromString(*opts, m_default_config, opts);
+  // rocksdb::GetColumnFamilyOptionsFromString(*opts, m_default_config, opts);
+  rocksdb_GetColumnFamilyOptionsFromString(opts, m_default_config, opts);
 
   // Get a custom confguration if we have one.
   Name_to_config_t::iterator it = m_name_map.find(cf_name);
 
   if (it != m_name_map.end()) {
-    rocksdb::GetColumnFamilyOptionsFromString(*opts, it->second, opts);
+    // ALTER
+    // rocksdb::GetColumnFamilyOptionsFromString(*opts, it->second, opts);
+    rocksdb_GetColumnFamilyOptionsFromString(opts, it->second, opts);
   }
 }
 
@@ -95,11 +113,16 @@ void Rdb_cf_options::update(const std::string &cf_name,
 }
 
 bool Rdb_cf_options::set_default(const std::string &default_config) {
-  rocksdb::ColumnFamilyOptions options;
+  // ALTER
+  // rocksdb::ColumnFamilyOptions options;
+  rocksdb::ColumnFamilyOptions *options = rocksdb_ColumnFamilyOptions();
 
   if (!default_config.empty()) {
-    rocksdb::Status s = rocksdb::GetColumnFamilyOptionsFromString(
-        options, default_config, &options);
+    // ALTER
+    // rocksdb::Status s = rocksdb::GetColumnFamilyOptionsFromString(
+    //     options, default_config, &options);
+    rocksdb::Status s = rocksdb_GetColumnFamilyOptionsFromString(
+        options, default_config, options);
     if (!s.ok()) {
       // NO_LINT_DEBUG
       fprintf(stderr,
@@ -260,7 +283,9 @@ bool Rdb_cf_options::parse_cf_options(const std::string &cf_options,
                                       Name_to_config_t *option_map) {
   std::string cf;
   std::string opt_str;
-  rocksdb::ColumnFamilyOptions options;
+  // ALTER
+  // rocksdb::ColumnFamilyOptions options;
+  rocksdb::ColumnFamilyOptions *options = rocksdb_ColumnFamilyOptions();
 
   DBUG_ASSERT(option_map != nullptr);
   DBUG_ASSERT(option_map->empty());
@@ -283,9 +308,14 @@ bool Rdb_cf_options::parse_cf_options(const std::string &cf_options,
       return false;
     }
 
+    // ALTER
     // Generate an error if the <opt_str> is not valid according to RocksDB.
+    // rocksdb::Status s =
+    //     rocksdb::GetColumnFamilyOptionsFromString(options, opt_str,
+    //     &options);
     rocksdb::Status s =
-        rocksdb::GetColumnFamilyOptionsFromString(options, opt_str, &options);
+        rocksdb_GetColumnFamilyOptionsFromString(options, opt_str, options);
+
     if (!s.ok()) {
       // NO_LINT_DEBUG
       sql_print_warning(
@@ -317,17 +347,27 @@ bool Rdb_cf_options::set_override(const std::string &override_config) {
 const rocksdb::Comparator *Rdb_cf_options::get_cf_comparator(
     const std::string &cf_name) {
   if (Rdb_cf_manager::is_cf_name_reverse(cf_name.c_str())) {
-    return &s_rev_pk_comparator;
+    // ALTER
+    // return &s_rev_pk_comparator;
+    rocksdb::Comparator *cmp = myrocks_SRevComparator();
+    return cmp;
   } else {
-    return &s_pk_comparator;
+    // ALTER
+    // return &s_pk_comparator;
+    rocksdb::Comparator *cmp = myrocks_SPkComparator();
+    return cmp;
   }
 }
 
-std::shared_ptr<rocksdb::MergeOperator> Rdb_cf_options::get_cf_merge_operator(
+std::shared_ptr<rocksdb::MergeOperator> *Rdb_cf_options::get_cf_merge_operator(
     const std::string &cf_name) {
-  return (cf_name == DEFAULT_SYSTEM_CF_NAME)
-             ? std::make_shared<Rdb_system_merge_op>()
-             : nullptr;
+  auto default_op = myrocks_RdbSystemMergeOp();
+  // ALTER
+  // return (cf_name == DEFAULT_SYSTEM_CF_NAME)
+  //            ? std::make_shared<Rdb_system_merge_op>()
+  //            : nullptr;
+  return (cf_name == DEFAULT_SYSTEM_CF_NAME) ? myrocks_RdbSystemMergeOp()
+                                             : nullptr;
 }
 
 void Rdb_cf_options::get_cf_options(const std::string &cf_name,
@@ -335,9 +375,13 @@ void Rdb_cf_options::get_cf_options(const std::string &cf_name,
   *opts = m_default_cf_opts;
   get(cf_name, opts);
 
+  // ALTER
   // Set the comparator according to 'rev:'
-  opts->comparator = get_cf_comparator(cf_name);
-  opts->merge_operator = get_cf_merge_operator(cf_name);
+  // opts->comparator = get_cf_comparator(cf_name);
+  // opts->merge_operator = get_cf_merge_operator(cf_name);
+  rocksdb_ColumnFamilyOptions__SetComparator(opts, get_cf_comparator(cf_name));
+  rocksdb_ColumnFamilyOptions__SetMergeOperator(opts,
+                                                get_cf_merge_operator(cf_name));
 }
 
 }  // namespace myrocks

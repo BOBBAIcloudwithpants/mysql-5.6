@@ -25,8 +25,10 @@
 #include "rocksdb/utilities/options_util.h"
 
 /* MyRocks header files */
-#include "./rdb_global.h"
 #include "./rdb_comparator.h"
+#include "./rdb_global.h"
+
+#include "rpcclient.hpp"
 
 namespace myrocks {
 
@@ -52,20 +54,20 @@ class Rdb_cf_options {
 
   void update(const std::string &cf_name, const std::string &cf_options);
 
-  bool init(const rocksdb::BlockBasedTableOptions &table_options,
+  bool init(rocksdb::BlockBasedTableOptions *table_options,
             std::shared_ptr<rocksdb::TablePropertiesCollectorFactory>
-                prop_coll_factory,
+                *prop_coll_factory,
             const char *const default_cf_options,
             const char *const override_cf_options);
 
-  const rocksdb::ColumnFamilyOptions &get_defaults() const {
+  rocksdb::ColumnFamilyOptions *get_defaults() const {
     return m_default_cf_opts;
   }
 
   static const rocksdb::Comparator *get_cf_comparator(
       const std::string &cf_name);
 
-  std::shared_ptr<rocksdb::MergeOperator> get_cf_merge_operator(
+  std::shared_ptr<rocksdb::MergeOperator> *get_cf_merge_operator(
       const std::string &cf_name);
 
   void get_cf_options(const std::string &cf_name,
@@ -99,7 +101,9 @@ class Rdb_cf_options {
   /* The default value (if there is only one value, it is stored here) */
   std::string m_default_config;
 
-  rocksdb::ColumnFamilyOptions m_default_cf_opts;
+  // ALTER
+  // rocksdb::ColumnFamilyOptions m_default_cf_opts;
+  rocksdb::ColumnFamilyOptions *m_default_cf_opts;
 };
 
 }  // namespace myrocks

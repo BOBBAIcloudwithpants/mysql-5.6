@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/json/include",
+                "/usr/local/include",
+                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/rocksdb/include",
+                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/rocksdb",
+                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/cpp-httplib",
+                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/include",
+                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/plog/include",
+                "/Users/bob/Desktop/projects/ali/mysql-5.6/rocksdb-rpc-client"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "macos-clang-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
