@@ -617,10 +617,13 @@ class Rdb_key_def {
       const Rdb_tbl_def *const tbl_def_arg, bool *per_part_match_found,
       const char *const qualifier);
 
-  rocksdb::ColumnFamilyHandle *get_cf() const { return m_cf_handle.get(); }
-  std::shared_ptr<rocksdb::ColumnFamilyHandle> get_shared_cf() const {
-    return m_cf_handle;
-  }
+  // ALTER
+  // rocksdb::ColumnFamilyHandle *get_cf() const { return m_cf_handle.get(); }
+  // std::shared_ptr<rocksdb::ColumnFamilyHandle> get_shared_cf() const {
+  //   return m_cf_handle;
+  // }
+  rocksdb::ColumnFamilyHandle *get_cf() const { return m_cf_handle; }
+  rocksdb::ColumnFamilyHandle *get_shared_cf() const { return m_cf_handle; }
 
   /* Check if keypart #kp can be unpacked from index tuple */
   inline bool can_unpack(const uint kp) const;
@@ -1465,7 +1468,7 @@ class Rdb_dict_manager {
   }
 
   /* Raw RocksDB operations */
-  std::unique_ptr<rocksdb::WriteBatch> begin() const;
+  rocksdb::WriteBatch *begin() const;
   int commit(rocksdb::WriteBatch *const batch, const bool sync = true) const;
   rocksdb::Status get_value(const rocksdb::Slice &key,
                             std::string *const value) const;

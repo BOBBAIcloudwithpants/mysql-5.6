@@ -448,7 +448,7 @@ class Rdb_key_def {
   Rdb_key_def &operator=(const Rdb_key_def &) = delete;
   Rdb_key_def(const Rdb_key_def &k);
   Rdb_key_def(uint indexnr_arg, uint keyno_arg,
-              std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle_arg,
+              rocksdb::ColumnFamilyHandle *cf_handle_arg,
               uint16_t index_dict_version_arg, uchar index_type_arg,
               uint16_t kv_format_version_arg, bool is_reverse_cf_arg,
               bool is_per_partition_cf, const char *name,
@@ -616,7 +616,6 @@ class Rdb_key_def {
       const std::string &comment, const TABLE *const table_arg,
       const Rdb_tbl_def *const tbl_def_arg, bool *per_part_match_found,
       const char *const qualifier);
-
   rocksdb::ColumnFamilyHandle *get_cf() const { return m_cf_handle.get(); }
   std::shared_ptr<rocksdb::ColumnFamilyHandle> get_shared_cf() const {
     return m_cf_handle;
@@ -765,7 +764,7 @@ class Rdb_key_def {
 
   uchar m_index_number_storage_form[INDEX_NUMBER_SIZE];
 
-  std::shared_ptr<rocksdb::ColumnFamilyHandle> m_cf_handle;
+  rocksdb::ColumnFamilyHandle *m_cf_handle;
 
   static void pack_legacy_variable_format(const uchar *src, size_t src_len,
                                           uchar **dst);
@@ -1465,7 +1464,7 @@ class Rdb_dict_manager {
   }
 
   /* Raw RocksDB operations */
-  std::unique_ptr<rocksdb::WriteBatch> begin() const;
+  rocksdb::WriteBatch *begin() const;
   int commit(rocksdb::WriteBatch *const batch, const bool sync = true) const;
   rocksdb::Status get_value(const rocksdb::Slice &key,
                             std::string *const value) const;
