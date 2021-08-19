@@ -61,24 +61,37 @@ class Rdb_logger : public rocksdb::Logger {
     Logv(rocksdb::InfoLogLevel::INFO_LEVEL, format, ap);
   }
 
-  void SetRocksDBLogger(const std::shared_ptr<rocksdb::Logger> logger) {
-    m_logger = logger;
-  }
+  // ALTER
+  // void SetRocksDBLogger(const std::shared_ptr<rocksdb::Logger> logger) {
+  //   m_logger = logger;
+  // }
+  void SetRocksDBLogger(ocksdb::Logger *logger) { m_logger = logger; }
 
   void SetInfoLogLevel(const rocksdb::InfoLogLevel log_level) override {
     // The InfoLogLevel for the logger is used by rocksdb to filter
     // messages, so it needs to be the lower of the two loggers
     rocksdb::InfoLogLevel base_level = log_level;
 
-    if (m_logger && m_logger->GetInfoLogLevel() < base_level) {
-      base_level = m_logger->GetInfoLogLevel();
+    // ALTER
+    // if (m_logger && m_logger->GetInfoLogLevel() < base_level) {
+    //   base_level = m_logger->GetInfoLogLevel();
+    // }
+    rocksdb::InfoLogLevel logger_level = rocksdb_Logger__GetInfoLogLevel();
+    if (m_logger && logger_level < base_level) {
+      base_level = logger_level;
     }
-    rocksdb::Logger::SetInfoLogLevel(base_level);
+
+    // ALTER
+    // rocksdb::Logger::SetInfoLogLevel(base_level);
+    rocksdb_Logger__SetInfoLogLevel(m_logger, base_level);
+
     m_mysql_log_level = log_level;
   }
 
  private:
-  std::shared_ptr<rocksdb::Logger> m_logger;
+  // ALTER
+  // std::shared_ptr<rocksdb::Logger> m_logger;
+  rocksdb::Logger *m_logger;
   rocksdb::InfoLogLevel m_mysql_log_level;
 };
 

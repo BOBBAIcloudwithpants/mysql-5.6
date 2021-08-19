@@ -46,6 +46,8 @@
 #include "./rdb_converter.h"
 #include "./rdb_datadic.h"
 
+#include "rpcclient.hpp"
+
 static const size_t DEFAULT_FIELD_LIST_SIZE = 16;
 static const size_t MAX_NOSQL_COND_COUNT = 16;
 static const size_t MAX_SIZE = std::numeric_limits<size_t>::max();
@@ -783,7 +785,9 @@ class select_exec {
   std::vector<std::pair<int, int>> m_field_index_to_where;
 
   // The iterator used in secondary index query or range query
-  std::unique_ptr<rocksdb::Iterator> m_scan_it;
+  // ALTER
+  // std::unique_ptr<rocksdb::Iterator> m_scan_it;
+  rocksdb::Iterator *m_scan_it;
 
   // The entire index (including extended keyparts) is used in query in equality
   // predicates - meaning it is a point query
@@ -1442,7 +1446,10 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
     size_t size = m_key_index_tuples.size();
     std::vector<rocksdb::Slice> key_slices;
     key_slices.reserve(size);
-    std::vector<rocksdb::PinnableSlice> value_slices(size);
+    // ALTER
+    // std::vector<rocksdb::PinnableSlice> value_slices(size);
+    std::vector<rocksdb::PinnableSlice *> value_slices =
+        rocksdb_PinnableSlice__PinnableSlices(size);
     std::vector<rocksdb::Status> statuses(size);
 
     for (auto &writer : m_key_index_tuples) {
@@ -1455,8 +1462,12 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
     bool sorted_input =
         (m_key_def->m_is_reverse_cf == m_parser.is_order_desc());
 
+    // ALTER
+    // txn->multi_get(m_key_def->get_cf(), size, sorted_input,
+    // key_slices.data(),
+    //                value_slices.data(), statuses.data());
     txn->multi_get(m_key_def->get_cf(), size, sorted_input, key_slices.data(),
-                   value_slices.data(), statuses.data());
+                   value_slices, statuses.data());
 
     for (size_t i = 0; i < size; ++i) {
       if (unlikely(handle_killed())) {
@@ -1483,7 +1494,10 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
       }
     }
   } else {
-    rocksdb::PinnableSlice value_slice;
+    // ALTER
+    // rocksdb::PinnableSlice value_slice;
+    rocksdb::PinnableSlice *value_slice =
+        rocksdb_PinnableSlice__PinnableSlice();
     for (auto &writer : m_key_index_tuples) {
       if (handle_killed()) {
         return true;
@@ -1492,7 +1506,11 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
       value_slice.Reset();
 
       rocksdb::Slice key_slice = writer.get_key_slice();
-      rocksdb::Status s = txn->get(cf, key_slice, &value_slice);
+
+      // ALTER
+      // rocksdb::Status s = txn->get(cf, key_slice, &value_slice);
+      rocksdb::Status s = txn->get(cf, key_slice, value_slice);
+
       if (s.IsNotFound()) {
         continue;
       } else if (!s.ok()) {
@@ -1533,7 +1551,10 @@ bool INLINE_ATTR select_exec::setup_iterator(txn_wrapper *txn,
   if (it == nullptr) {
     return true;
   }
-  m_scan_it.reset(it);
+  // ALTER
+  // m_scan_it.reset(it);
+  m_scan_it = it;
+
   return false;
 }
 
@@ -1547,18 +1568,32 @@ bool INLINE_ATTR select_exec::run_sk_point_query(txn_wrapper *txn) {
     if (unlikely(setup_iterator(txn, key_slice))) {
       return true;
     }
-    m_scan_it->Seek(key_slice);
+    // ALTER
+    // m_scan_it->Seek(key_slice);
+    rocksdb_Iterator__Seek(m_scan_it, key_slice);
 
-    if (!is_valid_iterator(m_scan_it.get())) {
+    // ALTER
+    // if (!is_valid_iterator(m_scan_it.get())) {
+    //   continue;
+    // }
+    if (!is_valid_iterator(m_scan_it)) {
       continue;
     }
-    auto rkey_slice = m_scan_it->key();
+
+    // ALTER
+    // auto rkey_slice = m_scan_it->key();
+    auto rkey_slice = rocksdb_Iterator__key(m_scan_it);
+
     if (rkey_slice.size() < key_slice.size() ||
         memcmp(rkey_slice.data(), key_slice.data(), key_slice.size()) != 0) {
       continue;
     }
 
-    if (unpack_for_sk(txn, rkey_slice, m_scan_it->value())) {
+    // ALTER
+    // if (unpack_for_sk(txn, rkey_slice, m_scan_it->value())) {
+    //   return true;
+    // }
+    if (unpack_for_sk(txn, rkey_slice, rocksdb_Iterator__value(m_scan_it))) {
       return true;
     }
 
@@ -1801,7 +1836,9 @@ bool INLINE_ATTR select_exec::run_range_query(txn_wrapper *txn) {
       return true;
     }
 
-    rocksdb_smart_seek(reverse_seek, m_scan_it.get(), initial_pos_slice);
+    // ALTER
+    // rocksdb_smart_seek(reverse_seek, m_scan_it.get(), initial_pos_slice);
+    rocksdb_smart_seek(reverse_seek, m_scan_it, initial_pos_slice);
 
     // Make sure the slice is alive as we'll point into the slice during
     // unpacking
@@ -1810,11 +1847,18 @@ bool INLINE_ATTR select_exec::run_range_query(txn_wrapper *txn) {
         return true;
       }
 
-      if (unlikely(!is_valid_iterator(m_scan_it.get()))) {
+      // ALTER
+      // if (unlikely(!is_valid_iterator(m_scan_it.get()))) {
+      //   break;
+      // }
+      if (unlikely(!is_valid_iterator(m_scan_it))) {
         break;
       }
 
-      const rocksdb::Slice rkey = m_scan_it->key();
+      // ALTER
+      // const rocksdb::Slice rkey = m_scan_it->key();
+      const rocksdb::Slice rkey = rocksdb_Iterator__key(m_scan_it);
+
       if (end_key_slice.empty()) {
         // No end - we stop when prefix no longer matches
         if (!rkey.starts_with(eq_slice)) {
@@ -1839,7 +1883,11 @@ bool INLINE_ATTR select_exec::run_range_query(txn_wrapper *txn) {
       // TODO: We could skip unpacking if m_filter_count=0 and we are
       // skipping the first N items in LIMIT, but this is low priority
       // for now
-      const rocksdb::Slice rvalue = m_scan_it->value();
+
+      // ALTER
+      // const rocksdb::Slice rvalue = m_scan_it->value();
+      const rocksdb::Slice rvalue = rocksdb_Iterator__value(m_scan_it);
+
       if (m_index_is_pk) {
         if (unlikely(unpack_for_pk(rkey, rvalue))) {
           return true;
@@ -1859,7 +1907,10 @@ bool INLINE_ATTR select_exec::run_range_query(txn_wrapper *txn) {
         return false;
       }
 
-      rocksdb_smart_next(reverse_seek, m_scan_it.get());
+      // ALTER
+      // rocksdb_smart_next(reverse_seek, m_scan_it.get());
+      rocksdb_smart_next(reverse_seek, m_scan_it);
+
     }  // while (true)
   }    // for m_key_index_tuples
 
