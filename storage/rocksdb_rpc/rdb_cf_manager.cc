@@ -189,7 +189,7 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_cf(
 rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_cf(const uint32_t id) const {
   // ALTER
   // std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle;
-  rocksdb::ColumnFamilyHandle *cf_handle;
+  rocksdb::ColumnFamilyHandle *cf_handle = nullptr;
 
   RDB_MUTEX_LOCK_CHECK(m_mutex);
   const auto it = m_cf_id_map.find(id);

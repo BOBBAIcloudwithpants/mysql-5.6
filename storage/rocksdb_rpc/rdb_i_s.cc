@@ -938,8 +938,10 @@ static int rdb_i_s_compact_stats_fill_table(
   Rdb_cf_manager &cf_manager = rdb_get_cf_manager();
 
   for (const auto &cf_name : cf_manager.get_cf_names()) {
-    std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
-        cf_manager.get_cf(cf_name);
+    // ALTER
+    // std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
+    //     cf_manager.get_cf(cf_name);
+    rocksdb::ColumnFamilyHandle *cfh = cf_manager.get_cf(cf_name);
 
     if (!cfh) {
       continue;
@@ -949,7 +951,9 @@ static int rdb_i_s_compact_stats_fill_table(
     // this point. The CF handle object is valid and sufficient here.
     std::map<std::string, std::string> props;
     bool bool_ret MY_ATTRIBUTE((__unused__));
-    bool_ret = rdb->GetMapProperty(cfh.get(), "rocksdb.cfstats", &props);
+    // ALTER
+    // bool_ret = rdb->GetMapProperty(cfh.get(), "rocksdb.cfstats", &props);
+    bool_ret = rocksdb_DB__GetMapProperty(rdb, cfh, "rocksdb.cfstats", &props);
 
     DBUG_ASSERT(bool_ret);
 
@@ -1125,7 +1129,10 @@ int Rdb_ddl_scanner::add_table(Rdb_tbl_def *tdef) {
     field[RDB_DDL_FIELD::TTL_DURATION]->store(kd.m_ttl_duration, true);
     field[RDB_DDL_FIELD::INDEX_FLAGS]->store(kd.m_index_flags_bitmap, true);
 
-    std::string cf_name = kd.get_cf()->GetName();
+    // ALTER
+    // std::string cf_name = kd.get_cf()->GetName();
+    std::string cf_name = rocksdb_ColumnFamilyHandle__GetName(kd.get_cf());
+
     field[RDB_DDL_FIELD::CF]->store(cf_name.c_str(), cf_name.size(),
                                     system_charset_info);
     ulonglong auto_incr;
@@ -1339,8 +1346,13 @@ static int rdb_i_s_sst_props_fill_table(
   for (const auto &cf_handle : cf_manager.get_all_cf()) {
     /* Grab the the properties of all the tables in the column family */
     rocksdb::TablePropertiesCollection table_props_collection;
-    const rocksdb::Status s =
-        rdb->GetPropertiesOfAllTables(cf_handle.get(), &table_props_collection);
+
+    // ALTER
+    // const rocksdb::Status s =
+    //     rdb->GetPropertiesOfAllTables(cf_handle.get(),
+    //     &table_props_collection);
+    const rocksdb::Status s = rocksdb_DB__GetPropertiesOfAllTables(
+        rdb, cf_handle, &table_props_collection);
 
     if (!s.ok()) {
       continue;
@@ -1504,8 +1516,12 @@ static int rdb_i_s_index_file_map_fill_table(
 
     // It is safe if the CF is removed from cf_manager at
     // this point. The CF handle object is valid and sufficient here.
-    const rocksdb::Status s =
-        rdb->GetPropertiesOfAllTables(cf_handle.get(), &table_props_collection);
+    // ALTER
+    // const rocksdb::Status s =
+    //     rdb->GetPropertiesOfAllTables(cf_handle.get(),
+    //     &table_props_collection);
+    const rocksdb::Status s = rocksdb_DB__GetPropertiesOfAllTables(
+        rdb, cf_handle, &table_props_collection);
 
     if (!s.ok()) {
       continue;
@@ -1634,8 +1650,11 @@ static int rdb_i_s_lock_info_fill_table(
   }
 
   /* cf id -> rocksdb::KeyLockInfo */
+  // ALTER
+  // std::unordered_multimap<uint32_t, rocksdb::KeyLockInfo> lock_info =
+  //     rdb->GetLockStatusData();
   std::unordered_multimap<uint32_t, rocksdb::KeyLockInfo> lock_info =
-      rdb->GetLockStatusData();
+      rocksdb_TransactionDB__GetLockStatusData(rdb);
 
   for (const auto &lock : lock_info) {
     const uint32_t cf_id = lock.first;

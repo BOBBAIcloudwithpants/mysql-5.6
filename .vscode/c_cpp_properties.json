@@ -4,14 +4,14 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/json/include",
+                "/Users/bob/Desktop/ali/rocksdb-rpc/json/include",
                 "/usr/local/include",
-                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/rocksdb/include",
-                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/rocksdb",
-                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/cpp-httplib",
-                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/include",
-                "/Users/bob/Desktop/projects/ali/rocksdb-rpc/plog/include",
-                "/Users/bob/Desktop/projects/ali/mysql-5.6/rocksdb-rpc-client"
+                "/Users/bob/Desktop/ali/rocksdb-rpc/rocksdb/include",
+                "/Users/bob/Desktop/ali/rocksdb-rpc/rocksdb",
+                "/Users/bob/Desktop/ali/rocksdb-rpc/cpp-httplib",
+                "/Users/bob/Desktop/ali/rocksdb-rpc/include",
+                "/Users/bob/Desktop/ali/rocksdb-rpc/plog/include",
+                "/Users/bob/Desktop/ali/mysql-5.6/rocksdb-rpc-client"
             ],
             "defines": [],
             "macFrameworkPath": [
