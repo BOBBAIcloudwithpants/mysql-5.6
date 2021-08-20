@@ -42,6 +42,8 @@
 #include "./rdb_datadic.h"
 #include "./rdb_utils.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 /**
@@ -123,8 +125,11 @@ static int rdb_i_s_cfstats_fill_table(
 
   for (const auto &cf_name : cf_manager.get_cf_names()) {
     DBUG_ASSERT(!cf_name.empty());
-    std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
-        cf_manager.get_cf(cf_name);
+
+    // ALTER
+    // std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
+    //     cf_manager.get_cf(cf_name);
+    rocksdb::ColumnFamilyHandle *cfh = cf_manager.get_cf(cf_name);
     if (!cfh) {
       continue;
     }
@@ -132,7 +137,12 @@ static int rdb_i_s_cfstats_fill_table(
     // It is safe if the CF is removed from cf_manager at
     // this point. The CF handle object is valid and sufficient here.
     for (const auto &property : cf_properties) {
-      if (!rdb->GetIntProperty(cfh.get(), property.first, &val)) {
+      // ALTER
+      // if (!rdb->GetIntProperty(cfh.get(), property.first, &val)) {
+      //   continue;
+      // }
+      if (!rocksdb_TransactionDB__GetIntPropertyWithCFH(rdb, cfh,
+                                                        property.first, &val)) {
         continue;
       }
 
@@ -205,11 +215,17 @@ static int rdb_i_s_dbstats_fill_table(
     DBUG_RETURN(ret);
   }
 
-  const rocksdb::BlockBasedTableOptions &table_options =
-      rdb_get_table_options();
+  // ALTER
+  // const rocksdb::BlockBasedTableOptions &table_options =
+  //     rdb_get_table_options();
+  rocksdb::BlockBasedTableOptions *table_options = rdb_get_table_options();
 
   for (const auto &property : db_properties) {
-    if (!rdb->GetIntProperty(property.first, &val)) {
+    // ALTER
+    // if (!rdb->GetIntProperty(property.first, &val)) {
+    //   continue;
+    // }
+    if (!rocksdb_TransactionDB__GetIntProperty(rdb, property.first, &val)) {
       continue;
     }
 
@@ -235,7 +251,14 @@ static int rdb_i_s_dbstats_fill_table(
     There is no interface to retrieve this block cache, nor fetch the usage
     information from the column family.
    */
-  val = (table_options.block_cache ? table_options.block_cache->GetUsage() : 0);
+
+  // ALTER
+  // val = (table_options.block_cache ? table_options.block_cache->GetUsage() :
+  // 0);
+  bool is_null;
+  auto block_cache_shared_ptr =
+      rocksdb_BlockBasedTableOptions__BlockCache(table_options, is_null);
+  val = is_null ? 0 : rocksdb_Cache__GetUsage(block_cache_shared_ptr);
 
   tables->table->field[RDB_DBSTATS_FIELD::STAT_TYPE]->store(
       STRING_WITH_LEN("DB_BLOCK_CACHE_USAGE"), system_charset_info);
@@ -463,75 +486,108 @@ static int rdb_i_s_cfoptions_fill_table(
 
   for (const auto &cf_name : cf_manager.get_cf_names()) {
     std::string val;
-    rocksdb::ColumnFamilyOptions opts;
+    // ALTER
+    // rocksdb::ColumnFamilyOptions opts;
+    rocksdb::ColumnFamilyOptions *opts_ptr = rocksdb_ColumnFamilyOptions();
 
     DBUG_ASSERT(!cf_name.empty());
-    cf_manager.get_cf_options(cf_name, &opts);
+    // ALTER
+    // cf_manager.get_cf_options(cf_name, &opts);
+    cf_manager.get_cf_options(cf_name, opts_ptr);
+
+    rocksdb::ColumnFamilyOptions opts =
+        rocksdb_ColumnFamilyOptions__GetFromPtr(opts_ptr);
+
+    bool is_merge_operator_null;
+    auto merge_operator = rocksdb_ColumnFamilyOptions__GetMergeOperator(
+        opts_ptr, is_merge_operator_null);
+
+    bool is_compaction_filter_factory_null;
+    auto compaction_filter_factory =
+        rocksdb_ColumnFamilyOptions__GetCompactionFilterFactory(
+            opts_ptr, is_compaction_filter_factory_null);
+
+    bool is_memtable_factory_null;
+    auto memtable_factory = rocksdb_ColumnFamilyOptions__GetMemTableFactory(
+        opts_ptr, is_memtable_factory_null);
 
     std::vector<std::pair<std::string, std::string>> cf_option_types = {
-        {"COMPARATOR", opts.comparator == nullptr
-                           ? "NULL"
-                           : std::string(opts.comparator->Name())},
-        {"MERGE_OPERATOR", opts.merge_operator == nullptr
-                               ? "NULL"
-                               : std::string(opts.merge_operator->Name())},
+      {"COMPARATOR",
+       opts.comparator == nullptr
+           ? "NULL"
+           : /* ALTER std::string(opts.comparator->Name())}*/
+           rocksdb_Comparator__Name(opts.comparator),
+       {"MERGE_OPERATOR",
+        /* ALTER opts.merge_operator == nullptr*/
+        is_merge_operator_null
+            ? "NULL"
+            : /*ALTER std::string(opts.merge_operator->Name())}*/
+            rocksdb_MergeOperator__Name(merge_operator),
         {"COMPACTION_FILTER",
          opts.compaction_filter == nullptr
              ? "NULL"
-             : std::string(opts.compaction_filter->Name())},
-        {"COMPACTION_FILTER_FACTORY",
-         opts.compaction_filter_factory == nullptr
-             ? "NULL"
-             : std::string(opts.compaction_filter_factory->Name())},
-        {"WRITE_BUFFER_SIZE", std::to_string(opts.write_buffer_size)},
-        {"MAX_WRITE_BUFFER_NUMBER",
-         std::to_string(opts.max_write_buffer_number)},
-        {"MIN_WRITE_BUFFER_NUMBER_TO_MERGE",
-         std::to_string(opts.min_write_buffer_number_to_merge)},
-        {"NUM_LEVELS", std::to_string(opts.num_levels)},
-        {"LEVEL0_FILE_NUM_COMPACTION_TRIGGER",
-         std::to_string(opts.level0_file_num_compaction_trigger)},
-        {"LEVEL0_SLOWDOWN_WRITES_TRIGGER",
-         std::to_string(opts.level0_slowdown_writes_trigger)},
-        {"LEVEL0_STOP_WRITES_TRIGGER",
-         std::to_string(opts.level0_stop_writes_trigger)},
-        {"MAX_MEM_COMPACTION_LEVEL",
-         std::to_string(opts.max_mem_compaction_level)},
-        {"TARGET_FILE_SIZE_BASE", std::to_string(opts.target_file_size_base)},
-        {"TARGET_FILE_SIZE_MULTIPLIER",
-         std::to_string(opts.target_file_size_multiplier)},
-        {"MAX_BYTES_FOR_LEVEL_BASE",
-         std::to_string(opts.max_bytes_for_level_base)},
-        {"LEVEL_COMPACTION_DYNAMIC_LEVEL_BYTES",
-         opts.level_compaction_dynamic_level_bytes ? "ON" : "OFF"},
-        {"MAX_BYTES_FOR_LEVEL_MULTIPLIER",
-         std::to_string(opts.max_bytes_for_level_multiplier)},
-        {"SOFT_RATE_LIMIT", std::to_string(opts.soft_rate_limit)},
-        {"HARD_RATE_LIMIT", std::to_string(opts.hard_rate_limit)},
-        {"RATE_LIMIT_DELAY_MAX_MILLISECONDS",
-         std::to_string(opts.rate_limit_delay_max_milliseconds)},
-        {"ARENA_BLOCK_SIZE", std::to_string(opts.arena_block_size)},
-        {"DISABLE_AUTO_COMPACTIONS",
-         opts.disable_auto_compactions ? "ON" : "OFF"},
-        {"PURGE_REDUNDANT_KVS_WHILE_FLUSH",
-         opts.purge_redundant_kvs_while_flush ? "ON" : "OFF"},
-        {"MAX_SEQUENTIAL_SKIP_IN_ITERATIONS",
-         std::to_string(opts.max_sequential_skip_in_iterations)},
-        {"MEMTABLE_FACTORY", opts.memtable_factory == nullptr
-                                 ? "NULL"
-                                 : opts.memtable_factory->Name()},
-        {"INPLACE_UPDATE_SUPPORT", opts.inplace_update_support ? "ON" : "OFF"},
-        {"INPLACE_UPDATE_NUM_LOCKS",
-         opts.inplace_update_num_locks ? "ON" : "OFF"},
-        {"MEMTABLE_PREFIX_BLOOM_BITS_RATIO",
-         std::to_string(opts.memtable_prefix_bloom_size_ratio)},
-        {"MEMTABLE_PREFIX_BLOOM_HUGE_PAGE_TLB_SIZE",
-         std::to_string(opts.memtable_huge_page_size)},
-        {"BLOOM_LOCALITY", std::to_string(opts.bloom_locality)},
-        {"MAX_SUCCESSIVE_MERGES", std::to_string(opts.max_successive_merges)},
-        {"OPTIMIZE_FILTERS_FOR_HITS",
-         (opts.optimize_filters_for_hits ? "ON" : "OFF")},
-    };
+             : /* ALTER std::string(opts.compaction_filter->Name())}*/
+             rocksdb_CompactionFilter__Name(opts.compaction_filter),
+         {"COMPACTION_FILTER_FACTORY",
+          /*ALTER opts.compaction_filter_factory == nullptr*/
+          is_compaction_filter_factory_null
+              ? "NULL"
+              : std::string(rocksdb_CompactionFilterFactory__Name(
+                    compaction_filter_factory))},
+         {"WRITE_BUFFER_SIZE", std::to_string(opts.write_buffer_size)},
+         {"MAX_WRITE_BUFFER_NUMBER",
+          std::to_string(opts.max_write_buffer_number)},
+         {"MIN_WRITE_BUFFER_NUMBER_TO_MERGE",
+          std::to_string(opts.min_write_buffer_number_to_merge)},
+         {"NUM_LEVELS", std::to_string(opts.num_levels)},
+         {"LEVEL0_FILE_NUM_COMPACTION_TRIGGER",
+          std::to_string(opts.level0_file_num_compaction_trigger)},
+         {"LEVEL0_SLOWDOWN_WRITES_TRIGGER",
+          std::to_string(opts.level0_slowdown_writes_trigger)},
+         {"LEVEL0_STOP_WRITES_TRIGGER",
+          std::to_string(opts.level0_stop_writes_trigger)},
+         {"MAX_MEM_COMPACTION_LEVEL",
+          std::to_string(opts.max_mem_compaction_level)},
+         {"TARGET_FILE_SIZE_BASE", std::to_string(opts.target_file_size_base)},
+         {"TARGET_FILE_SIZE_MULTIPLIER",
+          std::to_string(opts.target_file_size_multiplier)},
+         {"MAX_BYTES_FOR_LEVEL_BASE",
+          std::to_string(opts.max_bytes_for_level_base)},
+         {"LEVEL_COMPACTION_DYNAMIC_LEVEL_BYTES",
+          opts.level_compaction_dynamic_level_bytes ? "ON" : "OFF"},
+         {"MAX_BYTES_FOR_LEVEL_MULTIPLIER",
+          std::to_string(opts.max_bytes_for_level_multiplier)},
+         {"SOFT_RATE_LIMIT", std::to_string(opts.soft_rate_limit)},
+         {"HARD_RATE_LIMIT", std::to_string(opts.hard_rate_limit)},
+         {"RATE_LIMIT_DELAY_MAX_MILLISECONDS",
+          std::to_string(opts.rate_limit_delay_max_milliseconds)},
+         {"ARENA_BLOCK_SIZE", std::to_string(opts.arena_block_size)},
+         {"DISABLE_AUTO_COMPACTIONS",
+          opts.disable_auto_compactions ? "ON" : "OFF"},
+         {"PURGE_REDUNDANT_KVS_WHILE_FLUSH",
+          opts.purge_redundant_kvs_while_flush ? "ON" : "OFF"},
+         {"MAX_SEQUENTIAL_SKIP_IN_ITERATIONS",
+          std::to_string(opts.max_sequential_skip_in_iterations)},
+         {
+             "MEMTABLE_FACTORY",
+             /*ALTER opts.memtable_factory == nullptr*/
+             is_memtable_factory_null ? "NULL"
+                                      : /*ALTER opts.memtable_factory->Name()}*/
+                 rocksdb_MemTableRepFactory__Name(memtable_factory),
+             {"INPLACE_UPDATE_SUPPORT",
+              opts.inplace_update_support ? "ON" : "OFF"},
+             {"INPLACE_UPDATE_NUM_LOCKS",
+              opts.inplace_update_num_locks ? "ON" : "OFF"},
+             {"MEMTABLE_PREFIX_BLOOM_BITS_RATIO",
+              std::to_string(opts.memtable_prefix_bloom_size_ratio)},
+             {"MEMTABLE_PREFIX_BLOOM_HUGE_PAGE_TLB_SIZE",
+              std::to_string(opts.memtable_huge_page_size)},
+             {"BLOOM_LOCALITY", std::to_string(opts.bloom_locality)},
+             {"MAX_SUCCESSIVE_MERGES",
+              std::to_string(opts.max_successive_merges)},
+             {"OPTIMIZE_FILTERS_FOR_HITS",
+              (opts.optimize_filters_for_hits ? "ON" : "OFF")},
+         };
 
     // get MAX_BYTES_FOR_LEVEL_MULTIPLIER_ADDITIONAL option value
     val = opts.max_bytes_for_level_multiplier_additional.empty() ? "NULL" : "";
@@ -648,9 +704,16 @@ static int rdb_i_s_cfoptions_fill_table(
         {"COMPACTION_OPTION_FIFO::MAX_TABLE_FILES_SIZE",
          std::to_string(opts.compaction_options_fifo.max_table_files_size)});
 
-    // get table related options
-    std::vector<std::string> table_options =
-        split_into_vector(opts.table_factory->GetPrintableOptions(), '\n');
+    // ALTER
+    // // get table related options
+    // std::vector<std::string> table_options =
+    //     split_into_vector(opts.table_factory->GetPrintableOptions(), '\n');
+
+    bool is_table_factory_null;
+    auto table_factory = rocksdb_ColumnFamilyOptions__GetTableFactory(
+        opts_ptr, is_table_factory_null);
+    std::vector<std::string> table_options = split_into_vector(
+        rocksdb_TableFactory__GetPrintableOptions(table_factory), '\n');
 
     for (std::string option : table_options) {
       option.erase(std::remove(option.begin(), option.end(), ' '),
@@ -795,7 +858,9 @@ static int rdb_i_s_global_info_fill_table(
     DBUG_ASSERT(cf_handle != nullptr);
 
     DBUG_EXECUTE_IF("information_schema_global_info", {
-      if (cf_handle->GetName() == "cf_primary_key") {
+      // ALTER
+      // if (cf_handle->GetName() == "cf_primary_key") {
+      if (rocksdb_ColumnFamilyHandle__GetName(cf_handle) == "cf_primary_key") {
         const char act[] =
             "now signal ready_to_mark_cf_dropped_in_global_info "
             "wait_for mark_cf_dropped_done_in_global_info";
@@ -804,17 +869,24 @@ static int rdb_i_s_global_info_fill_table(
     });
 
     uint flags;
-
-    if (!dict_manager->get_cf_flags(cf_handle->GetID(), &flags)) {
+    uint32_t cf_handle_id = rocksdb_ColumnFamilyHandle__GetID(cf_handle);
+    std::string cf_handle_name = rocksdb_ColumnFamilyHandle__GetName(cf_handle);
+    // ALTER
+    // if (!dict_manager->get_cf_flags(cf_handle->GetID(), &flags)) {
+    if (!dict_manager->get_cf_flags(cf_handle_id, &flags)) {
       // If cf flags cannot be retrieved, set flags to 0. It can happen
       // if the CF is dropped. flags is only used to print information
       // here and so it doesn't affect functional correctness.
       flags = 0;
     }
 
-    snprintf(cf_id_buf, INT_BUF_LEN, "%u", cf_handle->GetID());
-    snprintf(cf_value_buf, FN_REFLEN, "%s [%u]", cf_handle->GetName().c_str(),
-             flags);
+    // ALTER
+    // snprintf(cf_id_buf, INT_BUF_LEN, "%u", cf_handle->GetID());
+    // snprintf(cf_value_buf, FN_REFLEN, "%s [%u]",
+    // cf_handle->GetName().c_str(),
+    //          flags);
+    snprintf(cf_id_buf, INT_BUF_LEN, "%u", cf_handle_id);
+    snprintf(cf_value_buf, FN_REFLEN, "%s [%u]", cf_handle_name.c_str(), flags);
 
     ret |= rdb_global_info_fill_row(thd, tables, "CF_FLAGS", cf_id_buf,
                                     cf_value_buf);
