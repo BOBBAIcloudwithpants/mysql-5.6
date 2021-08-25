@@ -24,6 +24,8 @@
 #include "./ha_rocksdb.h"
 #include "./rdb_datadic.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 Rdb_index_merge::Rdb_index_merge(const char *const tmpfile_path,
@@ -172,9 +174,15 @@ int Rdb_index_merge::add(const rocksdb::Slice &key, const rocksdb::Slice &val) {
   m_rec_buf_unsorted->store_key_value(key, val);
 
   /* Find sort order of the new record */
-  auto res =
-      m_offset_tree.emplace(m_rec_buf_unsorted->m_block.get() + rec_offset,
-                            m_cf_handle->GetComparator());
+
+  // ALTER
+  // auto res =
+  //     m_offset_tree.emplace(m_rec_buf_unsorted->m_block.get() + rec_offset,
+  //                           m_cf_handle->GetComparator());
+  auto res = m_offset_tree.emplace(
+      m_rec_buf_unsorted->m_block.get() + rec_offset,
+      rocksdb_ColumnFamilyOptions__GetComparator(m_cf_handle));
+
   if (!res.second) {
     my_printf_error(ER_DUP_ENTRY,
                     "Failed to insert the record: the key already exists",
@@ -282,8 +290,11 @@ int Rdb_index_merge::merge_heap_prepare() {
 
   /* Allocate buffers for each chunk */
   for (ulonglong i = 0; i < m_merge_file.m_num_sort_buffers; i++) {
-    const auto entry =
-        std::make_shared<merge_heap_entry>(m_cf_handle->GetComparator());
+    // ALTER
+    // const auto entry =
+    //     std::make_shared<merge_heap_entry>(m_cf_handle->GetComparator());
+    const auto entry = std::make_shared<merge_heap_entry>(
+        rocksdb_ColumnFamilyOptions__GetComparator(m_cf_handle));
 
     /*
       Read chunk_size bytes from each chunk on disk, and place inside
@@ -476,7 +487,9 @@ int Rdb_index_merge::merge_buf_info::read_next_chunk_from_disk(File fd) {
 int Rdb_index_merge::merge_record_compare(
     const uchar *const a_block, const uchar *const b_block,
     const rocksdb::Comparator *const comparator) {
-  return comparator->Compare(as_slice(a_block), as_slice(b_block));
+  // return comparator->Compare(as_slice(a_block), as_slice(b_block));
+  return rocksdb_Comparator__Compare(comparator, as_slice(a_block),
+                                     as_slice(b_block));
 }
 
 /**
@@ -495,7 +508,6 @@ void Rdb_index_merge::read_slice(rocksdb::Slice *slice,
                                  const uchar *block_ptr) {
   uint64 slice_len;
   merge_read_uint64(&block_ptr, &slice_len);
-
   *slice = rocksdb::Slice(reinterpret_cast<const char *>(block_ptr), slice_len);
 }
 

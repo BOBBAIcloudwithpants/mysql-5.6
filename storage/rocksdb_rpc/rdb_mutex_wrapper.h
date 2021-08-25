@@ -90,10 +90,12 @@ class Rdb_cond_var : public rocksdb::TransactionDBCondVar {
   // Returns OK if notified.
   // Returns non-OK if TransactionDB should stop waiting and fail the operation.
   // May return OK spuriously even if not notified.
+
+  // ALTER
   virtual rocksdb::Status Wait(
       const std::shared_ptr<rocksdb::TransactionDBMutex> mutex) override;
 
-  // Block current thread until condition variable is notifiesd by a call to
+    // Block current thread until condition variable is notifiesd by a call to
   // Notify() or NotifyAll(), or if the timeout is reached.
   // If timeout is non-negative, operation should be failed after this many
   // microseconds.
