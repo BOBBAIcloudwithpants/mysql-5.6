@@ -47,7 +47,11 @@ class Rdb_sst_file_ordered {
 
     rocksdb::DB *const m_db;
     rocksdb::ColumnFamilyHandle *const m_cf;
-    const rocksdb::DBOptions &m_db_options;
+
+    // ALTER
+    // const rocksdb::DBOptions &m_db_options;
+    rocksdb::DBOptions *m_db_options;
+
     rocksdb::SstFileWriter *m_sst_file_writer;
     const std::string m_name;
     const bool m_tracing;
@@ -56,9 +60,15 @@ class Rdb_sst_file_ordered {
     std::string generateKey(const std::string &key);
 
    public:
+    // ALTER
+    // Rdb_sst_file(rocksdb::DB *const db, rocksdb::ColumnFamilyHandle *const
+    // cf,
+    //              const rocksdb::DBOptions &db_options, const std::string
+    //              &name, const bool tracing);
     Rdb_sst_file(rocksdb::DB *const db, rocksdb::ColumnFamilyHandle *const cf,
-                 const rocksdb::DBOptions &db_options, const std::string &name,
+                 rocksdb::DBOptions *db_options, const std::string &name,
                  const bool tracing);
+
     ~Rdb_sst_file();
 
     rocksdb::Status open();
@@ -67,7 +77,9 @@ class Rdb_sst_file_ordered {
 
     inline const std::string get_name() const { return m_name; }
     inline int compare(rocksdb::Slice key1, rocksdb::Slice key2) {
-      return m_comparator->Compare(key1, key2);
+      // ALTER
+      // return m_comparator->Compare(key1, key2);
+      return rocksdb_Comparator__Compare(m_comparator, key1, key2);
     }
   };
 
@@ -101,11 +113,11 @@ class Rdb_sst_file_ordered {
   rocksdb::Status apply_first();
 
  public:
+  // ALTER
   Rdb_sst_file_ordered(rocksdb::DB *const db,
                        rocksdb::ColumnFamilyHandle *const cf,
-                       const rocksdb::DBOptions &db_options,
-                       const std::string &name, const bool tracing,
-                       size_t max_size);
+                       rocksdb::DBOptions *db_options, const std::string &name,
+                       const bool tracing, size_t max_size);
 
   inline rocksdb::Status open() { return m_file.open(); }
   rocksdb::Status put(const rocksdb::Slice &key, const rocksdb::Slice &value);
@@ -120,7 +132,11 @@ class Rdb_sst_info {
 
   rocksdb::DB *const m_db;
   rocksdb::ColumnFamilyHandle *const m_cf;
-  const rocksdb::DBOptions &m_db_options;
+
+  // ALTER
+  // const rocksdb::DBOptions &m_db_options;
+  rocksdb::DBOptions *m_db_options;
+
   uint64_t m_curr_size;
   uint64_t m_max_size;
   uint m_sst_count;
@@ -146,10 +162,15 @@ class Rdb_sst_info {
                      const rocksdb::Status &s);
 
  public:
+  // ALTER
+  // Rdb_sst_info(rocksdb::DB *const db, const std::string &tablename,
+  //              const std::string &indexname,
+  //              rocksdb::ColumnFamilyHandle *const cf,
+  //              const rocksdb::DBOptions &db_options, const bool tracing);
   Rdb_sst_info(rocksdb::DB *const db, const std::string &tablename,
                const std::string &indexname,
                rocksdb::ColumnFamilyHandle *const cf,
-               const rocksdb::DBOptions &db_options, const bool tracing);
+               rocksdb::DBOptions *db_options, const bool tracing);
   ~Rdb_sst_info();
 
   /*

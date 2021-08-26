@@ -41,15 +41,16 @@ namespace myrocks {
 
 Rdb_sst_file_ordered::Rdb_sst_file::Rdb_sst_file(
     rocksdb::DB *const db, rocksdb::ColumnFamilyHandle *const cf,
-    const rocksdb::DBOptions &db_options, const std::string &name,
-    const bool tracing)
+    rocksdb::DBOptions *db_options, const std::string &name, const bool tracing)
     : m_db(db),
       m_cf(cf),
       m_db_options(db_options),
       m_sst_file_writer(nullptr),
       m_name(name),
       m_tracing(tracing),
-      m_comparator(cf->GetComparator()) {
+      // ALTER
+      /*m_comparator(cf->GetComparator())*/
+      rocksdb_ColumnFamilyOptions__GetComparator(cf) {
   DBUG_ASSERT(db != nullptr);
   DBUG_ASSERT(cf != nullptr);
 }
@@ -63,23 +64,46 @@ Rdb_sst_file_ordered::Rdb_sst_file::~Rdb_sst_file() {
 rocksdb::Status Rdb_sst_file_ordered::Rdb_sst_file::open() {
   DBUG_ASSERT(m_sst_file_writer == nullptr);
 
-  rocksdb::ColumnFamilyDescriptor cf_descr;
+  rocksdb::ColumnFamilyDescriptor *cf_descr;
 
-  rocksdb::Status s = m_cf->GetDescriptor(&cf_descr);
+  // ALTER
+  // rocksdb::Status s = m_cf->GetDescriptor(&cf_descr);
+  rocksdb::Status s =
+      rocksdb_ColumnFamilyHandle__GetDescriptorPtr(m_cf, cf_descr);
   if (!s.ok()) {
     return s;
   }
 
   // Create an sst file writer with the current options and comparator
-  const rocksdb::EnvOptions env_options(m_db_options);
-  const rocksdb::Options options(m_db_options, cf_descr.options);
+  // ALTER
+  // const rocksdb::EnvOptions env_options(m_db_options);
+  rocksdb::EnvOptions env_options;
+  rocksdb_EnvOptions__EnvOptions(m_db_options, env_options);
 
-  m_sst_file_writer =
-      new rocksdb::SstFileWriter(env_options, options, m_comparator, m_cf, true,
-                                 rocksdb::Env::IOPriority::IO_TOTAL,
-                                 cf_descr.options.optimize_filters_for_hits);
+  // ALTER
+  // const rocksdb::Options options(m_db_options, cf_descr.options);
+  rocksdb::Options *options;
+  options = rocksdb_Options__Options(
+      m_db_options, rocksdb_ColumnFamilyDescriptor__Options(cf_descr));
 
-  s = m_sst_file_writer->Open(m_name);
+  // ALTER
+  rocksdb::ColumnFamilyOptions *cfopt =
+      rocksdb_ColumnFamilyDescriptor__Options(cf_descr);
+
+  // m_sst_file_writer =
+  //     new rocksdb::SstFileWriter(env_options, options, m_comparator, m_cf,
+  //     true,
+  //                                rocksdb::Env::IOPriority::IO_TOTAL,
+  //                                cf_descr.options.optimize_filters_for_hits);
+  m_sst_file_writer = rocksdb_NewSstFileWriter(
+      env_options, options, m_comparator, m_cf, true,
+      rocksdb::Env::IOPriority::IO_TOTAL,
+      rocksdb_ColumnFamilyOptions__OptimizeFiltersForHits(cfopt));
+
+  // ALTER
+  // s = m_sst_file_writer->Open(m_name);
+  s = rocksdb_SstFileWriter__Open(m_sst_file_writer, m_name);
+
   if (m_tracing) {
     // NO_LINT_DEBUG
     sql_print_information("SST Tracing: Open(%s) returned %s", m_name.c_str(),
@@ -101,7 +125,10 @@ rocksdb::Status Rdb_sst_file_ordered::Rdb_sst_file::put(
   // Add the specified key/value to the sst file writer
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  return m_sst_file_writer->Add(key, value);
+
+  // ALTER
+  // return m_sst_file_writer->Add(key, value);
+  return rocksdb_SstFileWriter__Add(m_sst_file_writer, key, value);
 }
 
 std::string Rdb_sst_file_ordered::Rdb_sst_file::generateKey(
@@ -129,7 +156,10 @@ rocksdb::Status Rdb_sst_file_ordered::Rdb_sst_file::commit() {
   rocksdb::ExternalSstFileInfo fileinfo;  /// Finish may should be modified
 
   // Close out the sst file
-  s = m_sst_file_writer->Finish(&fileinfo);
+  // ALTER
+  // s = m_sst_file_writer->Finish(&fileinfo);
+  s = rocksdb_SstFileWriter__Finish(m_sst_file_writer, &fileinfo);
+
   if (m_tracing) {
     // NO_LINT_DEBUG
     sql_print_information("SST Tracing: Finish returned %s",
@@ -191,8 +221,8 @@ Rdb_sst_file_ordered::Rdb_sst_stack::top() {
 
 Rdb_sst_file_ordered::Rdb_sst_file_ordered(
     rocksdb::DB *const db, rocksdb::ColumnFamilyHandle *const cf,
-    const rocksdb::DBOptions &db_options, const std::string &name,
-    const bool tracing, size_t max_size)
+    rocksdb::DBOptions *db_options, const std::string &name, const bool tracing,
+    size_t max_size)
     : m_use_stack(false),
       m_first(true),
       m_stack(max_size),
@@ -301,8 +331,7 @@ rocksdb::Status Rdb_sst_file_ordered::commit() {
 Rdb_sst_info::Rdb_sst_info(rocksdb::DB *const db, const std::string &tablename,
                            const std::string &indexname,
                            rocksdb::ColumnFamilyHandle *const cf,
-                           const rocksdb::DBOptions &db_options,
-                           const bool tracing)
+                           rocksdb::DBOptions *db_options, const bool tracing)
     : m_db(db),
       m_cf(cf),
       m_db_options(db_options),
@@ -331,14 +360,23 @@ Rdb_sst_info::Rdb_sst_info(rocksdb::DB *const db, const std::string &tablename,
   // is loaded in parallel
   m_prefix += std::to_string(m_prefix_counter.fetch_add(1)) + "_";
 
-  rocksdb::ColumnFamilyDescriptor cf_descr;
-  const rocksdb::Status s = m_cf->GetDescriptor(&cf_descr);
+  // ALTER
+  // rocksdb::ColumnFamilyDescriptor cf_descr;
+  // const rocksdb::Status s = m_cf->GetDescriptor(&cf_descr);
+  rocksdb::ColumnFamilyDescriptor *cf_descr;
+  const rocksdb::Status s =
+      rocksdb_ColumnFamilyHandle__GetDescriptorPtr(m_cf, cf_desc);
   if (!s.ok()) {
     // Default size if we can't get the cf's target size
     m_max_size = 64 * 1024 * 1024;
   } else {
     // Set the maximum size to 3 times the cf's target size
-    m_max_size = cf_descr.options.target_file_size_base * 3;
+    // ALTER
+    // m_max_size = cf_descr.options.target_file_size_base * 3;
+    m_max_size = rocksdb_ColumnFamilyOptions__GetUInt64Prop(
+                     rocksdb_ColumnFamilyDescriptor__Options(cf_descr),
+                     "target_file_size_base") *
+                 3;
   }
   mysql_mutex_init(rdb_sst_commit_key, &m_commit_mutex, MY_MUTEX_INIT_FAST);
 }
@@ -497,7 +535,8 @@ void Rdb_sst_info::set_error_msg(const std::string &sst_file_name,
 void Rdb_sst_info::report_error_msg(const rocksdb::Status &s,
                                     const char *sst_file_name) {
   if (s.IsInvalidArgument() &&
-      strcmp(s.getState(), "Keys must be added in strict ascending order.") == 0) {
+      strcmp(s.getState(), "Keys must be added in strict ascending order.") ==
+          0) {
     my_printf_error(ER_KEYS_OUT_OF_ORDER,
                     "Rows must be inserted in primary key order "
                     "during bulk load operation",
@@ -516,7 +555,10 @@ void Rdb_sst_info::report_error_msg(const rocksdb::Status &s,
 }
 
 void Rdb_sst_info::init(const rocksdb::DB *const db) {
-  const std::string path = db->GetName() + FN_DIRSEP;
+  // ALTER
+  // const std::string path = db->GetName() + FN_DIRSEP;
+  const std::string path = rocksdb_DB__GetName(db) + FN_DIRSEP;
+
   struct st_my_dir *const dir_info = my_dir(path.c_str(), MYF(MY_DONT_SORT));
 
   // Access the directory
