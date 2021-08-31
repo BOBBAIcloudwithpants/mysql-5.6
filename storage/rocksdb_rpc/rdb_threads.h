@@ -173,7 +173,10 @@ class Rdb_manual_compaction_thread : public Rdb_thread {
       FAILURE = 3,
       CANCEL = 4,
     } state;
-    std::shared_ptr<rocksdb::ColumnFamilyHandle> cf;
+    // ALTER
+    // std::shared_ptr<rocksdb::ColumnFamilyHandle> cf;
+    rocksdb::ColumnFamilyHandle *cf;
+
     rocksdb::Slice *start;
     rocksdb::Slice *limit;
     rocksdb::CompactRangeOptions option;

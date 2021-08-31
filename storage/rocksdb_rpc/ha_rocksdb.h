@@ -649,7 +649,6 @@ class ha_rocksdb : public my_core::handler {
     Default implementation from cancel_pushed_idx_cond() suits us
   */
 
-
   // Multi-Range-Read implmentation
   ha_rows multi_range_read_info_const(uint keyno, RANGE_SEQ_IF *seq,
                                       void *seq_init_param, uint n_ranges,
@@ -1156,18 +1155,26 @@ inline void rocksdb_smart_seek(bool seek_backward,
                                rocksdb::Iterator *const iter,
                                const rocksdb::Slice &key_slice) {
   if (seek_backward) {
-    iter->SeekForPrev(key_slice);
+    // ALTER
+    // iter->SeekForPrev(key_slice);
+    rocksdb_Iterator__SeekForPrev(iter, key_slice);
   } else {
-    iter->Seek(key_slice);
+    // ALTER
+    // iter->Seek(key_slice);
+    rocksdb_Iterator__Seek(iter, key_slice);
   }
 }
 
 inline void rocksdb_smart_next(bool seek_backward,
                                rocksdb::Iterator *const iter) {
   if (seek_backward) {
-    iter->Prev();
+    // ALTER
+    // iter->Prev();
+    rocksdb_Iterator__Prev(iter);
   } else {
-    iter->Next();
+    // ALTER
+    // iter->Next();
+    rocksdb_Iterator__Next(iter);
   }
 }
 
