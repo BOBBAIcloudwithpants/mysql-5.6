@@ -6993,7 +6993,10 @@ static int rocksdb_done_func(void *const p) {
   rocksdb_flush_all_memtables();
 
   // Stop all rocksdb background work
-  CancelAllBackgroundWork(rdb->GetBaseDB(), true);
+  // ALTER
+  // CancelAllBackgroundWork(rdb->GetBaseDB(), true);
+  rocksdb_CancelAllBackgroundWork(rocksdb_TransactionDB__GetBaseDB(GetBaseDB()),
+                                  true);
 
   // Signal the background thread to stop and to persist all stats collected
   // from background flushes and compactions. This will add more keys to a new
@@ -7069,10 +7072,14 @@ static int rocksdb_done_func(void *const p) {
   dict_manager.cleanup();
   cf_manager.cleanup();
 
-  delete rdb;
+  // ALTER
+  // delete rdb;
+  rocksdb_TransactionDB__delete(rdb);
   rdb = nullptr;
 
-  delete commit_latency_stats;
+  // ALTER
+  // delete commit_latency_stats;
+  rocksdb_HistogramImpl__delete(commit_latency_stats);
   commit_latency_stats = nullptr;
 
   delete io_watchdog;
@@ -7081,6 +7088,8 @@ static int rocksdb_done_func(void *const p) {
 // Disown the cache data since we're shutting down.
 // This results in memory leaks but it improved the shutdown time.
 // Don't disown when running under valgrind
+
+// TODO: ALTER
 #ifndef HAVE_purify
   if (rocksdb_tbl_options->block_cache) {
     rocksdb_tbl_options->block_cache->DisownData();
