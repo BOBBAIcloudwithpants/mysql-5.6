@@ -6339,39 +6339,88 @@ static int rocksdb_init_func(void *const p) {
   rocksdb_DBOptions__SetStatistics(rocksdb_db_options, rocksdb_stats);
 
   if (rocksdb_rate_limiter_bytes_per_sec != 0) {
-    rocksdb_rate_limiter.reset(
-        rocksdb::NewGenericRateLimiter(rocksdb_rate_limiter_bytes_per_sec));
-    rocksdb_db_options->rate_limiter = rocksdb_rate_limiter;
+    // ALTER
+    // rocksdb_rate_limiter.reset(
+    //     rocksdb::NewGenericRateLimiter(rocksdb_rate_limiter_bytes_per_sec));
+    rocksdb_rate_limiter =
+        rocksdb_NewGenericRateLimiter(rocksdb_rate_limiter_bytes_per_sec);
+
+    // ALTER
+    // rocksdb_db_options->rate_limiter = rocksdb_rate_limiter;
+    rocksdb_DBOptions__SetRateLimiter(rocksdb_rate_limiter);
   }
 
-  rocksdb_db_options->delayed_write_rate = rocksdb_delayed_write_rate;
-
+  // ALTER
+  // rocksdb_db_options->delayed_write_rate = rocksdb_delayed_write_rate;
+  rocksdb_DBOptions__SetUInt64Options(rocksdb_db_options, "delayed_write_rate",
+                                      rocksdb_delayed_write_rate);
   std::shared_ptr<Rdb_logger> myrocks_logger = std::make_shared<Rdb_logger>();
-  rocksdb::Status s = rocksdb::CreateLoggerFromOptions(
-      rocksdb_datadir, *rocksdb_db_options, &rocksdb_db_options->info_log);
+
+  // ALTER
+  // rocksdb::Status s = rocksdb::CreateLoggerFromOptions(
+  //     rocksdb_datadir, *rocksdb_db_options, &rocksdb_db_options->info_log);
+
+  rocksdb::Status s =
+      rocksdb_CreateLoggerFromOptions(rocksdb_datadir, rocksdb_db_options);
+
   if (s.ok()) {
-    myrocks_logger->SetRocksDBLogger(rocksdb_db_options->info_log);
+    // ALTER
+    // myrocks_logger->SetRocksDBLogger(rocksdb_db_options->info_log);
+
+    myrocks_logger->SetRocksDBLogger(
+        rocksdb_DBOptions__GetLoggerPtr(rocksdb_db_options));
   }
 
-  rocksdb_db_options->info_log = myrocks_logger;
+  // TODO: ALTER
+  // rocksdb_db_options->info_log = myrocks_logger;
+
   myrocks_logger->SetInfoLogLevel(
       static_cast<rocksdb::InfoLogLevel>(rocksdb_info_log_level));
-  rocksdb_db_options->wal_dir = rocksdb_wal_dir;
 
-  rocksdb_db_options->wal_recovery_mode =
-      static_cast<rocksdb::WALRecoveryMode>(rocksdb_wal_recovery_mode);
+  // ALTER
+  // rocksdb_db_options->wal_dir = rocksdb_wal_dir;
+  rocksdb_DBOptions__SetStringOptions(rocksdb_db_options, "wal_dir",
+                                      rocksdb_wal_dir);
 
-  rocksdb_db_options->track_and_verify_wals_in_manifest =
-      rocksdb_track_and_verify_wals_in_manifest;
+  // ALTER
+  // rocksdb_db_options->wal_recovery_mode =
+  //     static_cast<rocksdb::WALRecoveryMode>(rocksdb_wal_recovery_mode);
+  rocksdb_DBOptions__SetWALModeOptions(
+      rocksdb_db_options, "wal_recovery_mode",
+      static_cast<rocksdb::WALRecoveryMode>(rocksdb_wal_recovery_mode));
 
-  rocksdb_db_options->access_hint_on_compaction_start =
+  // ALTER
+  // rocksdb_db_options->track_and_verify_wals_in_manifest =
+  //     rocksdb_track_and_verify_wals_in_manifest;
+  rocksdb_DBOptions__SetBoolOptions(rocksdb_db_options,
+                                    "track_and_verify_wals_in_manifest",
+                                    rocksdb_track_and_verify_wals_in_manifest);
+
+  // ALTER
+  // rocksdb_db_options->access_hint_on_compaction_start =
+  //     static_cast<rocksdb::Options::AccessHint>(
+  //         rocksdb_access_hint_on_compaction_start);
+  rocksdb_DBOptions__SetAccessHint(
+      rocksdb_db_options, "access_hint_on_compaction_start",
       static_cast<rocksdb::Options::AccessHint>(
-          rocksdb_access_hint_on_compaction_start);
+          rocksdb_access_hint_on_compaction_start));
 
-  if (rocksdb_db_options->allow_mmap_reads &&
-      rocksdb_db_options->use_direct_reads) {
-    // allow_mmap_reads implies !use_direct_reads and RocksDB will not open if
-    // mmap_reads and direct_reads are both on.   (NO_LINT_DEBUG)
+  // ALTER
+  // if (rocksdb_db_options->allow_mmap_reads &&
+  //     rocksdb_db_options->use_direct_reads) {
+  //   // allow_mmap_reads implies !use_direct_reads and RocksDB will not open
+  //   if
+  //   // mmap_reads and direct_reads are both on.   (NO_LINT_DEBUG)
+  //   sql_print_error(
+  //       "RocksDB: Can't enable both use_direct_reads "
+  //       "and allow_mmap_reads\n");
+  //   DBUG_RETURN(HA_EXIT_FAILURE);
+  // }
+
+  if (rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+                                        "allow_mmap_reads") &&
+      rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+                                        "use_direct_reads")) {
     sql_print_error(
         "RocksDB: Can't enable both use_direct_reads "
         "and allow_mmap_reads\n");
@@ -6379,25 +6428,56 @@ static int rocksdb_init_func(void *const p) {
   }
 
   // Check whether the filesystem backing rocksdb_datadir allows O_DIRECT
-  if (rocksdb_db_options->use_direct_reads ||
-      rocksdb_db_options->use_direct_io_for_flush_and_compaction) {
+
+  // ALTER
+  // if (rocksdb_db_options->use_direct_reads ||
+  //     rocksdb_db_options->use_direct_io_for_flush_and_compaction) {
+  if (rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+                                        "use_direct_reads") ||
+      rocksdb_DBOptions__GetBoolOptions(
+          rocksdb_db_options, "use_direct_io_for_flush_and_compaction")) {
     rocksdb::EnvOptions soptions;
     rocksdb::Status check_status;
-    rocksdb::Env *const env = rocksdb_db_options->env;
+
+    // ALTER
+    // rocksdb::Env *const env = rocksdb_db_options->env;
+    rocksdb::Env *const env = rocksdb_DBOptions__GetEnv(rocksdb_db_options);
 
     std::string fname = format_string("%s/DIRECT_CHECK", rocksdb_datadir);
-    if (env->FileExists(fname).ok()) {
-      std::unique_ptr<rocksdb::SequentialFile> file;
+
+    // ALTER
+    // if (env->FileExists(fname).ok()) {
+    if (rocksdb_Env__FileExists(env, fname).ok()) {
+      // ALTER
+      // std::unique_ptr<rocksdb::SequentialFile> file;
+      std::unique_ptr<rocksdb::SequentialFile> *file;
+
       soptions.use_direct_reads = true;
-      check_status = env->NewSequentialFile(fname, &file, soptions);
+
+      // ALTER
+      // check_status = env->NewSequentialFile(fname, &file, soptions);
+      check_status = rocksdb_Env__NewSequentialFile(env, fname, file, soptions);
     } else {
-      std::unique_ptr<rocksdb::WritableFile> file;
+      // ALTER
+      // std::unique_ptr<rocksdb::WritableFile> file;
+      std::unique_ptr<rocksdb::WritableFile> *file;
+
       soptions.use_direct_writes = true;
-      check_status = env->ReopenWritableFile(fname, &file, soptions);
-      if (file != nullptr) {
-        file->Close();
+
+      // ALTER
+      // check_status = env->ReopenWritableFile(fname, &file, soptions);
+      check_status =
+          rocksdb_Env__ReopenWritableFile(env, fname, file, soptions);
+
+      if (!rocksdb_File__IsWritableFileNull(file)) {
+        // ALTER
+        // file->Close();
+        rocksdb_File__CloseWritableFile(file);
       }
-      env->DeleteFile(fname);
+
+      // ALTER
+      // env->DeleteFile(fname);
+      rocksdb_Env__DeleteFile(env, fname);
     }
 
     if (!check_status.ok()) {
@@ -6410,9 +6490,15 @@ static int rocksdb_init_func(void *const p) {
     }
   }
 
-  if (rocksdb_db_options->allow_mmap_writes &&
-      rocksdb_db_options->use_direct_io_for_flush_and_compaction) {
-    // See above comment for allow_mmap_reads. (NO_LINT_DEBUG)
+  // ALTER
+  // if (rocksdb_db_options->allow_mmap_writes &&
+  //     rocksdb_db_options->use_direct_io_for_flush_and_compaction) {
+  // See above comment for allow_mmap_reads. (NO_LINT_DEBUG)
+
+  if (rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+                                        "allow_mmap_writes") ||
+      rocksdb_DBOptions__GetBoolOptions(
+          rocksdb_db_options, "use_direct_io_for_flush_and_compaction")) {
     sql_print_error(
         "RocksDB: Can't enable both "
         "use_direct_io_for_flush_and_compaction and "
@@ -6420,7 +6506,11 @@ static int rocksdb_init_func(void *const p) {
     DBUG_RETURN(HA_EXIT_FAILURE);
   }
 
-  if (rocksdb_db_options->allow_mmap_writes &&
+  // ALTER
+  // if (rocksdb_db_options->allow_mmap_writes &&
+  //     rocksdb_flush_log_at_trx_commit != FLUSH_LOG_NEVER)
+  if (rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+                                        "allow_mmap_writes") &&
       rocksdb_flush_log_at_trx_commit != FLUSH_LOG_NEVER) {
     // NO_LINT_DEBUG
     sql_print_error(
@@ -6436,10 +6526,21 @@ static int rocksdb_init_func(void *const p) {
       rocksdb_db_options->env, myrocks_logger, trash_dir,
       rocksdb_sst_mgr_rate_bytes_per_sec, true /* delete_existing_trash */));
 
+  rocksdb_DBOptions__SetSstFileManager(
+      rocksdb_db_options,
+      rocksdb_NewSstFileManager(rocksdb_DBOptions__GetEnv(rocksdb_db_options),
+                                nullptr, trash_dir,
+                                rocksdb_sst_mgr_rate_bytes_per_sec, true));
+
   std::vector<std::string> cf_names;
   rocksdb::Status status;
-  status = rocksdb::DB::ListColumnFamilies(*rocksdb_db_options, rocksdb_datadir,
-                                           &cf_names);
+  // ALTER
+  // status = rocksdb::DB::ListColumnFamilies(*rocksdb_db_options,
+  // rocksdb_datadir,
+  //                                          &cf_names);
+
+  status = rocksdb_DB_ListColumnFamilies(rocksdb_db_options, rocksdb_datadir,
+                                         cf_names);
   if (!status.ok()) {
     /*
       When we start on an empty datadir, ListColumnFamilies returns IOError,
@@ -6463,15 +6564,28 @@ static int rocksdb_init_func(void *const p) {
                           cf_names.size());
   }
 
-  std::vector<rocksdb::ColumnFamilyDescriptor> cf_descr;
+  // ALTER
+  // std::vector<rocksdb::ColumnFamilyDescriptor> cf_descr;
+  std::vector<rocksdb::ColumnFamilyDescriptor *> cf_descr;
   std::vector<rocksdb::ColumnFamilyHandle *> cf_handles;
 
-  rocksdb_tbl_options->index_type =
-      (rocksdb::BlockBasedTableOptions::IndexType)rocksdb_index_type;
+  // ALTER
+  // rocksdb_tbl_options->index_type =
+  //     (rocksdb::BlockBasedTableOptions::IndexType)rocksdb_index_type;
+  rocksdb_BlockBasedTableOptions__SetIndexType(rocksdb_tbl_options,
+                                               rocksdb_index_type);
 
-  if (!rocksdb_tbl_options->no_block_cache) {
-    std::shared_ptr<rocksdb::MemoryAllocator> memory_allocator;
+  // ALTER
+  // if (!rocksdb_tbl_options->no_block_cache) {
+  if (!rocksdb_BlockBasedTableOptions__GetBoolOptions(rocksdb_tbl_options,
+                                                      "no_block_cache")) {
+    // ALTER
+    // std::shared_ptr<rocksdb::MemoryAllocator> memory_allocator;
+    std::shared_ptr<rocksdb::MemoryAllocator> *memory_allocator =
+        rocksdb_MemoryAllocator_New();
+
     if (!rocksdb_cache_dump) {
+// TODO: ALTER
 #ifdef HAVE_JEMALLOC
       size_t block_size = rocksdb_tbl_options->block_size;
       rocksdb::JemallocAllocatorOptions alloc_opt;
@@ -6496,21 +6610,39 @@ static int rocksdb_init_func(void *const p) {
           "Ignoring rocksdb_cache_dump because jemalloc is missing.");
 #endif  // HAVE_JEMALLOC
     }
-    std::shared_ptr<rocksdb::Cache> block_cache =
+    // ALTER
+    // std::shared_ptr<rocksdb::Cache> block_cache =
+    //     rocksdb_use_clock_cache
+    //         ? rocksdb::NewClockCache(rocksdb_block_cache_size)
+    //         : rocksdb::NewLRUCache(
+    //               rocksdb_block_cache_size, -1 /*num_shard_bits*/,
+    //               false /*strict_capcity_limit*/,
+    //               rocksdb_cache_high_pri_pool_ratio, memory_allocator);
+
+    std::shared_ptr<rocksdb::Cache> *block_cache =
         rocksdb_use_clock_cache
-            ? rocksdb::NewClockCache(rocksdb_block_cache_size)
-            : rocksdb::NewLRUCache(
+            ? rocksdb_NewClockCache(rocksdb_block_cache_size)
+            : rocksdb_NewLRUCache(
                   rocksdb_block_cache_size, -1 /*num_shard_bits*/,
                   false /*strict_capcity_limit*/,
                   rocksdb_cache_high_pri_pool_ratio, memory_allocator);
+
     if (rocksdb_sim_cache_size > 0) {
       // Simulated cache enabled
       // Wrap block cache inside a simulated cache and pass it to RocksDB
-      rocksdb_tbl_options->block_cache =
-          rocksdb::NewSimCache(block_cache, rocksdb_sim_cache_size, 6);
+
+      // ALTER
+      // rocksdb_tbl_options->block_cache =
+      //     rocksdb::NewSimCache(block_cache, rocksdb_sim_cache_size, 6);
+      rocksdb_BlockBasedTableOptions__SetBlockCache(
+          rocksdb_tbl_options,
+          rocksdb_NewSimCache(block_cache, rocksdb_sim_cache_size, 6));
+
     } else {
       // Pass block cache to RocksDB
-      rocksdb_tbl_options->block_cache = block_cache;
+      // rocksdb_tbl_options->block_cache = block_cache;
+      rocksdb_BlockBasedTableOptions__SetBlockCache(rocksdb_tbl_options,
+                                                    block_cache);
     }
   }
 
@@ -6530,8 +6662,13 @@ static int rocksdb_init_func(void *const p) {
     RDB_MUTEX_UNLOCK_CHECK(rdb_sysvars_mutex);
   }
 
+  // TODO: ALTER
   if (rocksdb_persistent_cache_size_mb > 0) {
-    std::shared_ptr<rocksdb::PersistentCache> pcache;
+    // ALTER
+    // std::shared_ptr<rocksdb::PersistentCache> pcache;
+    std::shared_ptr<rocksdb::PersistentCache> *pcache =
+        rocksdb_Cache__NewPersistentCache();
+
     uint64_t cache_size_bytes = rocksdb_persistent_cache_size_mb * 1024 * 1024;
     status = rocksdb::NewPersistentCache(
         rocksdb::Env::Default(), std::string(rocksdb_persistent_cache_path),
@@ -6569,38 +6706,68 @@ static int rocksdb_init_func(void *const p) {
   // NO_LINT_DEBUG
   sql_print_information("RocksDB: Column Families at start:");
   for (size_t i = 0; i < cf_names.size(); ++i) {
-    rocksdb::ColumnFamilyOptions opts;
-    cf_options_map->get_cf_options(cf_names[i], &opts);
+    // ALTER
+    // rocksdb::ColumnFamilyOptions opts;
+    rocksdb::ColumnFamilyOptions *opts = rocksdb_ColumnFamilyOptions();
+
+    cf_options_map->get_cf_options(cf_names[i], opts);
 
     // NO_LINT_DEBUG
     sql_print_information("  cf=%s", cf_names[i].c_str());
 
+    // ALTER
     // NO_LINT_DEBUG
-    sql_print_information("    write_buffer_size=%ld", opts.write_buffer_size);
+    // sql_print_information("    write_buffer_size=%ld",
+    // opts.write_buffer_size);
+    sql_print_information(
+        "    write_buffer_size=%ld",
+        rocksdb_ColumnFamilyOptions__GetSizeTProp(opts, "write_buffer_size"));
 
+    // ALTER
     // NO_LINT_DEBUG
+    // sql_print_information("    target_file_size_base=%" PRIu64,
+    //                       opts.target_file_size_base);
     sql_print_information("    target_file_size_base=%" PRIu64,
-                          opts.target_file_size_base);
+                          rocksdb_ColumnFamilyOptions__GetUInt64Prop(
+                              opts, "target_file_size_base"));
 
     /*
       Temporarily disable compactions to prevent a race condition where
       compaction starts before compaction filter is ready.
     */
-    if (!opts.disable_auto_compactions) {
+    // ALTER
+    // if (!opts.disable_auto_compactions) {
+    //   compaction_enabled_cf_indices.push_back(i);
+    //   opts.disable_auto_compactions = true;
+    // }
+    if (!rocksdb_ColumnFamilyOptions__GetBoolProp(opts,
+                                                  "disable_auto_compactions")) {
       compaction_enabled_cf_indices.push_back(i);
-      opts.disable_auto_compactions = true;
+      rocksdb_ColumnFamilyOptions__SetBoolProp(opts, "disable_auto_compactions",
+                                               true);
     }
-    cf_descr.push_back(rocksdb::ColumnFamilyDescriptor(cf_names[i], opts));
+
+    // ALTER
+    // cf_descr.push_back(rocksdb::ColumnFamilyDescriptor(cf_names[i], opts));
+    cf_descr.push_back(rocksdb_ColumnFamilyDescriptor__ColumnFamilyDescriptor(
+        cf_names[i], opts));
   }
 
-  rocksdb::Options main_opts(*rocksdb_db_options,
-                             cf_options_map->get_defaults());
+  // ALTER
+  // rocksdb::Options main_opts(*rocksdb_db_options,
+  //                            cf_options_map->get_defaults());
+  rocksdb::Options *main_opts = rocksdb_Options__Options(
+      rocksdb_db_options, cf_options_map->get_defaults());
 
-  rocksdb::TransactionDBOptions tx_db_options;
-  tx_db_options.transaction_lock_timeout = 2000;  // 2 seconds
-  tx_db_options.custom_mutex_factory = std::make_shared<Rdb_mutex_factory>();
-  tx_db_options.write_policy =
-      static_cast<rocksdb::TxnDBWritePolicy>(rocksdb_write_policy);
+  // ALTER
+  // rocksdb::TransactionDBOptions tx_db_options;
+  // tx_db_options.transaction_lock_timeout = 2000;  // 2 seconds
+  // tx_db_options.custom_mutex_factory = std::make_shared<Rdb_mutex_factory>();
+  // tx_db_options.write_policy =
+  //     static_cast<rocksdb::TxnDBWritePolicy>(rocksdb_write_policy);
+
+  rocksdb::TransactionDBOptions *tx_db_options = myrocks_InitTxDBOptions(
+      2000, static_cast<rocksdb::TxnDBWritePolicy>(rocksdb_write_policy));
 
   status =
       check_rocksdb_options_compatibility(rocksdb_datadir, main_opts, cf_descr);
@@ -6616,8 +6783,12 @@ static int rocksdb_init_func(void *const p) {
   // NO_LINT_DEBUG
   sql_print_information("RocksDB: Opening TransactionDB...");
 
-  status = rocksdb::TransactionDB::Open(
-      main_opts, tx_db_options, rocksdb_datadir, cf_descr, &cf_handles, &rdb);
+  // ALTER
+  // status = rocksdb::TransactionDB::Open(
+  //     main_opts, tx_db_options, rocksdb_datadir, cf_descr, &cf_handles,
+  //     &rdb);
+  status = rocksdb_TransactionDB_Open(main_opts, tx_db_options, rocksdb_datadir,
+                                      cf_descr, &cf_handles, &rdb);
 
   if (!status.ok()) {
     rdb_log_status_error(status, "Error opening instance");
@@ -6672,7 +6843,10 @@ static int rocksdb_init_func(void *const p) {
     compaction_enabled_cf_handles.push_back(cf_handles[index]);
   }
 
-  status = rdb->EnableAutoCompaction(compaction_enabled_cf_handles);
+  // ALTER
+  // status = rdb->EnableAutoCompaction(compaction_enabled_cf_handles);
+  status = rocksdb_TransactionDB__EnableAutoCompaction(
+      rdb, compaction_enabled_cf_handles);
 
   if (!status.ok()) {
     rdb_log_status_error(status, "Error enabling compaction");
@@ -6737,7 +6911,9 @@ static int rocksdb_init_func(void *const p) {
   rdb_set_collation_exception_list(rocksdb_strict_collation_exceptions);
 
   if (rocksdb_pause_background_work) {
-    rdb->PauseBackgroundWork();
+    // ALTER
+    // rdb->PauseBackgroundWork();
+    rocksdb_TransactionDB__PauseBackgroundWork(rdb);
   }
 
   // NO_LINT_DEBUG
@@ -6762,7 +6938,10 @@ static int rocksdb_init_func(void *const p) {
 
   // Creating an instance of HistogramImpl should only happen after RocksDB
   // has been successfully initialized.
-  commit_latency_stats = new rocksdb::HistogramImpl();
+
+  // ALTER
+  // commit_latency_stats = new rocksdb::HistogramImpl();
+  commit_latency_stats = rocksdb_HistogramImpl__HistogramImpl();
 
   // Construct a list of directories which will be monitored by I/O watchdog
   // to make sure that we won't lose write access to them.

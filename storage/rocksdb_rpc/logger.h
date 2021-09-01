@@ -65,7 +65,7 @@ class Rdb_logger : public rocksdb::Logger {
   // void SetRocksDBLogger(const std::shared_ptr<rocksdb::Logger> logger) {
   //   m_logger = logger;
   // }
-  void SetRocksDBLogger(ocksdb::Logger *logger) { m_logger = logger; }
+  void SetRocksDBLogger(rocksdb::Logger *logger) { m_logger = logger; }
 
   void SetInfoLogLevel(const rocksdb::InfoLogLevel log_level) override {
     // The InfoLogLevel for the logger is used by rocksdb to filter
