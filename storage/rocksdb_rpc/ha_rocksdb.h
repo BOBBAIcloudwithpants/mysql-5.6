@@ -703,8 +703,14 @@ class ha_rocksdb : public my_core::handler {
   void mrr_free();
   uint mrr_get_length_per_rec();
 
+  // ALTER
+  // struct key_def_cf_info {
+  //   std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle;
+  //   bool is_reverse_cf;
+  //   bool is_per_partition_cf;
+  // };
   struct key_def_cf_info {
-    std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle;
+    rocksdb::ColumnFamilyHandle *cf_handle;
     bool is_reverse_cf;
     bool is_per_partition_cf;
   };

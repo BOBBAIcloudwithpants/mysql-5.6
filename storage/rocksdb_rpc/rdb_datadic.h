@@ -440,7 +440,8 @@ class Rdb_key_def {
   const std::string &get_name() const { return m_name; }
 
   const rocksdb::SliceTransform *get_extractor() const {
-    return m_prefix_extractor.get();
+    // return m_prefix_extractor.get();
+    return m_prefix_extractor;
   }
 
   static size_t get_unpack_header_size(char tag);
@@ -850,7 +851,9 @@ class Rdb_key_def {
   uint m_ttl_field_index;
 
   /* Prefix extractor for the column family of the key definiton */
-  std::shared_ptr<const rocksdb::SliceTransform> m_prefix_extractor;
+  // ALTER
+  // std::shared_ptr<const rocksdb::SliceTransform> m_prefix_extractor;
+  rocksdb::SliceTransform *m_prefix_extractor;
 
   /* Maximum length of the mem-comparable form. */
   uint m_maxlength;
