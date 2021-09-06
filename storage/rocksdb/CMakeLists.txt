@@ -190,12 +190,12 @@ IF (WITH_ROCKSDB_SE_STORAGE_ENGINE AND (NOT HAVE_EXTERNAL_ROCKSDB))
     ${CMAKE_SOURCE_DIR}/rocksdb/tools/ldb_cmd.cc
     ${CMAKE_SOURCE_DIR}/rocksdb/tools/sst_dump_tool.cc
   )
-  MYSQL_ADD_EXECUTABLE(sst_dump ${CMAKE_SOURCE_DIR}/rocksdb/tools/sst_dump.cc ${ROCKSDB_TOOL_SOURCES})
-  TARGET_LINK_LIBRARIES(sst_dump rocksdb_se)
+  MYSQL_ADD_EXECUTABLE(sst_dump_rocksdb ${CMAKE_SOURCE_DIR}/rocksdb/tools/sst_dump.cc ${ROCKSDB_TOOL_SOURCES})
+  TARGET_LINK_LIBRARIES(sst_dump_rocksdb rocksdb_se)
 
-  MYSQL_ADD_EXECUTABLE(ldb ${CMAKE_SOURCE_DIR}/rocksdb/tools/ldb.cc ${ROCKSDB_TOOL_SOURCES})
-  TARGET_LINK_LIBRARIES(ldb rocksdb_se)
+  MYSQL_ADD_EXECUTABLE(ldb_rocksdb ${CMAKE_SOURCE_DIR}/rocksdb/tools/ldb.cc ${ROCKSDB_TOOL_SOURCES})
+  TARGET_LINK_LIBRARIES(ldb_rocksdb rocksdb_se)
 
-  MYSQL_ADD_EXECUTABLE(mysql_ldb ${CMAKE_SOURCE_DIR}/storage/rocksdb/tools/mysql_ldb.cc ${ROCKSDB_TOOL_SOURCES})
-  TARGET_LINK_LIBRARIES(mysql_ldb rocksdb_se)
+  MYSQL_ADD_EXECUTABLE(mysql_ldb_rocksdb ${CMAKE_SOURCE_DIR}/storage/rocksdb/tools/mysql_ldb.cc ${ROCKSDB_TOOL_SOURCES})
+  TARGET_LINK_LIBRARIES(mysql_ldb_rocksdb rocksdb_se)
 ENDIF()
