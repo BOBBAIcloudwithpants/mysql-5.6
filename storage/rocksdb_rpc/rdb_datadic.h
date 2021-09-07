@@ -402,7 +402,8 @@ class Rdb_key_def {
   uint32 get_index_number() const { return m_index_number; }
 
   GL_INDEX_ID get_gl_index_id() const {
-    const GL_INDEX_ID gl_index_id = {m_cf_handle->GetID(), m_index_number};
+    const GL_INDEX_ID gl_index_id = {
+        rocksdb_ColumnFamilyHandle__GetID(m_cf_handle), m_index_number};
     return gl_index_id;
   }
 
@@ -769,7 +770,7 @@ class Rdb_key_def {
 
   uchar m_index_number_storage_form[INDEX_NUMBER_SIZE];
 
-  std::shared_ptr<rocksdb::ColumnFamilyHandle> m_cf_handle;
+  rocksdb::ColumnFamilyHandle *m_cf_handle;
 
   static void pack_legacy_variable_format(const uchar *src, size_t src_len,
                                           uchar **dst);
