@@ -48,6 +48,7 @@ INCLUDE_DIRECTORIES(
   ${ROCKSDB_ROOT}
   ${ROCKSDB_ROOT}/include
   ${ROCKSDB_ROOT}/third-party/gtest-1.8.1/fused-src
+  ${ROCKSDB_ROOT}/rocksdb-rpc-client/include
 )
 
 IF(UNIX)
