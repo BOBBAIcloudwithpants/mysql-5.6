@@ -51,6 +51,8 @@ INCLUDE_DIRECTORIES(
   ${ROCKSDB_ROOT}/rocksdb-rpc-client/include
 )
 
+MESSAGE(STATUS "lalalalalalalalal: ${ROCKSDB_ROOT}/include")
+
 IF(UNIX)
   IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     ADD_DEFINITIONS(-DOS_LINUX)
