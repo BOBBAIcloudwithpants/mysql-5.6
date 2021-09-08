@@ -49,6 +49,9 @@ INCLUDE_DIRECTORIES(
   ${ROCKSDB_ROOT}/include
   ${ROCKSDB_ROOT}/third-party/gtest-1.8.1/fused-src
   ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include
+  ${ROCKSDB_ROOT}/../rocksdb-rpc-client/json/include
+  ${ROCKSDB_ROOT}/../rocksdb-rpc-client/json/include
+  ${ROCKSDB_ROOT}/../rocksdb-rpc-client/cpp-httplib
 )
 
 MESSAGE(STATUS "lalalalalalalalal: ${ROCKSDB_ROOT}/include")
