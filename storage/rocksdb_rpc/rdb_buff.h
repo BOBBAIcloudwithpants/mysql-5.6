@@ -31,6 +31,8 @@
 #include "rocksdb/slice.h"
 #include "rocksdb/status.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 /*

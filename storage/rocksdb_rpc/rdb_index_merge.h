@@ -32,6 +32,8 @@
 /* MyRocks header files */
 #include "./rdb_comparator.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 /*

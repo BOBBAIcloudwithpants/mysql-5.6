@@ -29,6 +29,7 @@
 // MyRocks header files
 #include "./ha_rocksdb.h"
 #include "./rdb_datadic.h"
+#include "rpcclient.hpp"
 
 namespace myrocks {
 class Rdb_field_encoder;

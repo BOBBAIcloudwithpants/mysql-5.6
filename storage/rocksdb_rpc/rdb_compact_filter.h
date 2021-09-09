@@ -31,6 +31,8 @@
 #include "./ha_rocksdb_proto.h"
 #include "./rdb_datadic.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 class Rdb_compact_filter : public rocksdb::CompactionFilter {

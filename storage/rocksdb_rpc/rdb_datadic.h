@@ -35,6 +35,7 @@
 #include "./properties_collector.h"
 #include "./rdb_buff.h"
 #include "./rdb_utils.h"
+#include "rpcclient.hpp"
 
 namespace myrocks {
 

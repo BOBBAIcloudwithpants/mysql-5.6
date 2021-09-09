@@ -28,6 +28,8 @@
 /* MyRocks header files */
 #include "./ha_rocksdb.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 class Rdb_ddl_manager;

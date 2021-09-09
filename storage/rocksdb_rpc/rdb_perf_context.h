@@ -24,6 +24,7 @@
 /* MySQL header files */
 #include <my_global.h>
 #include "./handler.h"
+#include "rpcclient.hpp"
 
 namespace myrocks {
 

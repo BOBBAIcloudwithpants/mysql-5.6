@@ -28,6 +28,8 @@
 #include "./rdb_global.h"
 #include "./rdb_utils.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 /*

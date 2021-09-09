@@ -28,6 +28,8 @@
 /* MyRocks header files */
 #include "./ha_rocksdb_proto.h"
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 // To add a new metric:

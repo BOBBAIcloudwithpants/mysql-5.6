@@ -19,6 +19,8 @@
 #include <sstream>
 #include <string>
 
+#include "rpcclient.hpp"
+
 namespace myrocks {
 
 class Rdb_logger : public rocksdb::Logger {

@@ -33,6 +33,7 @@
 #include "./rdb_utils.h"
 #include "./sql_class.h"
 #include "rocksdb/db.h"
+#include "rpcclient.hpp"
 
 namespace myrocks {
 

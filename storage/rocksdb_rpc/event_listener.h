@@ -21,6 +21,7 @@
 /* MyRocks header files */
 #include "./rdb_global.h"
 
+#include "rpcclient.hpp"
 namespace myrocks {
 
 class Rdb_ddl_manager;
