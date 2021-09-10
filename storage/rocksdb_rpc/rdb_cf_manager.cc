@@ -121,7 +121,8 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
 
     // NO_LINT_DEBUG
     sql_print_information("    target_file_size_base=%" PRIu64,
-                          rocksdb_ColumnFamilyOptions__GetUInt64Prop(opts, "target_file_size_base")));
+                          rocksdb_ColumnFamilyOptions__GetUInt64Prop(
+                              opts, "target_file_size_base"));
 
     rocksdb::ColumnFamilyHandle *cf_handle_ptr = nullptr;
     // ALTER
@@ -213,7 +214,9 @@ std::vector<std::string> Rdb_cf_manager::get_cf_names(void) const {
 
 std::vector<rocksdb::ColumnFamilyHandle *> Rdb_cf_manager::get_all_cf(
     void) const {
-  std::vector<std::shared_ptr<rocksdb::ColumnFamilyHandle>> list;
+  // ALTER
+  // std::vector<std::shared_ptr<rocksdb::ColumnFamilyHandle>> list;
+  std::vector<rocksdb::ColumnFamilyHandle *> list;
 
   RDB_MUTEX_LOCK_CHECK(m_mutex);
 
@@ -361,7 +364,11 @@ int Rdb_cf_manager::drop_cf(Rdb_ddl_manager *const ddl_manager,
   //  dict_manager -> cf_manager -> ddl_manager
 
   RDB_MUTEX_LOCK_CHECK(m_mutex);
-  auto cf_handle = get_cf(cf_name, true /* lock_held_by_caller */).get();
+
+  // ALTER
+  // auto cf_handle = get_cf(cf_name, true /* lock_held_by_caller */).get();
+  auto cf_handle = get_cf(cf_name, true /* lock_held_by_caller */);
+
   if (cf_handle == nullptr) {
     RDB_MUTEX_UNLOCK_CHECK(m_mutex);
     // NO_LINT_DEBUG
@@ -405,9 +412,11 @@ int Rdb_cf_manager::drop_cf(Rdb_ddl_manager *const ddl_manager,
   // we don't delete handle object. Here we mark the column family
   // as dropped.
 
-  const std::unique_ptr<rocksdb::WriteBatch> wb = dict_manager->begin();
-  rocksdb::WriteBatch *const batch = wb.get();
+  // ALTER
+  // const std::unique_ptr<rocksdb::WriteBatch> wb = dict_manager->begin();
+  // rocksdb::WriteBatch *const batch = wb.get();
 
+  rocksdb::WriteBatch *batch = wb.get();
   dict_manager->add_dropped_cf(batch, cf_id);
   dict_manager->commit(batch);
 

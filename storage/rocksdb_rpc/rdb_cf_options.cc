@@ -56,13 +56,13 @@ bool Rdb_cf_options::init(
   rocksdb_ColumnFamilyOptions__SetComparator(m_default_cf_opts, cmp);
 
   // TODO: ALTER
-  m_default_cf_opts.compaction_filter_factory.reset(
-      new Rdb_compact_filter_factory);
+  // m_default_cf_opts.compaction_filter_factory.reset(
+  //     new Rdb_compact_filter_factory);
 
   // ALTER
   // m_default_cf_opts.table_factory.reset(
   //     rocksdb::NewBlockBasedTableFactory(table_options));
-  std::shared_ptr<rocksdb::TableFactory *> *tf =
+  std::shared_ptr<rocksdb::TableFactory> *tf =
       rocksdb_NewBlockBasedTableFactoryWithOption(table_options);
   rocksdb_ColumnFamilyOptions__SetTableFactory(m_default_cf_opts, tf);
 

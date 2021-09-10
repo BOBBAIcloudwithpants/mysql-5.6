@@ -78,7 +78,8 @@ class Rdb_logger : public rocksdb::Logger {
     // if (m_logger && m_logger->GetInfoLogLevel() < base_level) {
     //   base_level = m_logger->GetInfoLogLevel();
     // }
-    rocksdb::InfoLogLevel logger_level = rocksdb_Logger__GetInfoLogLevel();
+    rocksdb::InfoLogLevel logger_level =
+        rocksdb_Logger__GetInfoLogLevel(m_logger);
     if (m_logger && logger_level < base_level) {
       base_level = logger_level;
     }

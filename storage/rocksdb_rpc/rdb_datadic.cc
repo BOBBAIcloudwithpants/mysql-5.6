@@ -529,8 +529,11 @@ void Rdb_key_def::setup(const TABLE *const tbl,
     m_stats.m_distinct_keys_per_prefix.resize(get_key_parts());
 
     /* Cache prefix extractor for bloom filter usage later */
-    rocksdb::Options opt = rdb_get_rocksdb_db()->GetOptions(get_cf());
-    m_prefix_extractor = opt.prefix_extractor;
+    // ALTER
+    // rocksdb::Options opt = rdb_get_rocksdb_db()->GetOptions(get_cf());
+    // m_prefix_extractor = opt.prefix_extractor;
+    m_prefix_extractor = rocksdb_TransactionDB__GetOptionsPrefixExtractor(
+        rdb_get_rocksdb_db(), get_cf());
 
     /*
       This should be the last member variable set before releasing the mutex
@@ -4787,9 +4790,9 @@ void Rdb_binlog_manager::update_slave_gtid_info(
     value_writer.write_byte(gtid_len);
     value_writer.write(gtid, gtid_len);
 
-    // ALTER
-    // write_batch->Put(kd->get_cf(), key_writer.to_slice(),
-    //                  value_writer.to_slice());
+    ALTER
+    write_batch->Put(kd->get_cf(), key_writer.to_slice(),
+                     value_writer.to_slice());
     rocksdb_WriteBatchBase__Put(write_batch, kd->get_cf(),
                                 key_writer.to_slice(), value_writer.to_slice());
   }

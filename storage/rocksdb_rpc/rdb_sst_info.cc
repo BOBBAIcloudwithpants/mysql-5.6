@@ -365,7 +365,7 @@ Rdb_sst_info::Rdb_sst_info(rocksdb::DB *const db, const std::string &tablename,
   // const rocksdb::Status s = m_cf->GetDescriptor(&cf_descr);
   rocksdb::ColumnFamilyDescriptor *cf_descr;
   const rocksdb::Status s =
-      rocksdb_ColumnFamilyHandle__GetDescriptorPtr(m_cf, cf_desc);
+      rocksdb_ColumnFamilyHandle__GetDescriptorPtr(m_cf, cf_descr);
   if (!s.ok()) {
     // Default size if we can't get the cf's target size
     m_max_size = 64 * 1024 * 1024;

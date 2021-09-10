@@ -512,82 +512,78 @@ static int rdb_i_s_cfoptions_fill_table(
         opts_ptr, is_memtable_factory_null);
 
     std::vector<std::pair<std::string, std::string>> cf_option_types = {
-      {"COMPARATOR",
-       opts.comparator == nullptr
-           ? "NULL"
-           : /* ALTER std::string(opts.comparator->Name())}*/
-           rocksdb_Comparator__Name(opts.comparator),
-       {"MERGE_OPERATOR",
-        /* ALTER opts.merge_operator == nullptr*/
-        is_merge_operator_null
-            ? "NULL"
-            : /*ALTER std::string(opts.merge_operator->Name())}*/
-            rocksdb_MergeOperator__Name(merge_operator),
+        {"COMPARATOR", opts.comparator == nullptr
+                           ? "NULL"
+                           : /* ALTER std::string(opts.comparator->Name())}*/
+                           rocksdb_Comparator__Name(opts.comparator)},
+        {"MERGE_OPERATOR",
+         /* ALTER opts.merge_operator == nullptr*/
+         is_merge_operator_null
+             ? "NULL"
+             : /*ALTER std::string(opts.merge_operator->Name())}*/
+             rocksdb_MergeOperator__Name(merge_operator)},
         {"COMPACTION_FILTER",
          opts.compaction_filter == nullptr
              ? "NULL"
              : /* ALTER std::string(opts.compaction_filter->Name())}*/
-             rocksdb_CompactionFilter__Name(opts.compaction_filter),
-         {"COMPACTION_FILTER_FACTORY",
-          /*ALTER opts.compaction_filter_factory == nullptr*/
-          is_compaction_filter_factory_null
-              ? "NULL"
-              : std::string(rocksdb_CompactionFilterFactory__Name(
-                    compaction_filter_factory))},
-         {"WRITE_BUFFER_SIZE", std::to_string(opts.write_buffer_size)},
-         {"MAX_WRITE_BUFFER_NUMBER",
-          std::to_string(opts.max_write_buffer_number)},
-         {"MIN_WRITE_BUFFER_NUMBER_TO_MERGE",
-          std::to_string(opts.min_write_buffer_number_to_merge)},
-         {"NUM_LEVELS", std::to_string(opts.num_levels)},
-         {"LEVEL0_FILE_NUM_COMPACTION_TRIGGER",
-          std::to_string(opts.level0_file_num_compaction_trigger)},
-         {"LEVEL0_SLOWDOWN_WRITES_TRIGGER",
-          std::to_string(opts.level0_slowdown_writes_trigger)},
-         {"LEVEL0_STOP_WRITES_TRIGGER",
-          std::to_string(opts.level0_stop_writes_trigger)},
-         {"MAX_MEM_COMPACTION_LEVEL",
-          std::to_string(opts.max_mem_compaction_level)},
-         {"TARGET_FILE_SIZE_BASE", std::to_string(opts.target_file_size_base)},
-         {"TARGET_FILE_SIZE_MULTIPLIER",
-          std::to_string(opts.target_file_size_multiplier)},
-         {"MAX_BYTES_FOR_LEVEL_BASE",
-          std::to_string(opts.max_bytes_for_level_base)},
-         {"LEVEL_COMPACTION_DYNAMIC_LEVEL_BYTES",
-          opts.level_compaction_dynamic_level_bytes ? "ON" : "OFF"},
-         {"MAX_BYTES_FOR_LEVEL_MULTIPLIER",
-          std::to_string(opts.max_bytes_for_level_multiplier)},
-         {"SOFT_RATE_LIMIT", std::to_string(opts.soft_rate_limit)},
-         {"HARD_RATE_LIMIT", std::to_string(opts.hard_rate_limit)},
-         {"RATE_LIMIT_DELAY_MAX_MILLISECONDS",
-          std::to_string(opts.rate_limit_delay_max_milliseconds)},
-         {"ARENA_BLOCK_SIZE", std::to_string(opts.arena_block_size)},
-         {"DISABLE_AUTO_COMPACTIONS",
-          opts.disable_auto_compactions ? "ON" : "OFF"},
-         {"PURGE_REDUNDANT_KVS_WHILE_FLUSH",
-          opts.purge_redundant_kvs_while_flush ? "ON" : "OFF"},
-         {"MAX_SEQUENTIAL_SKIP_IN_ITERATIONS",
-          std::to_string(opts.max_sequential_skip_in_iterations)},
-         {
-             "MEMTABLE_FACTORY",
-             /*ALTER opts.memtable_factory == nullptr*/
-             is_memtable_factory_null ? "NULL"
-                                      : /*ALTER opts.memtable_factory->Name()}*/
-                 rocksdb_MemTableRepFactory__Name(memtable_factory),
-             {"INPLACE_UPDATE_SUPPORT",
-              opts.inplace_update_support ? "ON" : "OFF"},
-             {"INPLACE_UPDATE_NUM_LOCKS",
-              opts.inplace_update_num_locks ? "ON" : "OFF"},
-             {"MEMTABLE_PREFIX_BLOOM_BITS_RATIO",
-              std::to_string(opts.memtable_prefix_bloom_size_ratio)},
-             {"MEMTABLE_PREFIX_BLOOM_HUGE_PAGE_TLB_SIZE",
-              std::to_string(opts.memtable_huge_page_size)},
-             {"BLOOM_LOCALITY", std::to_string(opts.bloom_locality)},
-             {"MAX_SUCCESSIVE_MERGES",
-              std::to_string(opts.max_successive_merges)},
-             {"OPTIMIZE_FILTERS_FOR_HITS",
-              (opts.optimize_filters_for_hits ? "ON" : "OFF")},
-         };
+             rocksdb_CompactionFilter__Name(opts.compaction_filter)},
+        {"COMPACTION_FILTER_FACTORY",
+         /*ALTER opts.compaction_filter_factory == nullptr*/
+         is_compaction_filter_factory_null
+             ? "NULL"
+             : std::string(rocksdb_CompactionFilterFactory__Name(
+                   compaction_filter_factory))},
+        {"WRITE_BUFFER_SIZE", std::to_string(opts.write_buffer_size)},
+        {"MAX_WRITE_BUFFER_NUMBER",
+         std::to_string(opts.max_write_buffer_number)},
+        {"MIN_WRITE_BUFFER_NUMBER_TO_MERGE",
+         std::to_string(opts.min_write_buffer_number_to_merge)},
+        {"NUM_LEVELS", std::to_string(opts.num_levels)},
+        {"LEVEL0_FILE_NUM_COMPACTION_TRIGGER",
+         std::to_string(opts.level0_file_num_compaction_trigger)},
+        {"LEVEL0_SLOWDOWN_WRITES_TRIGGER",
+         std::to_string(opts.level0_slowdown_writes_trigger)},
+        {"LEVEL0_STOP_WRITES_TRIGGER",
+         std::to_string(opts.level0_stop_writes_trigger)},
+        {"MAX_MEM_COMPACTION_LEVEL",
+         std::to_string(opts.max_mem_compaction_level)},
+        {"TARGET_FILE_SIZE_BASE", std::to_string(opts.target_file_size_base)},
+        {"TARGET_FILE_SIZE_MULTIPLIER",
+         std::to_string(opts.target_file_size_multiplier)},
+        {"MAX_BYTES_FOR_LEVEL_BASE",
+         std::to_string(opts.max_bytes_for_level_base)},
+        {"LEVEL_COMPACTION_DYNAMIC_LEVEL_BYTES",
+         opts.level_compaction_dynamic_level_bytes ? "ON" : "OFF"},
+        {"MAX_BYTES_FOR_LEVEL_MULTIPLIER",
+         std::to_string(opts.max_bytes_for_level_multiplier)},
+        {"SOFT_RATE_LIMIT", std::to_string(opts.soft_rate_limit)},
+        {"HARD_RATE_LIMIT", std::to_string(opts.hard_rate_limit)},
+        {"RATE_LIMIT_DELAY_MAX_MILLISECONDS",
+         std::to_string(opts.rate_limit_delay_max_milliseconds)},
+        {"ARENA_BLOCK_SIZE", std::to_string(opts.arena_block_size)},
+        {"DISABLE_AUTO_COMPACTIONS",
+         opts.disable_auto_compactions ? "ON" : "OFF"},
+        {"PURGE_REDUNDANT_KVS_WHILE_FLUSH",
+         opts.purge_redundant_kvs_while_flush ? "ON" : "OFF"},
+        {"MAX_SEQUENTIAL_SKIP_IN_ITERATIONS",
+         std::to_string(opts.max_sequential_skip_in_iterations)},
+        {"MEMTABLE_FACTORY",
+         /*ALTER opts.memtable_factory == nullptr*/
+         is_memtable_factory_null ? "NULL"
+                                  : /*ALTER opts.memtable_factory->Name()}*/
+             rocksdb_MemTableRepFactory__Name(memtable_factory)},
+        {"INPLACE_UPDATE_SUPPORT", opts.inplace_update_support ? "ON" : "OFF"},
+        {"INPLACE_UPDATE_NUM_LOCKS",
+         opts.inplace_update_num_locks ? "ON" : "OFF"},
+        {"MEMTABLE_PREFIX_BLOOM_BITS_RATIO",
+         std::to_string(opts.memtable_prefix_bloom_size_ratio)},
+        {"MEMTABLE_PREFIX_BLOOM_HUGE_PAGE_TLB_SIZE",
+         std::to_string(opts.memtable_huge_page_size)},
+        {"BLOOM_LOCALITY", std::to_string(opts.bloom_locality)},
+        {"MAX_SUCCESSIVE_MERGES", std::to_string(opts.max_successive_merges)},
+        {"OPTIMIZE_FILTERS_FOR_HITS",
+         (opts.optimize_filters_for_hits ? "ON" : "OFF")},
+    };
 
     // get MAX_BYTES_FOR_LEVEL_MULTIPLIER_ADDITIONAL option value
     val = opts.max_bytes_for_level_multiplier_additional.empty() ? "NULL" : "";

@@ -245,7 +245,7 @@ class ha_rocksdb : public my_core::handler {
     This is used only when we get the record with rocksdb's Get() call (The
     other option is when we get a rocksdb::Slice from an iterator)
   */
-  rocksdb::PinnableSlice m_retrieved_record;
+  rocksdb::PinnableSlice *m_retrieved_record;
 
   /* Type of locking to apply to rows */
   enum { RDB_LOCK_NONE, RDB_LOCK_READ, RDB_LOCK_WRITE } m_lock_rows;

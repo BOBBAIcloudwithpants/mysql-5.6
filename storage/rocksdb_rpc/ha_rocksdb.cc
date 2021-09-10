@@ -1078,8 +1078,9 @@ static void rocksdb_set_rocksdb_info_log_level(
   // ALTER
   // rocksdb_db_options->info_log->SetInfoLogLevel(
   //     static_cast<const rocksdb::InfoLogLevel>(rocksdb_info_log_level));
-  rocksdb_DBOptions__SetInfoLogLevel(rocksdb_db_options,
-                                     rocksdb_info_log_level);
+  rocksdb_DBOptions__SetInfoLogLevel(
+      rocksdb_db_options,
+      static_cast<const rocksdb::InfoLogLevel>(rocksdb_info_log_level));
   RDB_MUTEX_UNLOCK_CHECK(rdb_sysvars_mutex);
 }
 
@@ -1266,13 +1267,13 @@ static MYSQL_SYSVAR_BOOL(enable_bulk_load_api, rocksdb_enable_bulk_load_api,
                          nullptr, nullptr, rocksdb_enable_bulk_load_api);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    enable_pipelined_write,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->enable_pipelined_write),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::enable_pipelined_write for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
-                                      "enable_pipelined_write"));
+// static MYSQL_SYSVAR_BOOL(
+//     enable_pipelined_write,
+//     *reinterpret_cast<my_bool
+//     *>(&rocksdb_db_options->enable_pipelined_write), PLUGIN_VAR_RQCMDARG |
+//     PLUGIN_VAR_READONLY, "DBOptions::enable_pipelined_write for RocksDB",
+//     nullptr, nullptr, rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//                                       "enable_pipelined_write"));
 
 static MYSQL_SYSVAR_BOOL(enable_remove_orphaned_dropped_cfs,
                          rocksdb_enable_remove_orphaned_dropped_cfs,
@@ -1489,28 +1490,31 @@ static MYSQL_THDVAR_ENUM(
     &bottommost_level_compaction_typelib);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    create_if_missing,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->create_if_missing),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::create_if_missing for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "create_if_missing"));
+// static MYSQL_SYSVAR_BOOL(
+//     create_if_missing,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->create_if_missing),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::create_if_missing for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "create_if_missing"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    two_write_queues,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->two_write_queues),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::two_write_queues for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "two_write_queues"));
+// static MYSQL_SYSVAR_BOOL(
+//     two_write_queues,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->two_write_queues),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::two_write_queues for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "two_write_queues"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    manual_wal_flush,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->manual_wal_flush),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::manual_wal_flush for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "manual_wal_flush"));
+// static MYSQL_SYSVAR_BOOL(
+//     manual_wal_flush,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->manual_wal_flush),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::manual_wal_flush for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "manual_wal_flush"));
 
 static MYSQL_SYSVAR_ENUM(write_policy, rocksdb_write_policy,
                          PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
@@ -1519,30 +1523,32 @@ static MYSQL_SYSVAR_ENUM(write_policy, rocksdb_write_policy,
                          &write_policy_typelib);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    create_missing_column_families,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_db_options->create_missing_column_families),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::create_missing_column_families for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
-                                      "create_missing_column_families"));
+// static MYSQL_SYSVAR_BOOL(
+//     create_missing_column_families,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_db_options->create_missing_column_families),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::create_missing_column_families for RocksDB", nullptr,
+//     nullptr, rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//                                       "create_missing_column_families"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    error_if_exists,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->error_if_exists),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::error_if_exists for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "error_if_exists"));
+// static MYSQL_SYSVAR_BOOL(
+//     error_if_exists,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->error_if_exists),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::error_if_exists for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "error_if_exists"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    paranoid_checks,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->paranoid_checks),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::paranoid_checks for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "paranoid_checks"));
+// static MYSQL_SYSVAR_BOOL(
+//     paranoid_checks,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->paranoid_checks),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::paranoid_checks for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "paranoid_checks"));
 
 static MYSQL_SYSVAR_ULONGLONG(
     rate_limiter_bytes_per_sec, rocksdb_rate_limiter_bytes_per_sec,
@@ -1559,12 +1565,12 @@ static MYSQL_SYSVAR_ULONGLONG(
     /* min */ 0L, /* max */ UINT64_MAX, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_ULONGLONG(
-    delayed_write_rate, rocksdb_delayed_write_rate, PLUGIN_VAR_RQCMDARG,
-    "DBOptions::delayed_write_rate", nullptr, rocksdb_set_delayed_write_rate,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "delayed_write_rate"),
-    0, UINT64_MAX, 0);
+// static MYSQL_SYSVAR_ULONGLONG(
+//     delayed_write_rate, rocksdb_delayed_write_rate, PLUGIN_VAR_RQCMDARG,
+//     "DBOptions::delayed_write_rate", nullptr, rocksdb_set_delayed_write_rate,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "delayed_write_rate"),
+//     0, UINT64_MAX, 0);
 
 static MYSQL_SYSVAR_UINT(max_latest_deadlocks, rocksdb_max_latest_deadlocks,
                          PLUGIN_VAR_RQCMDARG,
@@ -1613,26 +1619,26 @@ static MYSQL_SYSVAR_UINT(
     /* max */ (uint)rocksdb::StatsLevel::kAll, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    compaction_readahead_size,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
-                                       "compaction_readahead_size"),
-    PLUGIN_VAR_RQCMDARG, "DBOptions::compaction_readahead_size for RocksDB",
-    nullptr, nullptr,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
-                                       "compaction_readahead_size"),
-    /* min */ 0L, /* max */ ULONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     compaction_readahead_size,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//                                        "compaction_readahead_size"),
+//     PLUGIN_VAR_RQCMDARG, "DBOptions::compaction_readahead_size for RocksDB",
+//     nullptr, nullptr,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//                                        "compaction_readahead_size"),
+//     /* min */ 0L, /* max */ ULONG_MAX, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    new_table_reader_for_compaction_inputs,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_db_options->new_table_reader_for_compaction_inputs),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::new_table_reader_for_compaction_inputs for RocksDB", nullptr,
-    nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
-                                      new_table_reader_for_compaction_inputs));
+// static MYSQL_SYSVAR_BOOL(
+//     new_table_reader_for_compaction_inputs,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_db_options->new_table_reader_for_compaction_inputs),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::new_table_reader_for_compaction_inputs for RocksDB", nullptr,
+//     nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//                                       new_table_reader_for_compaction_inputs));
 
 static MYSQL_SYSVAR_UINT(
     access_hint_on_compaction_start, rocksdb_access_hint_on_compaction_start,
@@ -1643,54 +1649,54 @@ static MYSQL_SYSVAR_UINT(
     /* max */ (uint)rocksdb::Options::AccessHint::WILLNEED, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    allow_concurrent_memtable_write,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_db_options->allow_concurrent_memtable_write),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::allow_concurrent_memtable_write for RocksDB", nullptr, nullptr,
-    false);
+// static MYSQL_SYSVAR_BOOL(
+//     allow_concurrent_memtable_write,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_db_options->allow_concurrent_memtable_write),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::allow_concurrent_memtable_write for RocksDB", nullptr,
+//     nullptr, false);
 
-// TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    enable_write_thread_adaptive_yield,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_db_options->enable_write_thread_adaptive_yield),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::enable_write_thread_adaptive_yield for RocksDB", nullptr,
-    nullptr, false);
+// // TODO: ALTER
+// static MYSQL_SYSVAR_BOOL(
+//     enable_write_thread_adaptive_yield,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_db_options->enable_write_thread_adaptive_yield),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::enable_write_thread_adaptive_yield for RocksDB", nullptr,
+//     nullptr, false);
 
-// ALTER
-static MYSQL_SYSVAR_INT(
-    max_open_files,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options, "max_open_files"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::max_open_files for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options, "max_open_files"),
-    /* min */ -2, /* max */ INT_MAX, 0);
+// // ALTER
+// static MYSQL_SYSVAR_INT(
+//     max_open_files,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options, "max_open_files"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::max_open_files for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options, "max_open_files"),
+//     /* min */ -2, /* max */ INT_MAX, 0);
 
-// ALTER
-static MYSQL_SYSVAR_ULONG(
-    max_total_wal_size,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "max_total_wal_size"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::max_total_wal_size for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "max_total_wal_size"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// // ALTER
+// static MYSQL_SYSVAR_ULONG(
+//     max_total_wal_size,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "max_total_wal_size"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::max_total_wal_size for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "max_total_wal_size"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
-// TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    use_fsync, *reinterpret_cast<my_bool *>(&rocksdb_db_options->use_fsync),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::use_fsync for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "use_fsync"));
+// // TODO: ALTER
+// static MYSQL_SYSVAR_BOOL(
+//     use_fsync, *reinterpret_cast<my_bool *>(&rocksdb_db_options->use_fsync),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::use_fsync for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "use_fsync"));
 
-static MYSQL_SYSVAR_STR(wal_dir, rocksdb_wal_dir,
-                        PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-                        "DBOptions::wal_dir for RocksDB", nullptr, nullptr,
-                        rocksdb_db_options->wal_dir.c_str());
+// static MYSQL_SYSVAR_STR(wal_dir, rocksdb_wal_dir,
+//                         PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//                         "DBOptions::wal_dir for RocksDB", nullptr, nullptr,
+//                         rocksdb_db_options->wal_dir.c_str());
 
 static MYSQL_SYSVAR_STR(
     persistent_cache_path, rocksdb_persistent_cache_path,
@@ -1706,44 +1712,50 @@ static MYSQL_SYSVAR_ULONG(
     nullptr, nullptr, rocksdb_persistent_cache_size_mb,
     /* min */ 0L, /* max */ ULONG_MAX, 0);
 
-static MYSQL_SYSVAR_ULONG(
-    delete_obsolete_files_period_micros,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "delete_obsolete_files_period_micros"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::delete_obsolete_files_period_micros for RocksDB", nullptr,
-    nullptr,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "delete_obsolete_files_period_micros"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// ALTER
+// static MYSQL_SYSVAR_ULONG(
+//     delete_obsolete_files_period_micros,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "delete_obsolete_files_period_micros"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::delete_obsolete_files_period_micros for RocksDB", nullptr,
+//     nullptr,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "delete_obsolete_files_period_micros"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
-static MYSQL_SYSVAR_INT(
-    max_background_jobs,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options, "max_background_jobs"),
-    PLUGIN_VAR_RQCMDARG, "DBOptions::max_background_jobs for RocksDB", nullptr,
-    rocksdb_set_max_background_jobs,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options, "max_background_jobs"),
-    /* min */ -1, /* max */ MAX_BACKGROUND_JOBS, 0);
+// ALTER
+// static MYSQL_SYSVAR_INT(
+//     max_background_jobs,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//     "max_background_jobs"), PLUGIN_VAR_RQCMDARG,
+//     "DBOptions::max_background_jobs for RocksDB", nullptr,
+//     rocksdb_set_max_background_jobs,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//     "max_background_jobs"),
+//     /* min */ -1, /* max */ MAX_BACKGROUND_JOBS, 0);
 
-static MYSQL_SYSVAR_INT(
-    max_background_flushes,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
-                                     "max_background_flushes"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::max_background_flushes for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
-                                     "max_background_flushes"),
-    /* min */ -1, /* max */ 64, 0);
+// ALTER
+// static MYSQL_SYSVAR_INT(
+//     max_background_flushes,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//                                      "max_background_flushes"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::max_background_flushes for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//                                      "max_background_flushes"),
+//     /* min */ -1, /* max */ 64, 0);
 
-static MYSQL_SYSVAR_INT(
-    max_background_compactions,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
-                                     "max_background_compactions"),
-    PLUGIN_VAR_RQCMDARG, "DBOptions::max_background_compactions for RocksDB",
-    nullptr, rocksdb_set_max_background_compactions,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
-                                     "max_background_compactions"),
-    /* min */ -1, /* max */ 64, 0);
+// ALTER
+// static MYSQL_SYSVAR_INT(
+//     max_background_compactions,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//                                      "max_background_compactions"),
+//     PLUGIN_VAR_RQCMDARG, "DBOptions::max_background_compactions for RocksDB",
+//     nullptr, rocksdb_set_max_background_compactions,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//                                      "max_background_compactions"),
+//     /* min */ -1, /* max */ 64, 0);
 
 static MYSQL_SYSVAR_UINT(
     max_bottom_pri_background_compactions,
@@ -1766,126 +1778,131 @@ static MYSQL_SYSVAR_UINT(
     /* min */ 0, /* max */ ROCKSDB_MAX_BOTTOM_PRI_BACKGROUND_COMPACTIONS, 0);
 
 // ALTER
-static MYSQL_SYSVAR_UINT(
-    max_subcompactions,
-    rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
-                                        "max_subcompactions"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::max_subcompactions for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
-                                        "max_subcompactions"),
-    /* min */ 1, /* max */ MAX_SUBCOMPACTIONS, 0);
+// static MYSQL_SYSVAR_UINT(
+//     max_subcompactions,
+//     rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
+//                                         "max_subcompactions"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::max_subcompactions for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
+//                                         "max_subcompactions"),
+//     /* min */ 1, /* max */ MAX_SUBCOMPACTIONS, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    max_log_file_size,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options, "max_log_file_size"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::max_log_file_size for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options, "max_log_file_size"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     max_log_file_size,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//     "max_log_file_size"), PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::max_log_file_size for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//     "max_log_file_size"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    log_file_time_to_roll,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
-                                       "log_file_time_to_roll"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::log_file_time_to_roll for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
-                                       "log_file_time_to_roll"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     log_file_time_to_roll,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//                                        "log_file_time_to_roll"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::log_file_time_to_roll for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//                                        "log_file_time_to_roll"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    keep_log_file_num,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options, "keep_log_file_num"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::keep_log_file_num for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options, "keep_log_file_num"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     keep_log_file_num,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//     "keep_log_file_num"), PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::keep_log_file_num for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//     "keep_log_file_num"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    max_manifest_file_size,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "max_manifest_file_size"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::max_manifest_file_size for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "max_manifest_file_size"),
-    /* min */ 0L, /* max */ ULONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     max_manifest_file_size,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "max_manifest_file_size"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::max_manifest_file_size for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "max_manifest_file_size"),
+//     /* min */ 0L, /* max */ ULONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_INT(
-    table_cache_numshardbits,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
-                                     "table_cache_numshardbits"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::table_cache_numshardbits for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
-                                     "table_cache_numshardbits"),
-    // LRUCache limits this to 19 bits, anything greater
-    // fails to create a cache and returns a nullptr
-    /* min */ 0, /* max */ 19, 0);
+// static MYSQL_SYSVAR_INT(
+//     table_cache_numshardbits,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//                                      "table_cache_numshardbits"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::table_cache_numshardbits for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
+//                                      "table_cache_numshardbits"),
+//     // LRUCache limits this to 19 bits, anything greater
+//     // fails to create a cache and returns a nullptr
+//     /* min */ 0, /* max */ 19, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    wal_ttl_seconds,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options, "WAL_ttl_seconds"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::WAL_ttl_seconds for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options, "WAL_ttl_seconds"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     wal_ttl_seconds,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//     "WAL_ttl_seconds"), PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::WAL_ttl_seconds for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//     "WAL_ttl_seconds"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    wal_size_limit_mb,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "WAL_size_limit_MB"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::WAL_size_limit_MB for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "WAL_size_limit_MB"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     wal_size_limit_mb,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "WAL_size_limit_MB"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::WAL_size_limit_MB for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "WAL_size_limit_MB"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    manifest_preallocation_size,
-    rocksdb_ColumnFamilyOptions__GetSizeTProp(rocksdb_db_options,
-                                              "manifest_preallocation_size"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::manifest_preallocation_size for RocksDB", nullptr, nullptr,
-    rocksdb_ColumnFamilyOptions__GetSizeTProp(rocksdb_db_options,
-                                              "manifest_preallocation_size"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     manifest_preallocation_size,
+//     rocksdb_ColumnFamilyOptions__GetSizeTProp(rocksdb_db_options,
+//                                               "manifest_preallocation_size"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::manifest_preallocation_size for RocksDB", nullptr, nullptr,
+//     rocksdb_ColumnFamilyOptions__GetSizeTProp(rocksdb_db_options,
+//                                               "manifest_preallocation_size"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    use_direct_reads,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->use_direct_reads),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::use_direct_reads for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "use_direct_reads"));
+// static MYSQL_SYSVAR_BOOL(
+//     use_direct_reads,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->use_direct_reads),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::use_direct_reads for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "use_direct_reads"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    use_direct_io_for_flush_and_compaction,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_db_options->use_direct_io_for_flush_and_compaction),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::use_direct_io_for_flush_and_compaction for RocksDB", nullptr,
-    nullptr,
-    rocksdb_DBOptions__GetBoolOptions(
-        rocksdb_db_options, "use_direct_io_for_flush_and_compaction"));
+// static MYSQL_SYSVAR_BOOL(
+//     use_direct_io_for_flush_and_compaction,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_db_options->use_direct_io_for_flush_and_compaction),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::use_direct_io_for_flush_and_compaction for RocksDB", nullptr,
+//     nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(
+//         rocksdb_db_options, "use_direct_io_for_flush_and_compaction"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    allow_mmap_reads,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->allow_mmap_reads),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::allow_mmap_reads for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "allow_mmap_reads"));
+// static MYSQL_SYSVAR_BOOL(
+//     allow_mmap_reads,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->allow_mmap_reads),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::allow_mmap_reads for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "allow_mmap_reads"));
 
 // TODO: ALTER
 static MYSQL_SYSVAR_BOOL(
@@ -1896,80 +1913,82 @@ static MYSQL_SYSVAR_BOOL(
     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "allow_mmap_writes"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    is_fd_close_on_exec,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->is_fd_close_on_exec),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::is_fd_close_on_exec for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
-                                      "is_fd_close_on_exec"));
+// static MYSQL_SYSVAR_BOOL(
+//     is_fd_close_on_exec,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->is_fd_close_on_exec),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::is_fd_close_on_exec for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//                                       "is_fd_close_on_exec"));
 
 // ALTER
-static MYSQL_SYSVAR_UINT(
-    stats_dump_period_sec,
-    rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
-                                        "stats_dump_period_sec"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::stats_dump_period_sec for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
-                                        "stats_dump_period_sec"),
-    /* min */ 0, /* max */ INT_MAX, 0);
+// static MYSQL_SYSVAR_UINT(
+//     stats_dump_period_sec,
+//     rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
+//                                         "stats_dump_period_sec"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::stats_dump_period_sec for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetUInt32Options(rocksdb_db_options,
+//                                         "stats_dump_period_sec"),
+//     /* min */ 0, /* max */ INT_MAX, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    advise_random_on_open,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->advise_random_on_open),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::advise_random_on_open for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
-                                      "advise_random_on_open"));
+// static MYSQL_SYSVAR_BOOL(
+//     advise_random_on_open,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->advise_random_on_open),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::advise_random_on_open for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//                                       "advise_random_on_open"));
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    db_write_buffer_size,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
-                                       "db_write_buffer_size"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::db_write_buffer_size for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
-                                       "db_write_buffer_size"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     db_write_buffer_size,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//                                        "db_write_buffer_size"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::db_write_buffer_size for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetSizeTOptions(rocksdb_db_options,
+//                                        "db_write_buffer_size"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    use_adaptive_mutex,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->use_adaptive_mutex),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::use_adaptive_mutex for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
-                                      "use_adaptive_mutex"));
+// static MYSQL_SYSVAR_BOOL(
+//     use_adaptive_mutex,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->use_adaptive_mutex),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::use_adaptive_mutex for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//                                       "use_adaptive_mutex"));
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    bytes_per_sync,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options, "bytes_per_sync"),
-    PLUGIN_VAR_RQCMDARG, "DBOptions::bytes_per_sync for RocksDB", nullptr,
-    rocksdb_set_bytes_per_sync,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options, "bytes_per_sync"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     bytes_per_sync,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//     "bytes_per_sync"), PLUGIN_VAR_RQCMDARG, "DBOptions::bytes_per_sync for
+//     RocksDB", nullptr, rocksdb_set_bytes_per_sync,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//     "bytes_per_sync"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(
-    wal_bytes_per_sync,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "wal_bytes_per_sync"),
-    PLUGIN_VAR_RQCMDARG, "DBOptions::wal_bytes_per_sync for RocksDB", nullptr,
-    rocksdb_set_wal_bytes_per_sync,
-    rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
-                                        "wal_bytes_per_sync"),
-    /* min */ 0L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(
+//     wal_bytes_per_sync,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "wal_bytes_per_sync"),
+//     PLUGIN_VAR_RQCMDARG, "DBOptions::wal_bytes_per_sync for RocksDB",
+//     nullptr, rocksdb_set_wal_bytes_per_sync,
+//     rocksdb_DBOptions__GetUInt64Options(rocksdb_db_options,
+//                                         "wal_bytes_per_sync"),
+//     /* min */ 0L, /* max */ LONG_MAX, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    enable_thread_tracking,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->enable_thread_tracking),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::enable_thread_tracking for RocksDB", nullptr, nullptr, true);
+// static MYSQL_SYSVAR_BOOL(
+//     enable_thread_tracking,
+//     *reinterpret_cast<my_bool
+//     *>(&rocksdb_db_options->enable_thread_tracking), PLUGIN_VAR_RQCMDARG |
+//     PLUGIN_VAR_READONLY, "DBOptions::enable_thread_tracking for RocksDB",
+//     nullptr, nullptr, true);
 
 static MYSQL_SYSVAR_LONGLONG(block_cache_size, rocksdb_block_cache_size,
                              PLUGIN_VAR_RQCMDARG,
@@ -2008,21 +2027,22 @@ static MYSQL_SYSVAR_DOUBLE(cache_high_pri_pool_ratio,
                            /* max */ 1.0, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    cache_index_and_filter_blocks,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_tbl_options->cache_index_and_filter_blocks),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "BlockBasedTableOptions::cache_index_and_filter_blocks for RocksDB",
-    nullptr, nullptr, true);
+// static MYSQL_SYSVAR_BOOL(
+//     cache_index_and_filter_blocks,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_tbl_options->cache_index_and_filter_blocks),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "BlockBasedTableOptions::cache_index_and_filter_blocks for RocksDB",
+//     nullptr, nullptr, true);
 
-static MYSQL_SYSVAR_BOOL(
-    cache_index_and_filter_with_high_priority,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_tbl_options->cache_index_and_filter_blocks_with_high_priority),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "cache_index_and_filter_blocks_with_high_priority for RocksDB", nullptr,
-    nullptr, true);
+// TODO: ALTER
+// static MYSQL_SYSVAR_BOOL(
+//     cache_index_and_filter_with_high_priority,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_tbl_options->cache_index_and_filter_blocks_with_high_priority),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "cache_index_and_filter_blocks_with_high_priority for RocksDB", nullptr,
+//     nullptr, true);
 
 // When pin_l0_filter_and_index_blocks_in_cache is true, RocksDB will  use the
 // LRU cache, but will always keep the filter & idndex block's handle checked
@@ -2034,76 +2054,77 @@ static MYSQL_SYSVAR_BOOL(
 // index / QPS using PK).
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    pin_l0_filter_and_index_blocks_in_cache,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_tbl_options->pin_l0_filter_and_index_blocks_in_cache),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "pin_l0_filter_and_index_blocks_in_cache for RocksDB", nullptr, nullptr,
-    true);
+// static MYSQL_SYSVAR_BOOL(
+//     pin_l0_filter_and_index_blocks_in_cache,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_tbl_options->pin_l0_filter_and_index_blocks_in_cache),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "pin_l0_filter_and_index_blocks_in_cache for RocksDB", nullptr, nullptr,
+//     true);
 
 // ALTER
-static MYSQL_SYSVAR_ENUM(
-    index_type, rocksdb_index_type, PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "BlockBasedTableOptions::index_type for RocksDB", nullptr, nullptr,
-    (uint64_t)rocksdb_BlockBasedTableOptions__GetIndexType(rocksdb_tbl_options),
-    &index_type_typelib);
+// static MYSQL_SYSVAR_ENUM(
+//     index_type, rocksdb_index_type, PLUGIN_VAR_RQCMDARG |
+//     PLUGIN_VAR_READONLY, "BlockBasedTableOptions::index_type for RocksDB",
+//     nullptr, nullptr,
+//     (uint64_t)rocksdb_BlockBasedTableOptions__GetIndexType(rocksdb_tbl_options),
+//     &index_type_typelib);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    hash_index_allow_collision,
-    *reinterpret_cast<my_bool *>(
-        &rocksdb_tbl_options->hash_index_allow_collision),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "BlockBasedTableOptions::hash_index_allow_collision for RocksDB", nullptr,
-    nullptr,
-    rocksdb_BlockBasedTableOptions__GetBoolOptions(
-        rocksdb_tbl_options, "hash_index_allow_collision"));
+// static MYSQL_SYSVAR_BOOL(
+//     hash_index_allow_collision,
+//     *reinterpret_cast<my_bool *>(
+//         &rocksdb_tbl_options->hash_index_allow_collision),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "BlockBasedTableOptions::hash_index_allow_collision for RocksDB",
+//     nullptr, nullptr, rocksdb_BlockBasedTableOptions__GetBoolOptions(
+//         rocksdb_tbl_options, "hash_index_allow_collision"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    no_block_cache,
-    *reinterpret_cast<my_bool *>(&rocksdb_tbl_options->no_block_cache),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "BlockBasedTableOptions::no_block_cache for RocksDB", nullptr, nullptr,
-    rocksdb_BlockBasedTableOptions__GetBoolOptions(rocksdb_tbl_options,
-                                                   "no_block_cache"));
+// static MYSQL_SYSVAR_BOOL(
+//     no_block_cache,
+//     *reinterpret_cast<my_bool *>(&rocksdb_tbl_options->no_block_cache),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "BlockBasedTableOptions::no_block_cache for RocksDB", nullptr, nullptr,
+//     rocksdb_BlockBasedTableOptions__GetBoolOptions(rocksdb_tbl_options,
+//                                                    "no_block_cache"));
 
 // ALTER
-static MYSQL_SYSVAR_ULONG(block_size, rocksdb_tbl_options->block_size,
-                          PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-                          "BlockBasedTableOptions::block_size for RocksDB",
-                          nullptr, nullptr, rocksdb_tbl_options->block_size,
-                          /* min */ 1L, /* max */ LONG_MAX, 0);
+// static MYSQL_SYSVAR_ULONG(block_size, rocksdb_tbl_options->block_size,
+//                           PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//                           "BlockBasedTableOptions::block_size for RocksDB",
+//                           nullptr, nullptr, rocksdb_tbl_options->block_size,
+//                           /* min */ 1L, /* max */ LONG_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_INT(
-    block_size_deviation,
-    rocksdb_BlockBasedTableOptions__GetSizeTOptions(rocksdb_tbl_options,
-                                                    "block_size_deviation"),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "BlockBasedTableOptions::block_size_deviation for RocksDB", nullptr,
-    nullptr,
-    rocksdb_BlockBasedTableOptions__GetSizeTOptions(rocksdb_tbl_options,
-                                                    "block_size_deviation"),
-    /* min */ 0, /* max */ INT_MAX, 0);
+// static MYSQL_SYSVAR_INT(
+//     block_size_deviation,
+//     rocksdb_BlockBasedTableOptions__GetSizeTOptions(rocksdb_tbl_options,
+//                                                     "block_size_deviation"),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "BlockBasedTableOptions::block_size_deviation for RocksDB", nullptr,
+//     nullptr,
+//     rocksdb_BlockBasedTableOptions__GetSizeTOptions(rocksdb_tbl_options,
+//                                                     "block_size_deviation"),
+//     /* min */ 0, /* max */ INT_MAX, 0);
 
 // ALTER
-static MYSQL_SYSVAR_INT(
-    block_restart_interval, rocksdb_tbl_options->block_restart_interval,
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "BlockBasedTableOptions::block_restart_interval for RocksDB", nullptr,
-    nullptr, rocksdb_tbl_options->block_restart_interval,
-    /* min */ 1, /* max */ INT_MAX, 0);
+// static MYSQL_SYSVAR_INT(
+//     block_restart_interval, rocksdb_tbl_options->block_restart_interval,
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "BlockBasedTableOptions::block_restart_interval for RocksDB", nullptr,
+//     nullptr, rocksdb_tbl_options->block_restart_interval,
+//     /* min */ 1, /* max */ INT_MAX, 0);
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    whole_key_filtering,
-    *reinterpret_cast<my_bool *>(&rocksdb_tbl_options->whole_key_filtering),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "BlockBasedTableOptions::whole_key_filtering for RocksDB", nullptr, nullptr,
-    rocksdb_BlockBasedTableOptions__GetBoolOptions(rocksdb_tbl_options,
-                                                   "whole_key_filtering"));
+// static MYSQL_SYSVAR_BOOL(
+//     whole_key_filtering,
+//     *reinterpret_cast<my_bool *>(&rocksdb_tbl_options->whole_key_filtering),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "BlockBasedTableOptions::whole_key_filtering for RocksDB", nullptr,
+//     nullptr,
+//     rocksdb_BlockBasedTableOptions__GetBoolOptions(rocksdb_tbl_options,
+//                                                    "whole_key_filtering"));
 
 static MYSQL_SYSVAR_STR(default_cf_options, rocksdb_default_cf_options,
                         PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
@@ -2612,144 +2633,110 @@ static MYSQL_SYSVAR_BOOL(
 static const int ROCKSDB_ASSUMED_KEY_VALUE_DISK_SIZE = 100;
 
 static struct st_mysql_sys_var *rocksdb_system_variables[] = {
-    MYSQL_SYSVAR(lock_wait_timeout),
-    MYSQL_SYSVAR(deadlock_detect),
+    MYSQL_SYSVAR(lock_wait_timeout), MYSQL_SYSVAR(deadlock_detect),
     MYSQL_SYSVAR(deadlock_detect_depth),
-    MYSQL_SYSVAR(commit_time_batch_for_recovery),
-    MYSQL_SYSVAR(max_row_locks),
+    MYSQL_SYSVAR(commit_time_batch_for_recovery), MYSQL_SYSVAR(max_row_locks),
     MYSQL_SYSVAR(write_batch_max_bytes),
-    MYSQL_SYSVAR(write_batch_flush_threshold),
-    MYSQL_SYSVAR(lock_scanned_rows),
-    MYSQL_SYSVAR(bulk_load),
-    MYSQL_SYSVAR(bulk_load_allow_sk),
+    MYSQL_SYSVAR(write_batch_flush_threshold), MYSQL_SYSVAR(lock_scanned_rows),
+    MYSQL_SYSVAR(bulk_load), MYSQL_SYSVAR(bulk_load_allow_sk),
     MYSQL_SYSVAR(bulk_load_allow_unsorted),
-    MYSQL_SYSVAR(skip_unique_check_tables),
-    MYSQL_SYSVAR(trace_sst_api),
-    MYSQL_SYSVAR(commit_in_the_middle),
-    MYSQL_SYSVAR(blind_delete_primary_key),
-    MYSQL_SYSVAR(enable_iterate_bounds),
-    MYSQL_SYSVAR(read_free_rpl_tables),
-    MYSQL_SYSVAR(read_free_rpl),
-    MYSQL_SYSVAR(bulk_load_size),
-    MYSQL_SYSVAR(merge_buf_size),
-    MYSQL_SYSVAR(enable_bulk_load_api),
-    MYSQL_SYSVAR(enable_pipelined_write),
-    MYSQL_SYSVAR(enable_remove_orphaned_dropped_cfs),
-    MYSQL_SYSVAR(tmpdir),
+    MYSQL_SYSVAR(skip_unique_check_tables), MYSQL_SYSVAR(trace_sst_api),
+    MYSQL_SYSVAR(commit_in_the_middle), MYSQL_SYSVAR(blind_delete_primary_key),
+    MYSQL_SYSVAR(enable_iterate_bounds), MYSQL_SYSVAR(read_free_rpl_tables),
+    MYSQL_SYSVAR(read_free_rpl), MYSQL_SYSVAR(bulk_load_size),
+    MYSQL_SYSVAR(merge_buf_size), MYSQL_SYSVAR(enable_bulk_load_api),
+    // MYSQL_SYSVAR(enable_pipelined_write),
+    MYSQL_SYSVAR(enable_remove_orphaned_dropped_cfs), MYSQL_SYSVAR(tmpdir),
     MYSQL_SYSVAR(merge_combine_read_size),
     MYSQL_SYSVAR(merge_tmp_file_removal_delay_ms),
     MYSQL_SYSVAR(skip_bloom_filter_on_read),
 
-    MYSQL_SYSVAR(create_if_missing),
-    MYSQL_SYSVAR(two_write_queues),
-    MYSQL_SYSVAR(manual_wal_flush),
-    MYSQL_SYSVAR(write_policy),
-    MYSQL_SYSVAR(create_missing_column_families),
-    MYSQL_SYSVAR(error_if_exists),
-    MYSQL_SYSVAR(paranoid_checks),
-    MYSQL_SYSVAR(rate_limiter_bytes_per_sec),
-    MYSQL_SYSVAR(sst_mgr_rate_bytes_per_sec),
-    MYSQL_SYSVAR(delayed_write_rate),
-    MYSQL_SYSVAR(max_latest_deadlocks),
-    MYSQL_SYSVAR(info_log_level),
-    MYSQL_SYSVAR(max_open_files),
-    MYSQL_SYSVAR(max_total_wal_size),
-    MYSQL_SYSVAR(use_fsync),
-    MYSQL_SYSVAR(wal_dir),
-    MYSQL_SYSVAR(persistent_cache_path),
-    MYSQL_SYSVAR(persistent_cache_size_mb),
-    MYSQL_SYSVAR(delete_obsolete_files_period_micros),
-    MYSQL_SYSVAR(max_background_jobs),
-    MYSQL_SYSVAR(max_background_flushes),
-    MYSQL_SYSVAR(max_background_compactions),
+    MYSQL_SYSVAR(create_if_missing), MYSQL_SYSVAR(two_write_queues),
+    MYSQL_SYSVAR(manual_wal_flush), MYSQL_SYSVAR(write_policy),
+    MYSQL_SYSVAR(create_missing_column_families), MYSQL_SYSVAR(error_if_exists),
+    MYSQL_SYSVAR(paranoid_checks), MYSQL_SYSVAR(rate_limiter_bytes_per_sec),
+    MYSQL_SYSVAR(sst_mgr_rate_bytes_per_sec), MYSQL_SYSVAR(delayed_write_rate),
+    MYSQL_SYSVAR(max_latest_deadlocks), MYSQL_SYSVAR(info_log_level),
+    // MYSQL_SYSVAR(max_open_files),
+    // MYSQL_SYSVAR(max_total_wal_size),
+    // MYSQL_SYSVAR(use_fsync),
+    // MYSQL_SYSVAR(wal_dir),
+    MYSQL_SYSVAR(persistent_cache_path), MYSQL_SYSVAR(persistent_cache_size_mb),
+    // MYSQL_SYSVAR(delete_obsolete_files_period_micros),
+    // MYSQL_SYSVAR(max_background_jobs),
+    // MYSQL_SYSVAR(max_background_flushes),
+    // MYSQL_SYSVAR(max_background_compactions),
     MYSQL_SYSVAR(max_bottom_pri_background_compactions),
-    MYSQL_SYSVAR(max_log_file_size),
-    MYSQL_SYSVAR(max_subcompactions),
-    MYSQL_SYSVAR(log_file_time_to_roll),
-    MYSQL_SYSVAR(keep_log_file_num),
-    MYSQL_SYSVAR(max_manifest_file_size),
-    MYSQL_SYSVAR(table_cache_numshardbits),
-    MYSQL_SYSVAR(wal_ttl_seconds),
-    MYSQL_SYSVAR(wal_size_limit_mb),
-    MYSQL_SYSVAR(manifest_preallocation_size),
-    MYSQL_SYSVAR(use_direct_reads),
-    MYSQL_SYSVAR(use_direct_io_for_flush_and_compaction),
-    MYSQL_SYSVAR(allow_mmap_reads),
-    MYSQL_SYSVAR(allow_mmap_writes),
-    MYSQL_SYSVAR(is_fd_close_on_exec),
-    MYSQL_SYSVAR(stats_dump_period_sec),
-    MYSQL_SYSVAR(advise_random_on_open),
-    MYSQL_SYSVAR(db_write_buffer_size),
-    MYSQL_SYSVAR(use_adaptive_mutex),
-    MYSQL_SYSVAR(bytes_per_sync),
-    MYSQL_SYSVAR(wal_bytes_per_sync),
-    MYSQL_SYSVAR(enable_thread_tracking),
-    MYSQL_SYSVAR(perf_context_level),
-    MYSQL_SYSVAR(wal_recovery_mode),
-    MYSQL_SYSVAR(track_and_verify_wals_in_manifest),
-    MYSQL_SYSVAR(stats_level),
+    // MYSQL_SYSVAR(max_log_file_size),
+    // MYSQL_SYSVAR(max_subcompactions),
+    // MYSQL_SYSVAR(log_file_time_to_roll),
+    // MYSQL_SYSVAR(keep_log_file_num),
+    // MYSQL_SYSVAR(max_manifest_file_size),
+    // MYSQL_SYSVAR(table_cache_numshardbits),
+    // MYSQL_SYSVAR(wal_ttl_seconds),
+    // MYSQL_SYSVAR(wal_size_limit_mb),
+    // MYSQL_SYSVAR(manifest_preallocation_size),
+    // MYSQL_SYSVAR(use_direct_reads),
+    // MYSQL_SYSVAR(use_direct_io_for_flush_and_compaction),
+    // MYSQL_SYSVAR(allow_mmap_reads),
+    // MYSQL_SYSVAR(allow_mmap_writes),
+    // MYSQL_SYSVAR(is_fd_close_on_exec),
+    // MYSQL_SYSVAR(stats_dump_period_sec),
+    // MYSQL_SYSVAR(advise_random_on_open),
+    // MYSQL_SYSVAR(db_write_buffer_size),
+    // MYSQL_SYSVAR(use_adaptive_mutex),
+    // MYSQL_SYSVAR(bytes_per_sync),
+    // MYSQL_SYSVAR(wal_bytes_per_sync),
+    // MYSQL_SYSVAR(enable_thread_tracking),
+    MYSQL_SYSVAR(perf_context_level), MYSQL_SYSVAR(wal_recovery_mode),
+    MYSQL_SYSVAR(track_and_verify_wals_in_manifest), MYSQL_SYSVAR(stats_level),
     MYSQL_SYSVAR(access_hint_on_compaction_start),
     MYSQL_SYSVAR(new_table_reader_for_compaction_inputs),
     MYSQL_SYSVAR(compaction_readahead_size),
-    MYSQL_SYSVAR(allow_concurrent_memtable_write),
-    MYSQL_SYSVAR(enable_write_thread_adaptive_yield),
+    // MYSQL_SYSVAR(allow_concurrent_memtable_write),
+    // MYSQL_SYSVAR(enable_write_thread_adaptive_yield),
 
-    MYSQL_SYSVAR(block_cache_size),
-    MYSQL_SYSVAR(sim_cache_size),
-    MYSQL_SYSVAR(use_clock_cache),
-    MYSQL_SYSVAR(cache_high_pri_pool_ratio),
+    MYSQL_SYSVAR(block_cache_size), MYSQL_SYSVAR(sim_cache_size),
+    MYSQL_SYSVAR(use_clock_cache), MYSQL_SYSVAR(cache_high_pri_pool_ratio),
     MYSQL_SYSVAR(cache_dump),
-    MYSQL_SYSVAR(cache_index_and_filter_blocks),
-    MYSQL_SYSVAR(cache_index_and_filter_with_high_priority),
-    MYSQL_SYSVAR(pin_l0_filter_and_index_blocks_in_cache),
-    MYSQL_SYSVAR(index_type),
-    MYSQL_SYSVAR(hash_index_allow_collision),
-    MYSQL_SYSVAR(no_block_cache),
-    MYSQL_SYSVAR(block_size),
-    MYSQL_SYSVAR(block_size_deviation),
-    MYSQL_SYSVAR(block_restart_interval),
-    MYSQL_SYSVAR(whole_key_filtering),
+    // MYSQL_SYSVAR(cache_index_and_filter_blocks),
+    // MYSQL_SYSVAR(cache_index_and_filter_with_high_priority),
+    // MYSQL_SYSVAR(pin_l0_filter_and_index_blocks_in_cache),
+    // MYSQL_SYSVAR(index_type),
+    // MYSQL_SYSVAR(hash_index_allow_collision),
+    // MYSQL_SYSVAR(no_block_cache),
+    // MYSQL_SYSVAR(block_size),
+    // MYSQL_SYSVAR(block_size_deviation),
+    // MYSQL_SYSVAR(block_restart_interval),
+    // MYSQL_SYSVAR(whole_key_filtering),
 
-    MYSQL_SYSVAR(default_cf_options),
-    MYSQL_SYSVAR(override_cf_options),
-    MYSQL_SYSVAR(update_cf_options),
-    MYSQL_SYSVAR(use_default_sk_cf),
+    MYSQL_SYSVAR(default_cf_options), MYSQL_SYSVAR(override_cf_options),
+    MYSQL_SYSVAR(update_cf_options), MYSQL_SYSVAR(use_default_sk_cf),
 
-    MYSQL_SYSVAR(flush_log_at_trx_commit),
-    MYSQL_SYSVAR(write_disable_wal),
+    MYSQL_SYSVAR(flush_log_at_trx_commit), MYSQL_SYSVAR(write_disable_wal),
     MYSQL_SYSVAR(write_ignore_missing_column_families),
 
-    MYSQL_SYSVAR(skip_fill_cache),
-    MYSQL_SYSVAR(unsafe_for_binlog),
+    MYSQL_SYSVAR(skip_fill_cache), MYSQL_SYSVAR(unsafe_for_binlog),
 
-    MYSQL_SYSVAR(records_in_range),
-    MYSQL_SYSVAR(force_index_records_in_range),
+    MYSQL_SYSVAR(records_in_range), MYSQL_SYSVAR(force_index_records_in_range),
     MYSQL_SYSVAR(debug_optimizer_n_rows),
     MYSQL_SYSVAR(force_compute_memtable_stats),
     MYSQL_SYSVAR(force_compute_memtable_stats_cachetime),
     MYSQL_SYSVAR(debug_optimizer_no_zero_cardinality),
 
-    MYSQL_SYSVAR(compact_cf),
-    MYSQL_SYSVAR(delete_cf),
-    MYSQL_SYSVAR(signal_drop_index_thread),
-    MYSQL_SYSVAR(pause_background_work),
-    MYSQL_SYSVAR(enable_2pc),
-    MYSQL_SYSVAR(ignore_unknown_options),
+    MYSQL_SYSVAR(compact_cf), MYSQL_SYSVAR(delete_cf),
+    MYSQL_SYSVAR(signal_drop_index_thread), MYSQL_SYSVAR(pause_background_work),
+    MYSQL_SYSVAR(enable_2pc), MYSQL_SYSVAR(ignore_unknown_options),
     MYSQL_SYSVAR(strict_collation_check),
     MYSQL_SYSVAR(strict_collation_exceptions),
     MYSQL_SYSVAR(collect_sst_properties),
     MYSQL_SYSVAR(force_flush_memtable_now),
     MYSQL_SYSVAR(force_flush_memtable_and_lzero_now),
-    MYSQL_SYSVAR(cancel_manual_compactions),
-    MYSQL_SYSVAR(enable_ttl),
-    MYSQL_SYSVAR(enable_ttl_read_filtering),
-    MYSQL_SYSVAR(debug_ttl_rec_ts),
-    MYSQL_SYSVAR(debug_ttl_snapshot_ts),
-    MYSQL_SYSVAR(debug_ttl_read_filter_ts),
-    MYSQL_SYSVAR(debug_ttl_ignore_pk),
-    MYSQL_SYSVAR(reset_stats),
-    MYSQL_SYSVAR(io_write_timeout),
-    MYSQL_SYSVAR(seconds_between_stat_computes),
+    MYSQL_SYSVAR(cancel_manual_compactions), MYSQL_SYSVAR(enable_ttl),
+    MYSQL_SYSVAR(enable_ttl_read_filtering), MYSQL_SYSVAR(debug_ttl_rec_ts),
+    MYSQL_SYSVAR(debug_ttl_snapshot_ts), MYSQL_SYSVAR(debug_ttl_read_filter_ts),
+    MYSQL_SYSVAR(debug_ttl_ignore_pk), MYSQL_SYSVAR(reset_stats),
+    MYSQL_SYSVAR(io_write_timeout), MYSQL_SYSVAR(seconds_between_stat_computes),
 
     MYSQL_SYSVAR(compaction_sequential_deletes),
     MYSQL_SYSVAR(compaction_sequential_deletes_window),
@@ -2757,24 +2744,19 @@ static struct st_mysql_sys_var *rocksdb_system_variables[] = {
     MYSQL_SYSVAR(compaction_sequential_deletes_count_sd),
     MYSQL_SYSVAR(print_snapshot_conflict_queries),
 
-    MYSQL_SYSVAR(datadir),
-    MYSQL_SYSVAR(create_checkpoint),
+    MYSQL_SYSVAR(datadir), MYSQL_SYSVAR(create_checkpoint),
 
-    MYSQL_SYSVAR(checksums_pct),
-    MYSQL_SYSVAR(store_row_debug_checksums),
-    MYSQL_SYSVAR(verify_row_debug_checksums),
-    MYSQL_SYSVAR(master_skip_tx_api),
+    MYSQL_SYSVAR(checksums_pct), MYSQL_SYSVAR(store_row_debug_checksums),
+    MYSQL_SYSVAR(verify_row_debug_checksums), MYSQL_SYSVAR(master_skip_tx_api),
 
-    MYSQL_SYSVAR(validate_tables),
-    MYSQL_SYSVAR(table_stats_sampling_pct),
+    MYSQL_SYSVAR(validate_tables), MYSQL_SYSVAR(table_stats_sampling_pct),
     MYSQL_SYSVAR(table_stats_recalc_threshold_pct),
     MYSQL_SYSVAR(table_stats_recalc_threshold_count),
     MYSQL_SYSVAR(table_stats_max_num_rows_scanned),
     MYSQL_SYSVAR(table_stats_use_table_scan),
     MYSQL_SYSVAR(table_stats_background_thread_nice_value),
 
-    MYSQL_SYSVAR(large_prefix),
-    MYSQL_SYSVAR(allow_to_start_after_corruption),
+    MYSQL_SYSVAR(large_prefix), MYSQL_SYSVAR(allow_to_start_after_corruption),
     MYSQL_SYSVAR(error_on_suboptimal_collation),
     MYSQL_SYSVAR(stats_recalc_rate),
     MYSQL_SYSVAR(debug_manual_compaction_delay),
@@ -2784,8 +2766,7 @@ static struct st_mysql_sys_var *rocksdb_system_variables[] = {
     MYSQL_SYSVAR(rollback_on_timeout),
 
     MYSQL_SYSVAR(enable_insert_with_update_caching),
-    MYSQL_SYSVAR(trace_block_cache_access),
-    MYSQL_SYSVAR(trace_queries),
+    MYSQL_SYSVAR(trace_block_cache_access), MYSQL_SYSVAR(trace_queries),
     MYSQL_SYSVAR(select_bypass_policy),
     MYSQL_SYSVAR(select_bypass_fail_unsupported),
     MYSQL_SYSVAR(select_bypass_log_failed),
@@ -2793,11 +2774,9 @@ static struct st_mysql_sys_var *rocksdb_system_variables[] = {
     MYSQL_SYSVAR(select_bypass_log_rejected),
     MYSQL_SYSVAR(select_bypass_allow_filters),
     MYSQL_SYSVAR(select_bypass_debug_row_delay),
-    MYSQL_SYSVAR(select_bypass_multiget_min),
-    MYSQL_SYSVAR(mrr_batch_size),
+    MYSQL_SYSVAR(select_bypass_multiget_min), MYSQL_SYSVAR(mrr_batch_size),
     MYSQL_SYSVAR(skip_locks_if_skip_unique_check),
-    MYSQL_SYSVAR(alter_column_default_inplace),
-    nullptr};
+    MYSQL_SYSVAR(alter_column_default_inplace), nullptr};
 
 static rocksdb::WriteOptions rdb_get_rocksdb_write_options(
     my_core::THD *const thd) {
@@ -3296,7 +3275,7 @@ class Rdb_transaction {
   virtual void rollback() = 0;
 
   // ALTER
-  void snapshot_created(rocksdb::Snapshot *snapshot) {
+  void snapshot_created(const rocksdb::Snapshot *snapshot) {
     DBUG_ASSERT(snapshot != nullptr);
 
     // ALTER
@@ -4064,14 +4043,20 @@ class Rdb_transaction_impl : public Rdb_transaction {
   }
 
   void acquire_snapshot(bool acquire_now) override {
-    if (m_read_opts.snapshot == nullptr) {
+    // ALTER
+    // if (m_read_opts.snapshot == nullptr) {
+    if (rocksdb_TransactionDB__GetSnapshot(m_read_opts) == nullptr) {
       const auto thd_ss = std::static_pointer_cast<Rdb_explicit_snapshot>(
           m_thd->get_explicit_snapshot());
       if (thd_ss) {
         m_explicit_snapshot = thd_ss;
       }
       if (m_explicit_snapshot) {
-        auto snapshot = m_explicit_snapshot->get_snapshot()->snapshot();
+        // ALTER
+        // auto snapshot = m_explicit_snapshot->get_snapshot()->snapshot();
+        auto snapshot = rocksdb_ManagedSnapshot__snapshot(
+            m_explicit_snapshot->get_snapshot());
+
         snapshot_created(snapshot);
       } else if (is_tx_read_only()) {
         // ALTER
@@ -4135,8 +4120,8 @@ class Rdb_transaction_impl : public Rdb_transaction {
 
     // ALTER
     // return m_rocksdb_tx->Put(column_family, key, value, assume_tracked);
-    return m_rocrocksdb_Transaction__Put(m_rocksdb_tx, column_family, key,
-                                         value, assume_tracked);
+    return rocksdb_Transaction__Put(m_rocksdb_tx, column_family, key, value,
+                                    assume_tracked);
   }
 
   rocksdb::Status delete_key(rocksdb::ColumnFamilyHandle *const column_family,
@@ -4198,6 +4183,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
     return rocksdb_Transaction__GetWriteBatch(m_rocksdb_tx);
   }
 
+  // ALTER
   rocksdb::Status get(rocksdb::ColumnFamilyHandle *const column_family,
                       const rocksdb::Slice &key,
                       rocksdb::PinnableSlice *const value) const override {
@@ -4247,19 +4233,26 @@ class Rdb_transaction_impl : public Rdb_transaction {
     rocksdb::Status s;
     // If snapshot is null, pass it to GetForUpdate and snapshot is
     // initialized there. Snapshot validation is skipped in that case.
-    if (m_read_opts.snapshot == nullptr || do_validate) {
+
+    // if (m_read_opts.snapshot == nullptr || do_validate) {
+    if (rocksdb_TransactionDB__GetSnapshot(m_read_opts) || do_validate) {
       // ALTER
       // s = m_rocksdb_tx->GetForUpdate(
       //     m_read_opts, column_family, key, value, exclusive,
       //     m_read_opts.snapshot ? do_validate : false);
       s = rocksdb_Transaction__GetForUpdate(
-          m_rocksdb_tx, m_read_opts, column_family, key, value, exclusive,
+          m_rocksdb_tx, m_read_opts, column_family, key, &value, exclusive,
           rocksdb_ReadOptions__GetSnapshot(m_read_opts) ? do_validate : false);
     } else {
       // If snapshot is set, and if skipping validation,
       // call GetForUpdate without validation and set back old snapshot
-      auto saved_snapshot = m_read_opts.snapshot;
-      m_read_opts.snapshot = nullptr;
+
+      // ALTER
+      // auto saved_snapshot = m_read_opts.snapshot;
+      // m_read_opts.snapshot = nullptr;
+      auto saved_snapshot = rocksdb_TransactionDB__GetSnapshot(m_read_opts)
+          rocksdb::Snapshot *null_snap = nullptr;
+      rocksdb_ReadOptions__SetSnapshot(m_read_opts, null_snap);
 
       // ALTER
       // s = m_rocksdb_tx->GetForUpdate(m_read_opts, column_family, key, value,
@@ -4412,7 +4405,11 @@ class Rdb_transaction_impl : public Rdb_transaction {
       if (org_snapshot != cur_snapshot) {
         if (org_snapshot != nullptr) m_snapshot_timestamp = 0;
 
-        m_read_opts.snapshot = cur_snapshot;
+        // ALTER
+        // m_read_opts.snapshot = cur_snapshot;
+        // m_read_opts.snapshot = cur_snapshot;
+        rocksdb_ReadOptions__SetSnapshot(m_read_opts, cur_snapshot);
+
         if (cur_snapshot != nullptr) {
           // ALTER
           // rdb->GetEnv()->GetCurrentTime(&m_snapshot_timestamp);
@@ -4566,7 +4563,9 @@ class Rdb_writebatch_impl : public Rdb_transaction {
   }
 
   void acquire_snapshot(bool acquire_now) override {
-    if (m_read_opts.snapshot == nullptr) {
+    // ALTER
+    // if (m_read_opts.snapshot == nullptr) {
+    if (rocksdb_ReadOptions__GetSnapshot(m_read_opts) == nullptr) {
       // ALTER
       // snapshot_created(rdb->GetSnapshot());
       snapshot_created(rocksdb_TransactionDB__GetSnapshot(rdb));
@@ -4640,7 +4639,7 @@ class Rdb_writebatch_impl : public Rdb_transaction {
 
   rocksdb::Status get(rocksdb::ColumnFamilyHandle *const column_family,
                       const rocksdb::Slice &key,
-                      rocksdb::PinnableSlice *const value) const override {
+                      rocksdb::PinnableSlice *value) const override {
     // ALTER
     // value->Reset();
     // return m_batch->GetFromBatchAndDB(rdb, m_read_opts, column_family, key,
@@ -4677,8 +4676,9 @@ class Rdb_writebatch_impl : public Rdb_transaction {
                  rocksdb::PinnableSlice *values, rocksdb::Status *statuses,
                  const bool sorted_input) const override {
     // TODO: ALTER
-    m_batch->MultiGetFromBatchAndDB(rdb, m_read_opts, column_family, num_keys,
-                                    keys, values, statuses, sorted_input);
+    // m_batch->MultiGetFromBatchAndDB(rdb, m_read_opts, column_family,
+    // num_keys,
+    //                                 keys, values, statuses, sorted_input);
   }
 
   // ALTER
@@ -4687,7 +4687,7 @@ class Rdb_writebatch_impl : public Rdb_transaction {
       rocksdb::ColumnFamilyHandle *const /* column_family */) override {
     // const auto it = rdb->NewIterator(options);
     // return m_batch->NewIteratorWithBase(it);
-    auto it = rocksdb_DB__NewIterator(options);
+    auto it = rocksdb_DB__NewIterator(rdb, options);
     return rocksdb_WriteBatchWithIndex__NewIteratorWithBase(m_batch, it);
   }
 
@@ -4850,6 +4850,7 @@ static bool rocksdb_flush_wal(handlerton *const hton MY_ATTRIBUTE((__unused__)),
     // s = rdb->FlushWAL(target_lsn == 0 ||
     //                   rocksdb_flush_log_at_trx_commit == FLUSH_LOG_SYNC);
     s = rocksdb_TransactionDB__FlushWAL(
+        rdb,
         target_lsn == 0 || rocksdb_flush_log_at_trx_commit == FLUSH_LOG_SYNC);
   }
 
@@ -5658,7 +5659,7 @@ static bool rocksdb_show_status(handlerton *const hton, THD *const thd,
     for (const auto &cf_handle : cf_manager.get_all_cf()) {
       // It is safe if the CF handle is removed from cf_manager
       // at this point.
-      rocksdb::ColumnFamilyDescriptor cf_desc;
+      rocksdb::ColumnFamilyDescriptor *cf_desc;
 
       // ALTER
       // cf_handle->GetDescriptor(&cf_desc);
@@ -5672,7 +5673,7 @@ static bool rocksdb_show_status(handlerton *const hton, THD *const thd,
       if (table_factory != nullptr) {
         // ALTER
         // std::string tf_name = table_factory->Name();
-        std::string tf_name = rocksdb_TableFactory__Name(table_factory34);
+        std::string tf_name = rocksdb_TableFactory__Name(table_factory);
 
         if (tf_name.find("BlockBasedTable") != std::string::npos) {
           // ALTER
@@ -5963,8 +5964,11 @@ static int rocksdb_start_tx_with_shared_read_view(
 
     // case: an explicit snapshot was not assigned to this transaction
     if (!tx->m_explicit_snapshot) {
-      tx->m_explicit_snapshot =
-          Rdb_explicit_snapshot::create(ss_info, rdb, tx->m_read_opts.snapshot);
+      // tx->m_explicit_snapshot =
+      //     Rdb_explicit_snapshot::create(ss_info, rdb,
+      //     tx->m_read_opts.snapshot);
+      tx->m_explicit_snapshot = Rdb_explicit_snapshot::create(
+          ss_info, rdb, rocksdb_ReadOptions__GetSnapshot(tx->m_read_opts));
       if (!tx->m_explicit_snapshot) {
         my_printf_error(ER_UNKNOWN_ERROR, "Could not create snapshot", MYF(0));
         error = HA_EXIT_FAILURE;
@@ -6320,7 +6324,8 @@ static int rocksdb_init_func(void *const p) {
                                      open_files_limit / 2);
   } else if (rocksdb_DBOptions__GetIntOptions(rocksdb_db_options,
                                               "max_open_files") == -2) {
-    rocksdb_DBOptions__SetIntOptions(rocksdb_db_options, "max_open_files" ,open_files_limit / 2;
+    rocksdb_DBOptions__SetIntOptions(rocksdb_db_options, "max_open_files",
+                                     open_files_limit / 2);
   }
 
   rdb_read_free_regex_handler.set_patterns(DEFAULT_READ_FREE_RPL_TABLES);
@@ -6347,7 +6352,7 @@ static int rocksdb_init_func(void *const p) {
 
     // ALTER
     // rocksdb_db_options->rate_limiter = rocksdb_rate_limiter;
-    rocksdb_DBOptions__SetRateLimiter(rocksdb_rate_limiter);
+    rocksdb_DBOptions__SetRateLimiter(rocksdb_db_options, rocksdb_rate_limiter);
   }
 
   // ALTER
@@ -6572,8 +6577,9 @@ static int rocksdb_init_func(void *const p) {
   // ALTER
   // rocksdb_tbl_options->index_type =
   //     (rocksdb::BlockBasedTableOptions::IndexType)rocksdb_index_type;
-  rocksdb_BlockBasedTableOptions__SetIndexType(rocksdb_tbl_options,
-                                               rocksdb_index_type);
+  rocksdb_BlockBasedTableOptions__SetIndexType(
+      rocksdb_tbl_options,
+      (rocksdb::BlockBasedTableOptions::IndexType)rocksdb_index_type);
 
   // ALTER
   // if (!rocksdb_tbl_options->no_block_cache) {
@@ -6663,31 +6669,37 @@ static int rocksdb_init_func(void *const p) {
   }
 
   // TODO: ALTER
-  if (rocksdb_persistent_cache_size_mb > 0) {
-    // ALTER
-    // std::shared_ptr<rocksdb::PersistentCache> pcache;
-    std::shared_ptr<rocksdb::PersistentCache> *pcache =
-        rocksdb_Cache__NewPersistentCache();
+  // if (rocksdb_persistent_cache_size_mb > 0) {
+  //   // ALTER
+  //   // std::shared_ptr<rocksdb::PersistentCache> pcache;
+  //   std::shared_ptr<rocksdb::PersistentCache> *pcache =
+  //       rocksdb_Cache__NewPersistentCache();
 
-    uint64_t cache_size_bytes = rocksdb_persistent_cache_size_mb * 1024 * 1024;
-    status = rocksdb::NewPersistentCache(
-        rocksdb::Env::Default(), std::string(rocksdb_persistent_cache_path),
-        cache_size_bytes, myrocks_logger, true, &pcache);
-    if (!status.ok()) {
-      // NO_LINT_DEBUG
-      sql_print_error("RocksDB: Persistent cache returned error: (%s)",
-                      status.getState());
-      DBUG_RETURN(HA_EXIT_FAILURE);
-    }
-    rocksdb_tbl_options->persistent_cache = pcache;
-  } else if (strlen(rocksdb_persistent_cache_path)) {
-    // NO_LINT_DEBUG
-    sql_print_error("RocksDB: Must specify rocksdb_persistent_cache_size_mb");
-    DBUG_RETURN(HA_EXIT_FAILURE);
-  }
+  //   uint64_t cache_size_bytes = rocksdb_persistent_cache_size_mb * 1024 *
+  //   1024; status = rocksdb::NewPersistentCache(
+  //       rocksdb::Env::Default(), std::string(rocksdb_persistent_cache_path),
+  //       cache_size_bytes, myrocks_logger, true, &pcache);
+  //   if (!status.ok()) {
+  //     // NO_LINT_DEBUG
+  //     sql_print_error("RocksDB: Persistent cache returned error: (%s)",
+  //                     status.getState());
+  //     DBUG_RETURN(HA_EXIT_FAILURE);
+  //   }
+  //   rocksdb_tbl_options->persistent_cache = pcache;
+  // } else if (strlen(rocksdb_persistent_cache_path)) {
+  //   // NO_LINT_DEBUG
+  //   sql_print_error("RocksDB: Must specify
+  //   rocksdb_persistent_cache_size_mb"); DBUG_RETURN(HA_EXIT_FAILURE);
+  // }
 
   std::unique_ptr<Rdb_cf_options> cf_options_map(new Rdb_cf_options());
-  if (!cf_options_map->init(*rocksdb_tbl_options, properties_collector_factory,
+
+  // ALTER
+  // if (!cf_options_map->init(*rocksdb_tbl_options,
+  // properties_collector_factory,
+  //                           rocksdb_default_cf_options,
+  //                           rocksdb_override_cf_options)) {
+  if (!cf_options_map->init(rocksdb_tbl_options, properties_collector_factory,
                             rocksdb_default_cf_options,
                             rocksdb_override_cf_options)) {
     // NO_LINT_DEBUG
@@ -6769,16 +6781,19 @@ static int rocksdb_init_func(void *const p) {
   rocksdb::TransactionDBOptions *tx_db_options = myrocks_InitTxDBOptions(
       2000, static_cast<rocksdb::TxnDBWritePolicy>(rocksdb_write_policy));
 
-  status =
-      check_rocksdb_options_compatibility(rocksdb_datadir, main_opts, cf_descr);
-
-  // We won't start if we'll determine that there's a chance of data corruption
-  // because of incompatible options.
-  if (!status.ok()) {
-    rdb_log_status_error(
-        status, "Compatibility check against existing database options failed");
-    DBUG_RETURN(HA_EXIT_FAILURE);
-  }
+  // TODO: ALTER
+  // status =
+  //     check_rocksdb_options_compatibility(rocksdb_datadir, main_opts,
+  //     cf_descr);
+  // // We won't start if we'll determine that there's a chance of data
+  // corruption
+  // // because of incompatible options.
+  // if (!status.ok()) {
+  //   rdb_log_status_error(
+  //       status, "Compatibility check against existing database options
+  //       failed");
+  //   DBUG_RETURN(HA_EXIT_FAILURE);
+  // }
 
   // NO_LINT_DEBUG
   sql_print_information("RocksDB: Opening TransactionDB...");
@@ -6995,8 +7010,7 @@ static int rocksdb_done_func(void *const p) {
   // Stop all rocksdb background work
   // ALTER
   // CancelAllBackgroundWork(rdb->GetBaseDB(), true);
-  rocksdb_CancelAllBackgroundWork(rocksdb_TransactionDB__GetBaseDB(GetBaseDB()),
-                                  true);
+  rocksdb_CancelAllBackgroundWork(rocksdb_TransactionDB__GetBaseDB(), true);
 
   // Signal the background thread to stop and to persist all stats collected
   // from background flushes and compactions. This will add more keys to a new
@@ -7652,7 +7666,7 @@ int ha_rocksdb::rocksdb_skip_expired_records(const Rdb_key_def &kd,
     // while (iter->Valid() &&
     while (rocksdb_Iterator__Valid(iter) &&
            should_hide_ttl_rec(
-               kd, rocksdb_Iterator__value(it),
+               kd, rocksdb_Iterator__value(iter),
                get_or_create_tx(table->in_use)->m_snapshot_timestamp)) {
       DEBUG_SYNC(thd, "rocksdb.check_flags_ser");
       if (thd && thd->killed) {
@@ -9530,7 +9544,7 @@ int ha_rocksdb::read_row_from_secondary_key(uchar *const buf,
     if (!rc) {
       // ALTER
       // const rocksdb::Slice &rkey = m_scan_it->key();
-      const rocksdb::Slice &key = rocksdb_Iterator__key(m_scan_it);
+      const rocksdb::Slice &rkey = rocksdb_Iterator__key(m_scan_it);
 
       pk_size = kd.get_primary_key_tuple(table, *m_pk_descr, &rkey,
                                          m_pk_packed_tuple);
@@ -10173,8 +10187,15 @@ int ha_rocksdb::check(THD *const thd, HA_CHECK_OPT *const check_opt) {
         // NO_LINT_DEBUG
         sql_print_error("CHECKTABLE %s:   rowkey: %s", table_name, buf.c_str());
 
-        buf = rdb_hexdump(m_retrieved_record.data(), m_retrieved_record.size(),
+        // ALTER
+        // buf = rdb_hexdump(m_retrieved_record.data(),
+        // m_retrieved_record.size(),
+        //                   RDB_MAX_HEXDUMP_LEN);
+
+        buf = rdb_hexdump(rocksdb_PinnableSlice__data(m_retrieved_record),
+                          rocksdb_PinnableSlice__size(m_retrieved_record),
                           RDB_MAX_HEXDUMP_LEN);
+
         // NO_LINT_DEBUG
         sql_print_error("CHECKTABLE %s:   record: %s", table_name, buf.c_str());
 
@@ -10342,14 +10363,24 @@ int ha_rocksdb::get_row_by_rowid(uchar *const buf, const char *const rowid,
 
   if (m_lock_rows == RDB_LOCK_NONE) {
     tx->acquire_snapshot(true);
-    s = tx->get(m_pk_descr->get_cf(), key_slice, &m_retrieved_record);
+
+    // ALTER
+    // s = tx->get(m_pk_descr->get_cf(), key_slice, &m_retrieved_record);
+    s = tx->get(m_pk_descr->get_cf(), key_slice, m_retrieved_record);
+
   } else if (m_insert_with_update && m_dup_key_found &&
              m_pk_descr->get_keyno() == m_dupp_errkey) {
+    // ALTER
+    // DBUG_ASSERT(m_dup_key_retrieved_record.length() ==
+    //             m_retrieved_record.size());
+    // DBUG_ASSERT(memcmp(m_dup_key_retrieved_record.ptr(),
+    //                    m_retrieved_record.data(),
+    //                    m_retrieved_record.size()) == 0);
     DBUG_ASSERT(m_dup_key_retrieved_record.length() ==
-                m_retrieved_record.size());
+                rocksdb_PinnableSlice__size(m_retrieved_record));
     DBUG_ASSERT(memcmp(m_dup_key_retrieved_record.ptr(),
-                       m_retrieved_record.data(),
-                       m_retrieved_record.size()) == 0);
+                       rocksdb_PinnableSlice__data(m_retrieved_record),
+                       rocksdb_PinnableSlice__size(m_retrieved_record)) == 0);
 
     // do nothing - we already have the result in m_retrieved_record and
     // already taken the lock
@@ -10584,7 +10615,7 @@ int ha_rocksdb::index_first_intern(uchar *const buf) {
     // ALTER
     // m_scan_it->Seek(index_key);
     // m_scan_it->Seek(index_key);
-    rocksdb_Iterator__Seek(, index_key);
+    rocksdb_Iterator__Seek(m_scan_it, index_key);
     m_skip_scan_it_next_call = true;
 
     rc = index_next_with_direction(buf, true);
@@ -11079,9 +11110,16 @@ int ha_rocksdb::check_and_lock_unique_pk(const uint key_id,
     2) T1 Get(empty) -> T1 Put(insert, not committed yet) -> T2 Get(empty)
        -> T2 Put(insert, blocked) -> T1 commit -> T2 commit(overwrite)
   */
+
+  // ALTER
+  // const rocksdb::Status s =
+  //     get_for_update(row_info.tx, *m_pk_descr, row_info.new_pk_slice,
+  //                    ignore_pk_unique_check ? nullptr : &m_retrieved_record);
+
   const rocksdb::Status s =
       get_for_update(row_info.tx, *m_pk_descr, row_info.new_pk_slice,
-                     ignore_pk_unique_check ? nullptr : &m_retrieved_record);
+                     ignore_pk_unique_check ? nullptr : m_retrieved_record);
+
   if (!s.ok() && !s.IsNotFound()) {
     return row_info.tx->set_status_error(
         table->in_use, s, *m_key_descr_arr[key_id], m_tbl_def, m_table_handler);
@@ -11109,8 +11147,14 @@ int ha_rocksdb::check_and_lock_unique_pk(const uint key_id,
 
 #ifndef DBUG_OFF
     // save it for sanity checking later
-    m_dup_key_retrieved_record.copy(m_retrieved_record.data(),
-                                    m_retrieved_record.size(), &my_charset_bin);
+
+    // ALTER
+    // m_dup_key_retrieved_record.copy(m_retrieved_record.data(),
+    //                                 m_retrieved_record.size(),
+    //                                 &my_charset_bin);
+    m_dup_key_retrieved_record.copy(
+        rocksdb_PinnableSlice__data(m_retrieved_record),
+        rocksdb_PinnableSlice__size(m_retrieved_record), &my_charset_bin);
 #endif
   }
 
@@ -11355,7 +11399,7 @@ int ha_rocksdb::check_duplicate_sk(const TABLE *table_arg,
   // ALTER
   // const rocksdb::Comparator *index_comp = key_def.get_cf()->GetComparator();
   const rocksdb::Comparator *index_comp =
-      rocksdb_ColumnFamilyOptions__GetComparator(key_def.get_cf());
+      rocksdb_ColumnFamilyHandle__GetComparator(key_def.get_cf());
 
   /* Get proper SK buffer. */
   uchar *sk_buf = sk_info->swap_and_get_sk_buf();
@@ -11400,8 +11444,12 @@ int ha_rocksdb::bulk_load_key(Rdb_transaction *const tx, const Rdb_key_def &kd,
   // used to store the keys. It is still used to indicate when tables
   // are switched.
   if (m_sst_info == nullptr || m_sst_info->is_done()) {
+    // ALTER
+    // m_sst_info.reset(new Rdb_sst_info(rdb, m_table_handler->m_table_name,
+    //                                   kd.get_name(), cf, *rocksdb_db_options,
+    //                                   THDVAR(ha_thd(), trace_sst_api)));
     m_sst_info.reset(new Rdb_sst_info(rdb, m_table_handler->m_table_name,
-                                      kd.get_name(), cf, *rocksdb_db_options,
+                                      kd.get_name(), cf, rocksdb_db_options,
                                       THDVAR(ha_thd(), trace_sst_api)));
     res = tx->start_bulk_load(this, m_sst_info);
     if (res != HA_EXIT_SUCCESS) {
@@ -12122,8 +12170,12 @@ int ha_rocksdb::rnd_next_with_direction(uchar *const buf, bool move_forward) {
         continue;
       }
 
+      // ALTER
+      // const rocksdb::Status s =
+      //     get_for_update(tx, *m_pk_descr, key, &m_retrieved_record);
       const rocksdb::Status s =
-          get_for_update(tx, *m_pk_descr, key, &m_retrieved_record);
+          get_for_update(tx, *m_pk_descr, key, m_retrieved_record);
+
       if (s.IsNotFound() &&
           should_skip_invalidated_record(HA_ERR_KEY_NOT_FOUND)) {
         continue;
@@ -13047,7 +13099,7 @@ void Rdb_drop_index_thread::run() {
                                          is_reverse_cf ? 0 : 1);
 
         // TODO: ALTER
-        rocksdb::Status status = DeleteFilesInRange(rdb->GetBaseDB(), cfh.get(),
+        rocksdb::Status status = DeleteFilesInRange(rdb->GetBaseDB(), cfh,
                                                     &range.start, &range.limit);
         if (!status.ok()) {
           if (status.IsIncomplete()) {
@@ -13744,7 +13796,7 @@ static int calculate_cardinality_table_scan(
     uint64_t rows_scanned = 0ul;
     // for (it->Seek(first_index_key); is_valid_iterator(it.get()); it->Next())
     // {
-    for (rocksdb_Iterator__Seek(first_index_key); is_valid_iterator(it);
+    for (rocksdb_Iterator__Seek(it, first_index_key); is_valid_iterator(it);
          rocksdb_Iterator__Next(it)) {
       if (killed && *killed) {
         // NO_LINT_DEBUG
@@ -15369,8 +15421,10 @@ static ulonglong io_stall_prop_value(
 static void update_rocksdb_stall_status() {
   st_io_stall_stats local_io_stall_stats;
   for (const auto &cf_name : cf_manager.get_cf_names()) {
-    std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
-        cf_manager.get_cf(cf_name);
+    // ALTER
+    // std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
+    //     cf_manager.get_cf(cf_name);
+    rocksdb::ColumnFamilyHandle *cfh = cf_manager.get_cf(cf_name);
     if (!cfh) {
       continue;
     }
@@ -15936,10 +15990,11 @@ void Rdb_manual_compaction_thread::run() {
     // it is cancelled by CancelAllBackgroundWork, then status is
     // set to shutdownInProgress.
 
+    // ALTER
     // const rocksdb::Status s =
     //     rdb->CompactRange(mcr.option, mcr.cf.get(), mcr.start, mcr.limit);
     const rocksdb::Status s = rocksdb_TransactionDB__CompactRange(
-        rdb, mcr.option, mcr.cf.get(), mcr.start, mcr.limit);
+        rdb, mcr.option, mcr.cf, mcr.start, mcr.limit);
 
     rocksdb_manual_compactions_running--;
     if (s.ok()) {
@@ -16751,7 +16806,7 @@ static void rocksdb_set_max_background_jobs(THD *thd,
     // rocksdb::Status s =
     //     rdb->SetDBOptions({{"max_background_jobs",
     //     std::to_string(new_val)}});
-    rocksdb_TransactionDB__SetDBOptions(
+    rocksdb::Status s = rocksdb_TransactionDB__SetDBOptions(
         rdb, {{"max_background_jobs", std::to_string(new_val)}});
 
     if (!s.ok()) {
@@ -17805,7 +17860,7 @@ int ha_rocksdb::multi_range_read_next(char **range_info) {
     rocksdb_PinnableSlice__Reset(m_retrieved_record);
 
     // TODO: ALTER
-    m_retrieved_record.PinSlice(mrr_values[cur_key], &mrr_values[cur_key]);
+    // m_retrieved_record.PinSlice(mrr_values[cur_key], &mrr_values[cur_key]);
 
     /* If we found the record, but it's expired, pretend we didn't find it.  */
     if (m_pk_descr->has_ttl() &&
