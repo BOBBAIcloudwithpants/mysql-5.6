@@ -181,7 +181,7 @@ int Rdb_index_merge::add(const rocksdb::Slice &key, const rocksdb::Slice &val) {
   //                           m_cf_handle->GetComparator());
   auto res = m_offset_tree.emplace(
       m_rec_buf_unsorted->m_block.get() + rec_offset,
-      rocksdb_ColumnFamilyOptions__GetComparator(m_cf_handle));
+      rocksdb_ColumnFamilyHandle__GetComparator(m_cf_handle));
 
   if (!res.second) {
     my_printf_error(ER_DUP_ENTRY,

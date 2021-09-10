@@ -4790,9 +4790,9 @@ void Rdb_binlog_manager::update_slave_gtid_info(
     value_writer.write_byte(gtid_len);
     value_writer.write(gtid, gtid_len);
 
-    ALTER
-    write_batch->Put(kd->get_cf(), key_writer.to_slice(),
-                     value_writer.to_slice());
+    // ALTER
+    // write_batch->Put(kd->get_cf(), key_writer.to_slice(),
+    //                  value_writer.to_slice());
     rocksdb_WriteBatchBase__Put(write_batch, kd->get_cf(),
                                 key_writer.to_slice(), value_writer.to_slice());
   }
@@ -4879,7 +4879,7 @@ rocksdb::Status Rdb_dict_manager::get_value(const rocksdb::Slice &key,
   // rocksdb::ReadOptions options;
   // options.total_order_seek = true;
   // return m_db->Get(options, m_system_cfh, key, value);
-  rocksdb::ReadOptions *options = rocksdb_ReadOptions__ReadOptions();
+  rocksdb::ReadOptions *options = rocksdb_ReadOptions__NewReadOptions();
   rocksdb_ReadOptions__SetBoolProperty(options, "total_order_seek", true);
   return rocksdb_DB__Get(m_db, options, m_system_cfh, key, value);
 }
@@ -4897,7 +4897,7 @@ rocksdb::Iterator *Rdb_dict_manager::new_iterator() const {
   // rocksdb::ReadOptions read_options;
   // read_options.total_order_seek = true;
   // return m_db->NewIterator(read_options, m_system_cfh);
-  rocksdb::ReadOptions *options = rocksdb_ReadOptions__ReadOptions();
+  rocksdb::ReadOptions *options = rocksdb_ReadOptions__NewReadOptions();
   rocksdb_ReadOptions__SetBoolProperty(options, "total_order_seek", true);
   return rocksdb_DB__NewIterator(m_db, options, m_system_cfh);
 }

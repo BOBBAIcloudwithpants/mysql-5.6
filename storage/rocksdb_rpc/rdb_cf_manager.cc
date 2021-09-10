@@ -416,7 +416,7 @@ int Rdb_cf_manager::drop_cf(Rdb_ddl_manager *const ddl_manager,
   // const std::unique_ptr<rocksdb::WriteBatch> wb = dict_manager->begin();
   // rocksdb::WriteBatch *const batch = wb.get();
 
-  rocksdb::WriteBatch *batch = wb.get();
+  rocksdb::WriteBatch *batch = dict_manager->begin();
   dict_manager->add_dropped_cf(batch, cf_id);
   dict_manager->commit(batch);
 
@@ -453,8 +453,11 @@ int Rdb_cf_manager::create_cf_flags_if_needed(
       return HA_EXIT_FAILURE;
     }
   } else {
-    const std::unique_ptr<rocksdb::WriteBatch> wb = dict_manager->begin();
-    rocksdb::WriteBatch *const batch = wb.get();
+    // ALTER
+    // const std::unique_ptr<rocksdb::WriteBatch> wb = dict_manager->begin();
+    // rocksdb::WriteBatch *const batch = wb.get();
+
+    rocksdb::WriteBatch *batch = dict_manager->begin();
 
     dict_manager->add_cf_flags(batch, cf_id, flags);
     dict_manager->commit(batch);

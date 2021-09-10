@@ -942,8 +942,9 @@ class ha_rocksdb : public my_core::handler {
     DBUG_ENTER_FUNC();
 
     /* Free blob data */
-    m_retrieved_record.Reset();
-
+    // ALTER
+    // m_retrieved_record.Reset();
+    rocksdb_PinnableSlice__Reset(m_retrieved_record);
     DBUG_RETURN(HA_EXIT_SUCCESS);
   }
 
@@ -1138,7 +1139,10 @@ get_select_bypass_multiget_min();
 
 Rdb_transaction *&get_tx_from_thd(THD *const thd);
 
-const rocksdb::ReadOptions &rdb_tx_acquire_snapshot(Rdb_transaction *tx);
+// ALTER
+// const rocksdb::ReadOptions &rdb_tx_acquire_snapshot(Rdb_transaction *tx);
+rocksdb::ReadOptions *rdb_tx_acquire_snapshot(Rdb_transaction *tx);
+
 
 rocksdb::Iterator *rdb_tx_get_iterator(
     Rdb_transaction *tx, rocksdb::ColumnFamilyHandle *const column_family,

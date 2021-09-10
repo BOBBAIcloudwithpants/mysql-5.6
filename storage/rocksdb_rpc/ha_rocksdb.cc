@@ -2651,11 +2651,16 @@ static struct st_mysql_sys_var *rocksdb_system_variables[] = {
     MYSQL_SYSVAR(merge_tmp_file_removal_delay_ms),
     MYSQL_SYSVAR(skip_bloom_filter_on_read),
 
-    MYSQL_SYSVAR(create_if_missing), MYSQL_SYSVAR(two_write_queues),
-    MYSQL_SYSVAR(manual_wal_flush), MYSQL_SYSVAR(write_policy),
-    MYSQL_SYSVAR(create_missing_column_families), MYSQL_SYSVAR(error_if_exists),
-    MYSQL_SYSVAR(paranoid_checks), MYSQL_SYSVAR(rate_limiter_bytes_per_sec),
-    MYSQL_SYSVAR(sst_mgr_rate_bytes_per_sec), MYSQL_SYSVAR(delayed_write_rate),
+    // MYSQL_SYSVAR(create_if_missing),
+    // MYSQL_SYSVAR(two_write_queues),
+    // MYSQL_SYSVAR(manual_wal_flush),
+    MYSQL_SYSVAR(write_policy),
+    // MYSQL_SYSVAR(create_missing_column_families),
+    // MYSQL_SYSVAR(error_if_exists),
+    // MYSQL_SYSVAR(paranoid_checks),
+    MYSQL_SYSVAR(rate_limiter_bytes_per_sec),
+    MYSQL_SYSVAR(sst_mgr_rate_bytes_per_sec),
+    // MYSQL_SYSVAR(delayed_write_rate),
     MYSQL_SYSVAR(max_latest_deadlocks), MYSQL_SYSVAR(info_log_level),
     // MYSQL_SYSVAR(max_open_files),
     // MYSQL_SYSVAR(max_total_wal_size),
@@ -2691,8 +2696,8 @@ static struct st_mysql_sys_var *rocksdb_system_variables[] = {
     MYSQL_SYSVAR(perf_context_level), MYSQL_SYSVAR(wal_recovery_mode),
     MYSQL_SYSVAR(track_and_verify_wals_in_manifest), MYSQL_SYSVAR(stats_level),
     MYSQL_SYSVAR(access_hint_on_compaction_start),
-    MYSQL_SYSVAR(new_table_reader_for_compaction_inputs),
-    MYSQL_SYSVAR(compaction_readahead_size),
+    // MYSQL_SYSVAR(new_table_reader_for_compaction_inputs),
+    // MYSQL_SYSVAR(compaction_readahead_size),
     // MYSQL_SYSVAR(allow_concurrent_memtable_write),
     // MYSQL_SYSVAR(enable_write_thread_adaptive_yield),
 
@@ -4045,7 +4050,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
   void acquire_snapshot(bool acquire_now) override {
     // ALTER
     // if (m_read_opts.snapshot == nullptr) {
-    if (rocksdb_TransactionDB__GetSnapshot(m_read_opts) == nullptr) {
+    if (rocksdb_ReadOptions__GetSnapshot(m_read_opts) == nullptr) {
       const auto thd_ss = std::static_pointer_cast<Rdb_explicit_snapshot>(
           m_thd->get_explicit_snapshot());
       if (thd_ss) {
@@ -4081,7 +4086,9 @@ class Rdb_transaction_impl : public Rdb_transaction {
   void release_snapshot() override {
     bool need_clear = m_is_delayed_snapshot;
 
-    if (m_read_opts.snapshot != nullptr) {
+    // ALTER
+    // if (m_read_opts.snapshot != nullptr) {
+    if (rocksdb_ReadOptions__GetSnapshot(m_read_opts) != nullptr) {
       m_snapshot_timestamp = 0;
       if (m_explicit_snapshot) {
         m_explicit_snapshot.reset();
@@ -4200,25 +4207,27 @@ class Rdb_transaction_impl : public Rdb_transaction {
     // ALTER
     // return m_rocksdb_tx->Get(m_read_opts, column_family, key, value);
     return rocksdb_Transaction__Get(m_rocksdb_tx, m_read_opts, column_family,
-                                    key, &value);
+                                    key, value);
   }
 
   void multi_get(rocksdb::ColumnFamilyHandle *const column_family,
                  const size_t num_keys, const rocksdb::Slice *keys,
                  rocksdb::PinnableSlice **values, rocksdb::Status *statuses,
-                 const bool sorted_input) const override{
-      // ALTER
-      // m_rocksdb_tx->MultiGet(m_read_opts, column_family, num_keys, keys,
-      // values,
-      //                        statuses, sorted_input);
-      rocksdb_Transaction__MultiGet(m_rocksdb_tx, m_read_opts, column_family,
-                                    num_keys, keys, values, statuses,
-                                    sorted_input)}
+                 const bool sorted_input) const override {
+    // ALTER
+    // m_rocksdb_tx->MultiGet(m_read_opts, column_family, num_keys, keys,
+    // values,
+    //                        statuses, sorted_input);
+    rocksdb_Transaction__MultiGet(m_rocksdb_tx, m_read_opts, column_family,
+                                  num_keys, keys, values, statuses,
+                                  sorted_input);
+  }
 
-  rocksdb::Status
-      get_for_update(const Rdb_key_def &key_descr, const rocksdb::Slice &key,
-                     rocksdb::PinnableSlice *const value, bool exclusive,
-                     const bool do_validate) override {
+  rocksdb::Status get_for_update(const Rdb_key_def &key_descr,
+                                 const rocksdb::Slice &key,
+                                 rocksdb::PinnableSlice *const value,
+                                 bool exclusive,
+                                 const bool do_validate) override {
     rocksdb::ColumnFamilyHandle *const column_family = key_descr.get_cf();
     /* check row lock limit in a trx */
     if (get_row_lock_count() >= get_max_row_lock_count()) {
@@ -4235,13 +4244,13 @@ class Rdb_transaction_impl : public Rdb_transaction {
     // initialized there. Snapshot validation is skipped in that case.
 
     // if (m_read_opts.snapshot == nullptr || do_validate) {
-    if (rocksdb_TransactionDB__GetSnapshot(m_read_opts) || do_validate) {
+    if (rocksdb_ReadOptions__GetSnapshot(m_read_opts) || do_validate) {
       // ALTER
       // s = m_rocksdb_tx->GetForUpdate(
       //     m_read_opts, column_family, key, value, exclusive,
       //     m_read_opts.snapshot ? do_validate : false);
       s = rocksdb_Transaction__GetForUpdate(
-          m_rocksdb_tx, m_read_opts, column_family, key, &value, exclusive,
+          m_rocksdb_tx, m_read_opts, column_family, key, value, exclusive,
           rocksdb_ReadOptions__GetSnapshot(m_read_opts) ? do_validate : false);
     } else {
       // If snapshot is set, and if skipping validation,
@@ -4250,8 +4259,8 @@ class Rdb_transaction_impl : public Rdb_transaction {
       // ALTER
       // auto saved_snapshot = m_read_opts.snapshot;
       // m_read_opts.snapshot = nullptr;
-      auto saved_snapshot = rocksdb_TransactionDB__GetSnapshot(m_read_opts)
-          rocksdb::Snapshot *null_snap = nullptr;
+      auto saved_snapshot = rocksdb_ReadOptions__GetSnapshot(m_read_opts);
+      rocksdb::Snapshot *null_snap = nullptr;
       rocksdb_ReadOptions__SetSnapshot(m_read_opts, null_snap);
 
       // ALTER
@@ -4442,8 +4451,12 @@ class Rdb_transaction_impl : public Rdb_transaction {
     m_notifier->detach();
 
     // Free any transaction memory that is still hanging around.
-    delete m_rocksdb_reuse_tx;
-    DBUG_ASSERT(m_rocksdb_tx == nullptr);
+
+    // ALTER
+    // delete m_rocksdb_reuse_tx;
+    // DBUG_ASSERT(m_rocksdb_tx == nullptr);
+    rocksdb_Transaction__delete(m_rocksdb_reuse_tx);
+    m_rocksdb_reuse_tx = nullptr;
   }
 };
 
@@ -5663,7 +5676,7 @@ static bool rocksdb_show_status(handlerton *const hton, THD *const thd,
 
       // ALTER
       // cf_handle->GetDescriptor(&cf_desc);
-      rocksdb_ColumnFamilyHandle__GetDescriptor(cf_handle, cf_desc);
+      rocksdb_ColumnFamilyHandle__GetDescriptorPtr(cf_handle, cf_desc);
 
       // ALTER
       // auto *const table_factory = cf_desc.options.table_factory.get();
@@ -7010,7 +7023,7 @@ static int rocksdb_done_func(void *const p) {
   // Stop all rocksdb background work
   // ALTER
   // CancelAllBackgroundWork(rdb->GetBaseDB(), true);
-  rocksdb_CancelAllBackgroundWork(rocksdb_TransactionDB__GetBaseDB(), true);
+  rocksdb_CancelAllBackgroundWork(rocksdb_TransactionDB__GetBaseDB(rdb), true);
 
   // Signal the background thread to stop and to persist all stats collected
   // from background flushes and compactions. This will add more keys to a new
@@ -11306,7 +11319,7 @@ int ha_rocksdb::check_and_lock_sk(const uint key_id,
     // const rocksdb::Slice &rkey = iter->key();
     const rocksdb::Slice &key = rocksdb_Iterator__key(iter);
     uint pk_size =
-        kd.get_primary_key_tuple(table, *m_pk_descr, &rkey, m_pk_packed_tuple);
+        kd.get_primary_key_tuple(table, *m_pk_descr, &key, m_pk_packed_tuple);
     if (pk_size == RDB_INVALID_KEY_LEN) {
       rc = HA_ERR_ROCKSDB_CORRUPT_DATA;
     } else {
@@ -11719,7 +11732,7 @@ int ha_rocksdb::update_write_sk(const TABLE *const table_arg,
     // row_info.tx->get_indexed_write_batch()->Put(kd.get_cf(), new_key_slice,
     //                                             new_value_slice);
     rocksdb_WriteBatchBase__Put(row_info.tx->get_indexed_write_batch(),
-                                new_key_slice, new_value_slice);
+                                kd.get_cf(), new_key_slice, new_value_slice);
   }
 
   row_info.tx->update_bytes_written(bytes_written + new_key_slice.size() +
@@ -13111,8 +13124,8 @@ void Rdb_drop_index_thread::run() {
         }
 
         // TODO: ALTER
-        status = rdb->CompactRange(getCompactRangeOptions(), cfh.get(),
-                                   &range.start, &range.limit);
+        status = rdb->CompactRange(getCompactRangeOptions(), cfh, &range.start,
+                                   &range.limit);
         if (!status.ok()) {
           if (status.IsIncomplete()) {
             continue;
@@ -13121,8 +13134,13 @@ void Rdb_drop_index_thread::run() {
           }
           rdb_handle_io_error(status, RDB_IO_ERROR_BG_THREAD);
         }
-        if (is_myrocks_index_empty(cfh.get(), is_reverse_cf, read_opts,
-                                   d.index_id)) {
+
+        // ALTER
+        // if (is_myrocks_index_empty(cfh.get(), is_reverse_cf, read_opts,
+        //                            d.index_id)) {
+        //   finished.insert(d);
+        // }
+        if (is_myrocks_index_empty(cfh, is_reverse_cf, read_opts, d.index_id)) {
           finished.insert(d);
         }
       }
@@ -15437,8 +15455,8 @@ static void update_rocksdb_stall_status() {
     // if (!rdb->GetMapProperty(cfh.get(), "rocksdb.cfstats", &props)) {
     //   continue;
     // }
-    if (!rocksdb_TransactionDB__GetMapProperty(rdb, cfh.get(),
-                                               "rocksdb.cfstats", &props)) {
+    if (!rocksdb_TransactionDB__GetMapProperty(rdb, cfh, "rocksdb.cfstats",
+                                               &props)) {
       continue;
     }
 
