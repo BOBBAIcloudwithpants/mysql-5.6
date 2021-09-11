@@ -1481,7 +1481,12 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
         return true;
       }
 
-      if (unpack_for_pk(key_slices[i], value_slices[i])) {
+      // ALTER
+      // if (unpack_for_pk(key_slices[i], value_slices[i])) {
+      //   return true;
+      // }
+      if (unpack_for_pk(key_slices[i],
+                        rocksdb_PinnableSlice__Slice(value_slices[i]))) {
         return true;
       }
 

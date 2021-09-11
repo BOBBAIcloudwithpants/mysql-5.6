@@ -3427,9 +3427,13 @@ class Rdb_transaction {
         // "./database/table"
         std::replace(table_name.begin(), table_name.end(), '.', '/');
         table_name = "./" + table_name;
+        // ALTER
+        // auto sst_info = std::make_shared<Rdb_sst_info>(
+        //     rdb, table_name, index_name, rdb_merge.get_cf(),
+        //     *rocksdb_db_options, THDVAR(get_thd(), trace_sst_api));
         auto sst_info = std::make_shared<Rdb_sst_info>(
-            rdb, table_name, index_name, rdb_merge.get_cf(),
-            *rocksdb_db_options, THDVAR(get_thd(), trace_sst_api));
+            rdb, table_name, index_name, rdb_merge.get_cf(), rocksdb_db_options,
+            THDVAR(get_thd(), trace_sst_api));
 
         while ((rc2 = rdb_merge.next(&merge_key, &merge_val)) == 0) {
           if ((rc2 = sst_info->put(merge_key, merge_val)) != 0) {
@@ -3662,7 +3666,7 @@ class Rdb_transaction {
 
   virtual void multi_get(rocksdb::ColumnFamilyHandle *const column_family,
                          const size_t num_keys, const rocksdb::Slice *keys,
-                         rocksdb::PinnableSlice *values,
+                         rocksdb::PinnableSlice **values,
                          rocksdb::Status *statuses,
                          const bool sorted_input) const = 0;
 
@@ -4686,7 +4690,7 @@ class Rdb_writebatch_impl : public Rdb_transaction {
 
   void multi_get(rocksdb::ColumnFamilyHandle *const column_family,
                  const size_t num_keys, const rocksdb::Slice *keys,
-                 rocksdb::PinnableSlice *values, rocksdb::Status *statuses,
+                 rocksdb::PinnableSlice **values, rocksdb::Status *statuses,
                  const bool sorted_input) const override {
     // TODO: ALTER
     // m_batch->MultiGetFromBatchAndDB(rdb, m_read_opts, column_family,
