@@ -585,7 +585,7 @@ ADD_SUBDIRECTORY(mysys)
 ADD_SUBDIRECTORY(utils)
 ADD_SUBDIRECTORY(mysys_ssl)
 ADD_SUBDIRECTORY(libmysql)
-ADD_SUBDIRECTORY(rocksdb-rpc-client)
+# ADD_SUBDIRECTORY(rocksdb-rpc-client)
 
 IF(WITH_UNIT_TESTS)
   # Visual Studio 11 needs this extra flag in order to compile gmock.

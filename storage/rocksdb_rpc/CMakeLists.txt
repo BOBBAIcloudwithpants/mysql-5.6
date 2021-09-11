@@ -172,7 +172,7 @@ IF (WITH_TBB)
   ADD_DEFINITIONS(-DTBB)
 ENDIF()
 
-FIND_LIBRARY(RPCCLIENT_LIBRARY NAMES librpcclient.a rpcclient HINTS ${ROCKSDB_ROOT}/build)
+FIND_LIBRARY(RPCCLIENT_LIBRARY NAMES librpcclient.a rpcclient HINTS /mnt/ali/ali/rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
 
 CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
