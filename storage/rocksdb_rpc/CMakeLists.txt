@@ -205,7 +205,7 @@ SET(rocksdb_static_libs ${rocksdb_static_libs} ${HELPER_LIBRARY})
 FIND_LIBRARY(
   VARIABLE_LIBRARY 
   NAMES libvariable.a variable 
-  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include/build)
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
 
 CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
