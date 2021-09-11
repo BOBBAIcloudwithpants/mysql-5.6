@@ -17809,8 +17809,9 @@ int ha_rocksdb::mrr_fill_buffer() {
   if (active_index == table->s->primary_key)
     stats.rows_requested += mrr_n_elements;
 
-  tx->multi_get(m_pk_descr->get_cf(), mrr_n_elements, mrr_keys, mrr_values,
-                mrr_statuses, active_index == table->s->primary_key);
+  // TODO: ALTER
+  // tx->multi_get(m_pk_descr->get_cf(), mrr_n_elements, mrr_keys, mrr_values,
+  //               mrr_statuses, active_index == table->s->primary_key);
 
   return 0;
 }

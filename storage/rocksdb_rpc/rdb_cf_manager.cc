@@ -163,7 +163,7 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_cf(
   DBUG_ASSERT(!cf_name.empty());
   // ALTER
   // std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle;
-  rocksdb::ColumnFamilyHandle *cf_handle;
+  rocksdb::ColumnFamilyHandle *cf_handle = nullptr;
 
   if (!lock_held_by_caller) {
     RDB_MUTEX_LOCK_CHECK(m_mutex);

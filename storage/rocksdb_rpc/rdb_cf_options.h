@@ -56,7 +56,7 @@ class Rdb_cf_options {
 
   bool init(rocksdb::BlockBasedTableOptions *table_options,
             std::shared_ptr<rocksdb::TablePropertiesCollectorFactory>
-                *prop_coll_factory,
+                prop_coll_factory,
             const char *const default_cf_options,
             const char *const override_cf_options);
 
