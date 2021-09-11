@@ -294,7 +294,7 @@ int Rdb_index_merge::merge_heap_prepare() {
     // const auto entry =
     //     std::make_shared<merge_heap_entry>(m_cf_handle->GetComparator());
     const auto entry = std::make_shared<merge_heap_entry>(
-        rocksdb_ColumnFamilyOptions__GetComparator(m_cf_handle));
+        rocksdb_ColumnFamilyHandle__GetComparator(m_cf_handle));
 
     /*
       Read chunk_size bytes from each chunk on disk, and place inside

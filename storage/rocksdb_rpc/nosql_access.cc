@@ -1503,8 +1503,9 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
         return true;
       }
 
-      value_slice.Reset();
-
+      // ALTER
+      // value_slice.Reset();
+      rocksdb_PinnableSlice__Reset(value_slice);
       rocksdb::Slice key_slice = writer.get_key_slice();
 
       // ALTER

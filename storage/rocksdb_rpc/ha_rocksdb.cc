@@ -4322,8 +4322,8 @@ class Rdb_transaction_impl : public Rdb_transaction {
     // ALTER
     // m_rocksdb_tx =
     //     rdb->BeginTransaction(write_opts, tx_opts, m_rocksdb_reuse_tx);
-    rocksdb_TransactionDB__BeginTransaction(m_rocksdb_tx, write_opts, tx_opts,
-                                            m_rocksdb_reuse_tx);
+    m_rocksdb_tx = rocksdb_TransactionDB__BeginTransaction(
+        rdb, write_opts, tx_opts, m_rocksdb_reuse_tx);
     m_rocksdb_reuse_tx = nullptr;
 
     // ALTER
@@ -7740,7 +7740,9 @@ int ha_rocksdb::convert_record_from_storage_format(
   DBUG_EXECUTE_IF("myrocks_simulate_bad_row_read3",
                   dbug_modify_rec_varchar12(&m_retrieved_record););
 
-  return convert_record_from_storage_format(key, &m_retrieved_record, buf);
+  // ALTER
+  // return convert_record_from_storage_format(key, &m_retrieved_record, buf);
+  return convert_record_from_storage_format(key, m_retrieved_record, buf);
 }
 
 /*
@@ -10399,7 +10401,9 @@ int ha_rocksdb::get_row_by_rowid(uchar *const buf, const char *const rowid,
     // already taken the lock
     s = rocksdb::Status::OK();
   } else {
-    s = get_for_update(tx, *m_pk_descr, key_slice, &m_retrieved_record);
+    // ALTER
+    // s = get_for_update(tx, *m_pk_descr, key_slice, &m_retrieved_record);
+    s = get_for_update(tx, *m_pk_descr, key_slice, m_retrieved_record);
   }
 
   DBUG_EXECUTE_IF("rocksdb_return_status_corrupted",
@@ -10414,8 +10418,15 @@ int ha_rocksdb::get_row_by_rowid(uchar *const buf, const char *const rowid,
   table->status = STATUS_NOT_FOUND;
   if (found) {
     /* If we found the record, but it's expired, pretend we didn't find it.  */
+    // ALTER
+    // if (!skip_ttl_check && m_pk_descr->has_ttl() &&
+    //     should_hide_ttl_rec(*m_pk_descr, m_retrieved_record,
+    //                         tx->m_snapshot_timestamp)) {
+    //   DBUG_RETURN(HA_ERR_KEY_NOT_FOUND);
+    // }
     if (!skip_ttl_check && m_pk_descr->has_ttl() &&
-        should_hide_ttl_rec(*m_pk_descr, m_retrieved_record,
+        should_hide_ttl_rec(*m_pk_descr,
+                            rocksdb_PinnableSlice__Slice(m_retrieved_record),
                             tx->m_snapshot_timestamp)) {
       DBUG_RETURN(HA_ERR_KEY_NOT_FOUND);
     }
@@ -16012,7 +16023,7 @@ void Rdb_manual_compaction_thread::run() {
     // const rocksdb::Status s =
     //     rdb->CompactRange(mcr.option, mcr.cf.get(), mcr.start, mcr.limit);
     const rocksdb::Status s = rocksdb_TransactionDB__CompactRange(
-        rdb, mcr.option, mcr.cf, mcr.start, mcr.limit);
+        rdb, mcr.option, mcr.cf, *mcr.start, *mcr.limit);
 
     rocksdb_manual_compactions_running--;
     if (s.ok()) {
@@ -17881,8 +17892,14 @@ int ha_rocksdb::multi_range_read_next(char **range_info) {
     // m_retrieved_record.PinSlice(mrr_values[cur_key], &mrr_values[cur_key]);
 
     /* If we found the record, but it's expired, pretend we didn't find it.  */
+
+    // ALTER
+    // if (m_pk_descr->has_ttl() &&
+    //     should_hide_ttl_rec(*m_pk_descr, m_retrieved_record,
+    //                         tx->m_snapshot_timestamp)) {
     if (m_pk_descr->has_ttl() &&
-        should_hide_ttl_rec(*m_pk_descr, m_retrieved_record,
+        should_hide_ttl_rec(*m_pk_descr,
+                            rocksdb_PinnableSlice__Slice(m_retrieved_record),
                             tx->m_snapshot_timestamp)) {
       continue;
     }

@@ -50,7 +50,7 @@ Rdb_sst_file_ordered::Rdb_sst_file::Rdb_sst_file(
       m_tracing(tracing),
       // ALTER
       /*m_comparator(cf->GetComparator())*/
-      rocksdb_ColumnFamilyOptions__GetComparator(cf) {
+      m_comparator(rocksdb_ColumnFamilyOptions__GetComparator(cf)) {
   DBUG_ASSERT(db != nullptr);
   DBUG_ASSERT(cf != nullptr);
 }
