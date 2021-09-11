@@ -6707,12 +6707,12 @@ static int rocksdb_init_func(void *const p) {
 
   std::unique_ptr<Rdb_cf_options> cf_options_map(new Rdb_cf_options());
 
-  // ALTER
+  // TODO: ALTER
   // if (!cf_options_map->init(*rocksdb_tbl_options,
   // properties_collector_factory,
   //                           rocksdb_default_cf_options,
   //                           rocksdb_override_cf_options)) {
-  if (!cf_options_map->init(rocksdb_tbl_options, properties_collector_factory,
+  if (!cf_options_map->init(rocksdb_tbl_options, nullptr,
                             rocksdb_default_cf_options,
                             rocksdb_override_cf_options)) {
     // NO_LINT_DEBUG
@@ -11155,14 +11155,24 @@ int ha_rocksdb::check_and_lock_unique_pk(const uint key_id,
     If the pk key has ttl, we may need to pretend the row wasn't
     found if it is already expired.
   */
+
+  // ALTER
+  // if (key_found && m_pk_descr->has_ttl() &&
+  //     should_hide_ttl_rec(*m_pk_descr, m_retrieved_record,
+  //                         (row_info.tx->m_snapshot_timestamp
+  //                              ? row_info.tx->m_snapshot_timestamp
+  //                              : static_cast<int64_t>(std::time(nullptr)))))
+  //                              {
+  //   key_found = false;
+  // }
   if (key_found && m_pk_descr->has_ttl() &&
-      should_hide_ttl_rec(*m_pk_descr, m_retrieved_record,
+      should_hide_ttl_rec(*m_pk_descr,
+                          rocksdb_PinnableSlice__Slice(m_retrieved_record),
                           (row_info.tx->m_snapshot_timestamp
                                ? row_info.tx->m_snapshot_timestamp
                                : static_cast<int64_t>(std::time(nullptr))))) {
     key_found = false;
   }
-
   if (key_found && row_info.old_data == nullptr && m_insert_with_update) {
     // In INSERT ON DUPLICATE KEY UPDATE ... case, if the insert failed
     // due to a duplicate key, remember the last key and skip the check
@@ -17386,8 +17396,8 @@ rocksdb::Status rdb_tx_get(Rdb_transaction *tx,
 void rdb_tx_multi_get(Rdb_transaction *tx,
                       rocksdb::ColumnFamilyHandle *const column_family,
                       const size_t num_keys, const rocksdb::Slice *keys,
-                      rocksdb::PinnableSlice *values, rocksdb::Status *statuses,
-                      const bool sorted_input) {
+                      rocksdb::PinnableSlice **values,
+                      rocksdb::Status *statuses, const bool sorted_input) {
   tx->multi_get(column_family, num_keys, keys, values, statuses, sorted_input);
 }
 

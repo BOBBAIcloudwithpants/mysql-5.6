@@ -1143,7 +1143,6 @@ Rdb_transaction *&get_tx_from_thd(THD *const thd);
 // const rocksdb::ReadOptions &rdb_tx_acquire_snapshot(Rdb_transaction *tx);
 rocksdb::ReadOptions *rdb_tx_acquire_snapshot(Rdb_transaction *tx);
 
-
 rocksdb::Iterator *rdb_tx_get_iterator(
     Rdb_transaction *tx, rocksdb::ColumnFamilyHandle *const column_family,
     bool skip_bloom, bool fill_cache, const rocksdb::Slice &lower_bound_slice,
@@ -1158,8 +1157,8 @@ rocksdb::Status rdb_tx_get(Rdb_transaction *tx,
 void rdb_tx_multi_get(Rdb_transaction *tx,
                       rocksdb::ColumnFamilyHandle *const column_family,
                       const size_t num_keys, const rocksdb::Slice *keys,
-                      rocksdb::PinnableSlice *values, rocksdb::Status *statuses,
-                      const bool sorted_input);
+                      rocksdb::PinnableSlice **values,
+                      rocksdb::Status *statuses, const bool sorted_input);
 
 inline void rocksdb_smart_seek(bool seek_backward,
                                rocksdb::Iterator *const iter,

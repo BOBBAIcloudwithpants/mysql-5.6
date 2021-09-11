@@ -683,7 +683,7 @@ class select_exec {
 
     void multi_get(rocksdb::ColumnFamilyHandle *cf, size_t size,
                    bool sorted_input, const rocksdb::Slice *key_slices,
-                   rocksdb::PinnableSlice *value_slices,
+                   rocksdb::PinnableSlice **value_slices,
                    rocksdb::Status *statuses) {
       rdb_tx_multi_get(m_tx, cf, size, key_slices, value_slices, statuses,
                        sorted_input);
@@ -1467,7 +1467,7 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
     // key_slices.data(),
     //                value_slices.data(), statuses.data());
     txn->multi_get(m_key_def->get_cf(), size, sorted_input, key_slices.data(),
-                   value_slices, statuses.data());
+                   value_slices.data(), statuses.data());
 
     for (size_t i = 0; i < size; ++i) {
       if (unlikely(handle_killed())) {
@@ -1519,7 +1519,11 @@ bool INLINE_ATTR select_exec::run_pk_point_query(txn_wrapper *txn) {
         return true;
       }
 
-      if (unpack_for_pk(key_slice, value_slice)) {
+      // ALTER
+      // if (unpack_for_pk(key_slice, value_slice)) {
+      //   return true;
+      // }
+      if (unpack_for_pk(key_slice, rocksdb_PinnableSlice__Slice(value_slice))) {
         return true;
       }
 

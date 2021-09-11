@@ -85,7 +85,7 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
   DBUG_ASSERT(rdb != nullptr);
   DBUG_ASSERT(!cf_name.empty());
   std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle;
-  rocksdb::ColumnFamilyHandle *cf_handle_;
+  rocksdb::ColumnFamilyHandle *cf_handle_ = nullptr;
 
   if (cf_name == PER_INDEX_CF_NAME) {
     // per-index column families is no longer supported.
@@ -137,8 +137,8 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
       // cf_handle.reset(cf_handle_ptr);
       // m_cf_name_map[cf_handle_ptr->GetName()] = cf_handle;
       // m_cf_id_map[cf_handle_ptr->GetID()] = cf_handle;
-      std::string name = rocksdb_ColumnFamilyHandle__GetName(cf_handle_);
-      auto id = rocksdb_ColumnFamilyHandle__GetID(cf_handle_);
+      std::string name = rocksdb_ColumnFamilyHandle__GetName(cf_handle_ptr);
+      auto id = rocksdb_ColumnFamilyHandle__GetID(cf_handle_ptr);
       cf_handle_ = cf_handle_ptr;
       m_cf_name_map[name] = cf_handle_;
       m_cf_id_map[id] = cf_handle_;
