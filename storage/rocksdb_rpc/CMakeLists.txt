@@ -172,7 +172,40 @@ IF (WITH_TBB)
   ADD_DEFINITIONS(-DTBB)
 ENDIF()
 
-FIND_LIBRARY(RPCCLIENT_LIBRARY NAMES librpcclient.a rpcclient HINTS /mnt/ali/ali/rocksdb-rpc-client/build)
+FIND_LIBRARY(
+  RPCCLIENT_LIBRARY 
+  NAMES librpcclient.a rpcclient 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
+
+FIND_LIBRARY(
+  RPCCLIENT_LIBRARY 
+  NAMES libparameter.a parameter 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
+
+FIND_LIBRARY(
+  RPCCLIENT_LIBRARY 
+  NAMES librequest.a request 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
+
+FIND_LIBRARY(
+  RPCCLIENT_LIBRARY 
+  NAMES libresponse.a response 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
+
+FIND_LIBRARY(
+  RPCCLIENT_LIBRARY 
+  NAMES libhelper.a helper 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
+
+FIND_LIBRARY(
+  RPCCLIENT_LIBRARY 
+  NAMES libvariable.a variable 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/include/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
 
 CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
