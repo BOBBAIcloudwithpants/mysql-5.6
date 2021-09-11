@@ -67,8 +67,8 @@ bool Rdb_cf_options::init(
 
   // TODO: ALTER
   if (prop_coll_factory) {
-    m_default_cf_opts.table_properties_collector_factories.push_back(
-        prop_coll_factory);
+    // m_default_cf_opts.table_properties_collector_factories.push_back(
+    //     prop_coll_factory);
   }
   // rocksdb_ColumnFamilyOptions__SetTablePropCollectorFactory(m_default_cf_opts,
   //                                                           prop_coll_factory);
