@@ -31,7 +31,7 @@
 #include "./properties_collector.h"
 #include "./rdb_datadic.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 static std::vector<Rdb_index_stats> extract_index_stats(
     const std::vector<std::string> &files,
@@ -112,4 +112,4 @@ void Rdb_event_listener::OnBackgroundError(
     abort();
   }
 }
-}  // namespace myrocks
+}  // namespace myrocks_rpc

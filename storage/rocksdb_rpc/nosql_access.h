@@ -40,11 +40,11 @@ struct REJECTED_ITEM {
   std::string error_msg;
 };
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 bool rocksdb_handle_single_table_select(THD *thd, st_select_lex *select_lex);
 
 extern std::deque<REJECTED_ITEM> rejected_bypass_queries;
 extern std::mutex rejected_bypass_query_lock;
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

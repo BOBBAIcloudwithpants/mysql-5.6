@@ -34,7 +34,7 @@
 #include "./rdb_global.h"
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_mutex : public rocksdb::TransactionDBMutex {
   Rdb_mutex(const Rdb_mutex &p) = delete;
@@ -145,4 +145,4 @@ class Rdb_mutex_factory : public rocksdb::TransactionDBMutexFactory {
   virtual ~Rdb_mutex_factory() override {}
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

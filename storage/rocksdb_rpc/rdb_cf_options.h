@@ -30,7 +30,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   Per-column family options configs.
@@ -106,4 +106,4 @@ class Rdb_cf_options {
   rocksdb::ColumnFamilyOptions *m_default_cf_opts;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

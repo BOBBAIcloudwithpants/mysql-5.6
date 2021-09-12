@@ -37,7 +37,7 @@
 #include "./rdb_cf_options.h"
 #include "./rdb_psi.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 Rdb_sst_file_ordered::Rdb_sst_file::Rdb_sst_file(
     rocksdb::DB *const db, rocksdb::ColumnFamilyHandle *const cf,
@@ -588,4 +588,4 @@ void Rdb_sst_info::init(const rocksdb::DB *const db) {
 
 std::atomic<uint64_t> Rdb_sst_info::m_prefix_counter(0);
 std::string Rdb_sst_info::m_suffix = ".bulk_load.tmp";
-}  // namespace myrocks
+}  // namespace myrocks_rpc

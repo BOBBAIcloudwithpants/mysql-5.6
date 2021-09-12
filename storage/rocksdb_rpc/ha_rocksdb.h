@@ -66,7 +66,7 @@
   refinements (@see /storage/rocksdb/README file).
 */
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_converter;
 class Rdb_key_def;
@@ -111,7 +111,7 @@ struct Rdb_table_handler {
   uint64_t m_mtcache_last_update;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc
 
 /* Provide hash function for GL_INDEX_ID so we can include it in sets */
 namespace std {

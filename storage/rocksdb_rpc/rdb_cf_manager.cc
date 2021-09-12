@@ -34,7 +34,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /* Check if ColumnFamily name says it's a reverse-ordered CF */
 bool Rdb_cf_manager::is_cf_name_reverse(const char *const name) {
@@ -466,4 +466,4 @@ int Rdb_cf_manager::create_cf_flags_if_needed(
   return HA_EXIT_SUCCESS;
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

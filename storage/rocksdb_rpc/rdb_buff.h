@@ -33,7 +33,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   Basic composition functions for a network buffer presented as a MySQL String
@@ -616,4 +616,4 @@ class Rdb_buf_writer {
   uchar *m_ptr;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

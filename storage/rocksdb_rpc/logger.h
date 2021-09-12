@@ -21,7 +21,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_logger : public rocksdb::Logger {
  public:
@@ -98,4 +98,4 @@ class Rdb_logger : public rocksdb::Logger {
   rocksdb::InfoLogLevel m_mysql_log_level;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

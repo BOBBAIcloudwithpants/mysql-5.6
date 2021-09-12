@@ -44,7 +44,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /**
   Define the INFORMATION_SCHEMA (I_S) structures needed by MyRocks storage
@@ -2174,4 +2174,4 @@ struct st_mysql_plugin rdb_i_s_bypass_rejected_query_history = {
     nullptr, /* config options */
     0,       /* flags */
 };
-}  // namespace myrocks
+}  // namespace myrocks_rpc

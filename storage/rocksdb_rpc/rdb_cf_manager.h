@@ -32,7 +32,7 @@
 #include "./rdb_datadic.h"
 #include "./rdb_global.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   We need a Column Family (CF) manager. Its functions:
@@ -119,4 +119,4 @@ class Rdb_cf_manager {
                                       const bool lock_held_by_caller) const;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

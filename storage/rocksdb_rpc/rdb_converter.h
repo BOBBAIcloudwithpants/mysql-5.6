@@ -31,7 +31,7 @@
 #include "./rdb_datadic.h"
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 class Rdb_field_encoder;
 
 uint32_t u64ToAsciiTable(uint64_t value, Rdb_string_writer *writer) noexcept;
@@ -253,4 +253,4 @@ class Rdb_converter {
    */
   MY_BITMAP m_lookup_bitmap;
 };
-}  // namespace myrocks
+}  // namespace myrocks_rpc

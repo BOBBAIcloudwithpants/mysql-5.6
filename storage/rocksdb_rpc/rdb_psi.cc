@@ -22,7 +22,7 @@
 /* The C++ file's header */
 #include "./rdb_psi.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   The following is needed as an argument for mysql_stage_register,
@@ -121,4 +121,4 @@ void init_rocksdb_psi_keys() {
 void init_rocksdb_psi_keys() {}
 #endif  // HAVE_PSI_INTERFACE
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

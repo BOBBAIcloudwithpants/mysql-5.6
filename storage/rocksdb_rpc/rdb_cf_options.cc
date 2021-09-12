@@ -35,7 +35,7 @@
 #include "./rdb_cf_manager.h"
 #include "./rdb_compact_filter.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 Rdb_pk_comparator Rdb_cf_options::s_pk_comparator;
 Rdb_rev_comparator Rdb_cf_options::s_rev_pk_comparator;
@@ -384,4 +384,4 @@ void Rdb_cf_options::get_cf_options(const std::string &cf_name,
                                                 get_cf_merge_operator(cf_name));
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

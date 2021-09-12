@@ -29,7 +29,7 @@
 /* MyRocks header files */
 #include "./rdb_global.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 enum RDB_IO_ERROR_TYPE {
   RDB_IO_ERROR_TX_COMMIT,
@@ -112,4 +112,4 @@ Rdb_ddl_manager *rdb_get_ddl_manager(void)
 class Rdb_binlog_manager;
 Rdb_binlog_manager *rdb_get_binlog_manager(void)
     MY_ATTRIBUTE((__warn_unused_result__));
-}  // namespace myrocks
+}  // namespace myrocks_rpc

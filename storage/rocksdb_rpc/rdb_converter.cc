@@ -34,7 +34,7 @@
 #include "./rdb_datadic.h"
 #include "./rdb_utils.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 void dbug_modify_key_varchar8(String *on_disk_rec) {
   std::string res;
@@ -853,4 +853,4 @@ int Rdb_converter::encode_value_slice(
 
 template class Rdb_value_field_iterator<Rdb_convert_to_record_value_decoder,
                                         uchar *>;
-}  // namespace myrocks
+}  // namespace myrocks_rpc

@@ -36,7 +36,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_sst_file_ordered {
  private:
@@ -285,4 +285,4 @@ class Rdb_sst_info {
                                const char *sst_file_name);
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

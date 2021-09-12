@@ -37,7 +37,7 @@
 #include "./rdb_utils.h"
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_dict_manager;
 class Rdb_key_def;
@@ -1710,4 +1710,4 @@ class Rdb_system_merge_op : public rocksdb::AssociativeMergeOperator {
   }
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

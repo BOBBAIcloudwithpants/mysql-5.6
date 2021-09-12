@@ -32,7 +32,7 @@
 #include "./rdb_datadic.h"
 #include "./rdb_utils.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 std::atomic<uint64_t> rocksdb_num_sst_entry_put(0);
 std::atomic<uint64_t> rocksdb_num_sst_entry_delete(0);
@@ -199,7 +199,6 @@ const char *Rdb_tbl_prop_coll::INDEXSTATS_KEY = "__indexstats__";
 */
 rocksdb::Status Rdb_tbl_prop_coll::Finish(
     rocksdb::UserCollectedProperties *const properties) {
-
   DBUG_ASSERT(properties != nullptr);
 
   if (!m_recorded) {
@@ -590,4 +589,4 @@ void Rdb_tbl_card_coll::SetCardinality(Rdb_index_stats *stats) {
   }
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 void Rdb_io_watchdog::expire_io_callback(union sigval timer_data) {
   DBUG_ASSERT(timer_data.sival_ptr != nullptr);
@@ -231,4 +231,4 @@ int Rdb_io_watchdog::reset_timeout(const uint32_t write_timeout) {
   return HA_EXIT_SUCCESS;
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

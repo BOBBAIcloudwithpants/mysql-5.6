@@ -30,7 +30,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_ddl_manager;
 class Rdb_key_def;
@@ -245,4 +245,4 @@ class Rdb_tbl_prop_coll_factory
   uint8_t m_table_stats_sampling_pct;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

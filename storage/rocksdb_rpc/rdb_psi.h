@@ -27,7 +27,7 @@
 #include "./rdb_utils.h"
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   The following is needed as an argument for mysql_stage_register,
@@ -57,6 +57,6 @@ extern my_core::PSI_cond_key rdb_signal_bg_psi_cond_key,
 
 void init_rocksdb_psi_keys();
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc
 
 #endif  // _rdb_psi_h_

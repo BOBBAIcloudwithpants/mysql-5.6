@@ -15,7 +15,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 #pragma once
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   Declare INFORMATION_SCHEMA (I_S) plugins needed by MyRocks storage engine.
@@ -35,4 +35,4 @@ extern struct st_mysql_plugin rdb_i_s_lock_info;
 extern struct st_mysql_plugin rdb_i_s_trx_info;
 extern struct st_mysql_plugin rdb_i_s_deadlock_info;
 extern struct st_mysql_plugin rdb_i_s_bypass_rejected_query_history;
-}  // namespace myrocks
+}  // namespace myrocks_rpc

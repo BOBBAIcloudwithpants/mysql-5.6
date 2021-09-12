@@ -33,7 +33,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_compact_filter : public rocksdb::CompactionFilter {
  public:
@@ -218,4 +218,4 @@ class Rdb_compact_filter_factory : public rocksdb::CompactionFilterFactory {
   }
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

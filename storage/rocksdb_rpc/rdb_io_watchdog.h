@@ -33,7 +33,7 @@
 #include "./rdb_utils.h"
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_io_watchdog {
   const int RDB_IO_WRITE_BUFFER_SIZE = 4096;
@@ -113,4 +113,4 @@ class Rdb_io_watchdog {
   Rdb_io_watchdog &operator=(const Rdb_io_watchdog &) = delete;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

@@ -35,7 +35,7 @@
 #include "rocksdb/db.h"
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_thread {
  private:
@@ -223,4 +223,4 @@ struct Rdb_drop_index_thread : public Rdb_thread {
   virtual void run() override;
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

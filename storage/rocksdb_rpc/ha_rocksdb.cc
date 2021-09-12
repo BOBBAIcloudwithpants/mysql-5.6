@@ -109,7 +109,7 @@ bool thd_binlog_filter_ok(const MYSQL_THD thd);
 
 extern my_bool opt_core_file;
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 static st_global_stats global_stats;
 static st_export_stats export_stats;
@@ -17933,7 +17933,7 @@ int ha_rocksdb::multi_range_read_next(char **range_info) {
   return rc;
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc
 
 /*
   Register the storage engine plugin outside of myrocks namespace

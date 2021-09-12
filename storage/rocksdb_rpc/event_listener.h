@@ -22,7 +22,7 @@
 #include "./rdb_global.h"
 
 #include "rpcclient.hpp"
-namespace myrocks {
+namespace myrocks_rpc {
 
 class Rdb_ddl_manager;
 
@@ -51,4 +51,4 @@ class Rdb_event_listener : public rocksdb::EventListener {
   void update_index_stats(const rocksdb::TableProperties &props);
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

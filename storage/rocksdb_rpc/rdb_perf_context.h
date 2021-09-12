@@ -26,7 +26,7 @@
 #include "./handler.h"
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 enum {
   PC_USER_KEY_COMPARISON_COUNT = 0,
@@ -164,4 +164,4 @@ class Rdb_io_perf {
         io_write_requests(0) {}
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

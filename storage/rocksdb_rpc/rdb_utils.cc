@@ -29,7 +29,7 @@
 /* MyRocks header files */
 #include "./ha_rocksdb.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   Skip past any spaces in the input
@@ -310,4 +310,4 @@ void rdb_persist_corruption_marker() {
   }
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

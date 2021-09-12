@@ -30,7 +30,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 // To add a new metric:
 //   1. Update the PC enum in rdb_perf_context.h
@@ -305,4 +305,4 @@ void Rdb_io_perf::end_and_record(const uint32_t perf_context_level) {
   }
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

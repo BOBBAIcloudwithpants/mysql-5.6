@@ -36,7 +36,7 @@
 #include <jemalloc/jemalloc.h>
 #endif
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   Guess what?
@@ -344,7 +344,7 @@ class Rdb_exec_time {
    * static cast on overloaded functions passed in as template param.
    */
   template <class Fn, class... Args>
-  auto exec(const std::string &key, const Fn &&fn, Args &&... args)
+  auto exec(const std::string &key, const Fn &&fn, Args &&...args)
       -> decltype(fn(args...)) {
     Auto_timer timer([&](uint64_t &e) { entries_.emplace(key, e); });
     return fn(args...);
@@ -392,4 +392,4 @@ class Ensure_cleanup {
   std::function<void()> m_cleanup;
   bool m_skip_cleanup;
 };
-}  // namespace myrocks
+}  // namespace myrocks_rpc

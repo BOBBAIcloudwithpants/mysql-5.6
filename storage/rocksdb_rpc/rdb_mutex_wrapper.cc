@@ -26,7 +26,7 @@
 #include "./ha_rocksdb.h"
 #include "./rdb_utils.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 static PSI_stage_info stage_waiting_on_row_lock2 = {0, "Waiting for row lock",
                                                     0};
@@ -212,4 +212,4 @@ void Rdb_mutex::UnLock() {
   RDB_MUTEX_UNLOCK_CHECK(m_mutex);
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

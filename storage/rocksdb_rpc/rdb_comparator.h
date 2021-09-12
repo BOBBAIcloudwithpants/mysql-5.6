@@ -30,7 +30,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   The keys are in form: {index_number} {mem-comparable-key}
@@ -85,4 +85,4 @@ class Rdb_rev_comparator : public rocksdb::Comparator {
   }
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

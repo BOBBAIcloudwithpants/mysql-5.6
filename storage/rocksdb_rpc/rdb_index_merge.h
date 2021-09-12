@@ -34,7 +34,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /*
   Length of delimiters used during inplace index creation.
@@ -226,4 +226,4 @@ class Rdb_index_merge {
   rocksdb::ColumnFamilyHandle *get_cf() const { return m_cf_handle; }
 };
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

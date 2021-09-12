@@ -36,7 +36,7 @@
  */
 #define INLINE_ATTR
 
-namespace myrocks {
+namespace myrocks_rpc {
 /*
  * class for exporting transaction information for
  * information_schema.rocksdb_trx
@@ -449,7 +449,7 @@ struct st_io_stall_stats {
         total_stop(0),
         total_slowdown(0) {}
 };
-}  // namespace myrocks
+}  // namespace myrocks_rpc
 
 // We define ROCKSDB_NAMESPACE = my_rocksdb to avoid symbol conflicts
 // But keep code with rocksdb for clarity

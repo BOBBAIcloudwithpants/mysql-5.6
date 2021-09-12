@@ -56,7 +56,7 @@ static const size_t MAX_SIZE = std::numeric_limits<size_t>::max();
 // for stack allocation
 static const size_t KEY_WRITER_DEFAULT_SIZE = 16;
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 /* We only support simple equal / comparison functions */
 bool inline is_supported_item_func(Item_func::Functype type) {
@@ -2036,4 +2036,4 @@ bool rocksdb_handle_single_table_select(THD *thd, SELECT_LEX *select_lex) {
   return true;
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

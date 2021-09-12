@@ -47,7 +47,7 @@
 #include "./rdb_psi.h"
 #include "./rdb_utils.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 void get_mem_comparable_space(const CHARSET_INFO *cs,
                               const std::vector<uchar> **xfrm, size_t *xfrm_len,
@@ -5728,4 +5728,4 @@ uint Rdb_seq_generator::get_and_update_next_number(
   return res;
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

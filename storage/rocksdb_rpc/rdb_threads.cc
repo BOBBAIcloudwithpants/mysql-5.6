@@ -23,7 +23,7 @@
 #include "./rdb_threads.h"
 #include "./sql_class.h"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 void *Rdb_thread::thread_func(void *const thread_ptr) {
   DBUG_ASSERT(thread_ptr != nullptr);
@@ -83,4 +83,4 @@ void Rdb_thread::signal(const bool stop_thread) {
   RDB_MUTEX_UNLOCK_CHECK(m_signal_mutex);
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

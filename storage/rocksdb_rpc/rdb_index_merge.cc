@@ -26,7 +26,7 @@
 
 #include "rpcclient.hpp"
 
-namespace myrocks {
+namespace myrocks_rpc {
 
 Rdb_index_merge::Rdb_index_merge(const char *const tmpfile_path,
                                  const ulonglong merge_buf_size,
@@ -634,4 +634,4 @@ void Rdb_index_merge::merge_reset() {
   }
 }
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc
