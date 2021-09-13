@@ -17945,7 +17945,7 @@ int ha_rocksdb::multi_range_read_next(char **range_info) {
 struct st_mysql_storage_engine rocksdb_storage_engine = {
     MYSQL_HANDLERTON_INTERFACE_VERSION};
 
-mysql_declare_plugin(rocksdb_se){
+mysql_declare_plugin(rocksdb_rpc_se){
     MYSQL_STORAGE_ENGINE_PLUGIN,             /* Plugin Type */
     &rocksdb_storage_engine,                 /* Plugin Descriptor */
     "ROCKSDB_RPC",                           /* Plugin Name */
