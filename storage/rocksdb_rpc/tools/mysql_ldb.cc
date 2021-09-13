@@ -11,21 +11,21 @@ int main(int argc, char **argv) {
   // Register the comparators so they can be loaded from OPTIONS file when
   // `--try_load_options` is provided.
   rocksdb::ObjectLibrary::Default()->Register(
-      myrocks::Rdb_pk_comparator().Name(),
+      myrocks_rpc::Rdb_pk_comparator().Name(),
       rocksdb::FactoryFunc<rocksdb::Comparator>(
           [](const std::string & /* uri */,
              std::unique_ptr<rocksdb::Comparator> * /* res_guard */,
              std::string * /* err_msg */) {
-            static myrocks::Rdb_pk_comparator cmp;
+            static myrocks_rpc::Rdb_pk_comparator cmp;
             return &cmp;
           }));
   rocksdb::ObjectLibrary::Default()->Register(
-      myrocks::Rdb_rev_comparator().Name(),
+      myrocks_rpc::Rdb_rev_comparator().Name(),
       rocksdb::FactoryFunc<rocksdb::Comparator>(
           [](const std::string & /* uri */,
              std::unique_ptr<rocksdb::Comparator> * /* res_guard */,
              std::string * /* err_msg */) {
-            static myrocks::Rdb_rev_comparator cmp;
+            static myrocks_rpc::Rdb_rev_comparator cmp;
             return &cmp;
           }));
 
