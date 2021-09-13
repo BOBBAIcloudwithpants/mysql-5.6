@@ -109,22 +109,22 @@ extern const std::string PER_INDEX_CF_NAME;
 /*
   Name for the background thread.
 */
-const char *const BG_THREAD_NAME = "myrocks-bg";
+const char *const BG_THREAD_NAME = "myrocks-rpc-bg";
 
 /*
   Name for the drop index thread.
 */
-const char *const INDEX_THREAD_NAME = "myrocks-index";
+const char *const INDEX_THREAD_NAME = "myrocks-rpc-index";
 
 /*
   Name for the index stats calculation thread.
 */
-const char *const INDEX_STATS_THREAD_NAME = "myrocks-is";
+const char *const INDEX_STATS_THREAD_NAME = "myrocks-rpc-is";
 
 /*
   Name for the manual compaction thread.
 */
-const char *const MANUAL_COMPACTION_THREAD_NAME = "myrocks-mc";
+const char *const MANUAL_COMPACTION_THREAD_NAME = "myrocks-rpc-mc";
 
 /*
   Separator between partition name and the qualifier. Sample usage:

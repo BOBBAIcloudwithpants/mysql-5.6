@@ -999,8 +999,9 @@ static int rdb_i_s_bypass_rejected_query_history_fill_table(
   DBUG_ENTER_FUNC();
 
   int ret = 0;
-  const std::lock_guard<std::mutex> lock(myrocks::rejected_bypass_query_lock);
-  for (const REJECTED_ITEM &entry : myrocks::rejected_bypass_queries) {
+  const std::lock_guard<std::mutex> lock(
+      myrocks_rpc::rejected_bypass_query_lock);
+  for (const REJECTED_ITEM &entry : myrocks_rpc::rejected_bypass_queries) {
     Field **field = tables->table->field;
     DBUG_ASSERT(field != nullptr);
 

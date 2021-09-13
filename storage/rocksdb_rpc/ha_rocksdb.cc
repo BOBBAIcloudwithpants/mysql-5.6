@@ -6983,8 +6983,8 @@ static int rocksdb_init_func(void *const p) {
   directories.push_back(mysql_real_data_home);
 
   // 2. Transaction logs.
-  if (myrocks::rocksdb_wal_dir && *myrocks::rocksdb_wal_dir) {
-    directories.push_back(myrocks::rocksdb_wal_dir);
+  if (myrocks_rpc::rocksdb_wal_dir && *myrocks_rpc::rocksdb_wal_dir) {
+    directories.push_back(myrocks_rpc::rocksdb_wal_dir);
   }
 
   io_watchdog = new Rdb_io_watchdog(std::move(directories));
@@ -13012,15 +13012,15 @@ static rocksdb::Range get_range(const Rdb_key_def &kd,
 rocksdb::Range get_range(const Rdb_key_def &kd,
                          uchar buf[Rdb_key_def::INDEX_NUMBER_SIZE * 2]) {
   if (kd.m_is_reverse_cf) {
-    return myrocks::get_range(kd, buf, 1, 0);
+    return myrocks_rpc::get_range(kd, buf, 1, 0);
   } else {
-    return myrocks::get_range(kd, buf, 0, 1);
+    return myrocks_rpc::get_range(kd, buf, 0, 1);
   }
 }
 
 rocksdb::Range ha_rocksdb::get_range(
     const int i, uchar buf[Rdb_key_def::INDEX_NUMBER_SIZE * 2]) const {
-  return myrocks::get_range(*m_key_descr_arr[i], buf);
+  return myrocks_rpc::get_range(*m_key_descr_arr[i], buf);
 }
 
 /*
@@ -13798,7 +13798,7 @@ static int calculate_cardinality_table_scan(
     Rdb_index_stats &stat = (*stats)[kd->get_gl_index_id()];
 
     uchar r_buf[Rdb_key_def::INDEX_NUMBER_SIZE * 2];
-    auto r = myrocks::get_range(*kd, r_buf);
+    auto r = myrocks_rpc::get_range(*kd, r_buf);
     uint64_t memtableCount;
     uint64_t memtableSize;
 
@@ -13949,7 +13949,7 @@ static int read_stats_from_ssts(
   uchar *bufp = buf.data();
   for (const auto &it : to_recalc) {
     auto &kd = it.second;
-    ranges[kd->get_cf()].push_back(myrocks::get_range(*kd, bufp));
+    ranges[kd->get_cf()].push_back(myrocks_rpc::get_range(*kd, bufp));
     bufp += 2 * Rdb_key_def::INDEX_NUMBER_SIZE;
   }
 
@@ -17328,9 +17328,10 @@ static void rocksdb_select_bypass_rejected_query_history_size_update(
   uint32_t val = *static_cast<uint32_t *>(var_ptr) =
       *static_cast<const uint32_t *>(save);
 
-  const std::lock_guard<std::mutex> lock(myrocks::rejected_bypass_query_lock);
-  if (myrocks::rejected_bypass_queries.size() > val) {
-    myrocks::rejected_bypass_queries.resize(val);
+  const std::lock_guard<std::mutex> lock(
+      myrocks_rpc::rejected_bypass_query_lock);
+  if (myrocks_rpc::rejected_bypass_queries.size() > val) {
+    myrocks_rpc::rejected_bypass_queries.resize(val);
   }
 }
 
@@ -17951,19 +17952,19 @@ mysql_declare_plugin(rocksdb_se){
     "BobBai",                                /* Plugin Author */
     "RocksDB storage engine in rpc verison", /* Plugin Description */
     PLUGIN_LICENSE_GPL,                      /* Plugin Licence */
-    myrocks::rocksdb_init_func,              /* Plugin Entry Point */
-    myrocks::rocksdb_done_func,              /* Plugin Deinitializer */
+    myrocks_rpc::rocksdb_init_func,          /* Plugin Entry Point */
+    myrocks_rpc::rocksdb_done_func,          /* Plugin Deinitializer */
     0x0001,                                  /* version number (0.1) */
-    myrocks::rocksdb_status_vars,            /* status variables */
-    myrocks::rocksdb_system_variables,       /* system variables */
+    myrocks_rpc::rocksdb_status_vars,        /* status variables */
+    myrocks_rpc::rocksdb_system_variables,   /* system variables */
     nullptr,                                 /* config options */
     0,                                       /* flags */
 },
-    myrocks::rdb_i_s_cfstats, myrocks::rdb_i_s_dbstats,
-    myrocks::rdb_i_s_perf_context, myrocks::rdb_i_s_perf_context_global,
-    myrocks::rdb_i_s_cfoptions, myrocks::rdb_i_s_compact_stats,
-    myrocks::rdb_i_s_global_info, myrocks::rdb_i_s_ddl,
-    myrocks::rdb_i_s_sst_props, myrocks::rdb_i_s_index_file_map,
-    myrocks::rdb_i_s_lock_info, myrocks::rdb_i_s_trx_info,
-    myrocks::rdb_i_s_deadlock_info,
-    myrocks::rdb_i_s_bypass_rejected_query_history mysql_declare_plugin_end;
+    myrocks_rpc::rdb_i_s_cfstats, myrocks_rpc::rdb_i_s_dbstats,
+    myrocks_rpc::rdb_i_s_perf_context, myrocks_rpc::rdb_i_s_perf_context_global,
+    myrocks_rpc::rdb_i_s_cfoptions, myrocks_rpc::rdb_i_s_compact_stats,
+    myrocks_rpc::rdb_i_s_global_info, myrocks_rpc::rdb_i_s_ddl,
+    myrocks_rpc::rdb_i_s_sst_props, myrocks_rpc::rdb_i_s_index_file_map,
+    myrocks_rpc::rdb_i_s_lock_info, myrocks_rpc::rdb_i_s_trx_info,
+    myrocks_rpc::rdb_i_s_deadlock_info,
+    myrocks_rpc::rdb_i_s_bypass_rejected_query_history mysql_declare_plugin_end;

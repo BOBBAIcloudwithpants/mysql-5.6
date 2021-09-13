@@ -281,11 +281,12 @@ void rdb_log_status_error(const rocksdb::Status &s, const char *msg) {
 }
 
 bool rdb_check_rocksdb_corruption() {
-  return !my_access(myrocks::rdb_corruption_marker_file_name().c_str(), F_OK);
+  return !my_access(myrocks_rpc::rdb_corruption_marker_file_name().c_str(),
+                    F_OK);
 }
 
 void rdb_persist_corruption_marker() {
-  const std::string &fileName(myrocks::rdb_corruption_marker_file_name());
+  const std::string &fileName(myrocks_rpc::rdb_corruption_marker_file_name());
   int fd = my_open(fileName.c_str(), O_CREAT | O_SYNC, MYF(MY_WME));
   if (fd < 0) {
     // NO_LINT_DEBUG

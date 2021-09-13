@@ -719,7 +719,7 @@ const std::string Rdb_key_def::parse_comment_for_qualifier(
   // Let's fetch the comment for a index and check if there's a custom key
   // name specified for a partition we are handling.
   std::vector<std::string> v =
-      myrocks::parse_into_tokens(comment, RDB_QUALIFIER_SEP);
+      myrocks_rpc::parse_into_tokens(comment, RDB_QUALIFIER_SEP);
 
   std::string search_str = gen_qualifier_for_table(qualifier);
 
@@ -744,7 +744,7 @@ const std::string Rdb_key_def::parse_comment_for_qualifier(
       if (it.substr(0, search_str_part.length()) == search_str_part) {
         // We found a prefix match. Try to parse it as an assignment.
         std::vector<std::string> tokens =
-            myrocks::parse_into_tokens(it, RDB_QUALIFIER_VALUE_SEP);
+            myrocks_rpc::parse_into_tokens(it, RDB_QUALIFIER_VALUE_SEP);
 
         // We found a custom qualifier, it was in the form we expected it to be.
         // Return that instead of whatever we initially wanted to return. In
@@ -769,7 +769,7 @@ const std::string Rdb_key_def::parse_comment_for_qualifier(
   for (const auto &it : v) {
     if (it.substr(0, search_str.length()) == search_str) {
       std::vector<std::string> tokens =
-          myrocks::parse_into_tokens(it, RDB_QUALIFIER_VALUE_SEP);
+          myrocks_rpc::parse_into_tokens(it, RDB_QUALIFIER_VALUE_SEP);
       if (tokens.size() == 2) {
         return tokens[1];
       } else {

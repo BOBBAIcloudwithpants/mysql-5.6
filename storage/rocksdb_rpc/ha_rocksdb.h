@@ -116,8 +116,8 @@ struct Rdb_table_handler {
 /* Provide hash function for GL_INDEX_ID so we can include it in sets */
 namespace std {
 template <>
-struct hash<myrocks::GL_INDEX_ID> {
-  std::size_t operator()(const myrocks::GL_INDEX_ID &gl_index_id) const {
+struct hash<myrocks_rpc::GL_INDEX_ID> {
+  std::size_t operator()(const myrocks_rpc::GL_INDEX_ID &gl_index_id) const {
     const uint64_t val =
         ((uint64_t)gl_index_id.cf_id << 32 | (uint64_t)gl_index_id.index_id);
     return std::hash<uint64_t>()(val);
@@ -125,7 +125,7 @@ struct hash<myrocks::GL_INDEX_ID> {
 };
 }  // namespace std
 
-namespace myrocks {
+namespace myrocks_rpc {
 enum table_cardinality_scan_type {
   SCAN_TYPE_NONE,
   SCAN_TYPE_MEMTABLE_ONLY,
@@ -1198,4 +1198,4 @@ extern std::atomic<uint64_t> rocksdb_select_bypass_executed;
 extern std::atomic<uint64_t> rocksdb_select_bypass_rejected;
 extern std::atomic<uint64_t> rocksdb_select_bypass_failed;
 
-}  // namespace myrocks
+}  // namespace myrocks_rpc

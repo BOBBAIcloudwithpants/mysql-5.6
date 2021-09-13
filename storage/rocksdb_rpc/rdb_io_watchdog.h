@@ -37,7 +37,8 @@ namespace myrocks_rpc {
 
 class Rdb_io_watchdog {
   const int RDB_IO_WRITE_BUFFER_SIZE = 4096;
-  const char *const RDB_IO_DUMMY_FILE_NAME = "myrocks_io_watchdog_write_file";
+  const char *const RDB_IO_DUMMY_FILE_NAME =
+      "myrocks_rpc_io_watchdog_write_file";
 
  private:
   timer_t m_io_check_timer, m_io_check_watchdog_timer;

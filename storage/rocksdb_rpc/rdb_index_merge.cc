@@ -109,9 +109,9 @@ int Rdb_index_merge::merge_file_create() {
   int fd;
   /* If no path set for tmpfile, use mysql_tmpdir by default */
   if (m_tmpfile_path == nullptr) {
-    fd = mysql_tmpfile("myrocks");
+    fd = mysql_tmpfile("myrocks_rpc");
   } else {
-    fd = mysql_tmpfile_path(m_tmpfile_path, "myrocks");
+    fd = mysql_tmpfile_path(m_tmpfile_path, "myrocks_rpc");
   }
 
   if (fd < 0) {
