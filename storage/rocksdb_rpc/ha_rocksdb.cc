@@ -756,7 +756,7 @@ static my_bool rocksdb_collect_sst_properties = 0;
 static my_bool rocksdb_force_flush_memtable_now_var = 0;
 static my_bool rocksdb_force_flush_memtable_and_lzero_now_var = 0;
 static my_bool rocksdb_cancel_manual_compactions_var = 0;
-static my_bool rocksdb_enable_ttl = 1;
+static my_bool rocksdb_enable_ttl = 0;
 static my_bool rocksdb_enable_ttl_read_filtering = 1;
 static int rocksdb_debug_ttl_rec_ts = 0;
 static int rocksdb_debug_ttl_snapshot_ts = 0;
@@ -17857,7 +17857,8 @@ void ha_rocksdb::mrr_free() {
 
 void ha_rocksdb::mrr_free_rows() {
   for (ssize_t i = 0; i < mrr_n_elements; i++) {
-    mrr_values[i].~PinnableSlice();
+    // TODO: ALTER
+    // mrr_values[i].~PinnableSlice();
     mrr_statuses[i].~Status();
     // no need to free mrr_keys
   }
