@@ -1019,6 +1019,7 @@ static rocksdb::BlockBasedTableOptions *rocksdb_tbl_options =
 // ALTER
 // static std::unique_ptr<rocksdb::DBOptions> rocksdb_db_options =
 //     rdb_init_rocksdb_db_options();
+rocksdb_rpc_log(1023, "rdb_init_rocksdb_db_options");
 static rocksdb::DBOptions *rocksdb_db_options = rdb_init_rocksdb_db_options();
 
 // ALTER
@@ -1063,6 +1064,8 @@ static TYPELIB info_log_level_typelib = {
 static const char *bottommost_level_compaction_names[] = {
     "kSkip", "kIfHaveCompactionFilter", "kForce", "kForceOptimized", NullS};
 
+rocksdb_rpc_log(1067, "init static variables");
+
 static TYPELIB bottommost_level_compaction_typelib = {
     array_elements(bottommost_level_compaction_names) - 1,
     "bottommost_level_compaction_typelib", bottommost_level_compaction_names,
@@ -1096,6 +1099,10 @@ static void rocksdb_set_rocksdb_stats_level(THD *const thd,
   // rocksdb_db_options->statistics->set_stats_level(
   //     static_cast<const rocksdb::StatsLevel>(
   //         *static_cast<const uint64_t *>(save)));
+
+  rocksdb_rpc_log(
+      1103,
+      "rocksdb_set_rocksdb_stats_level: rocksdb_DBOptions__SetStatsLevel");
   rocksdb_DBOptions__SetStatsLevel(rocksdb_db_options,
                                    static_cast<const rocksdb::StatsLevel>(
                                        *static_cast<const uint64_t *>(save)));
@@ -1105,6 +1112,9 @@ static void rocksdb_set_rocksdb_stats_level(THD *const thd,
 
   // ALTER
   // rocksdb_stats_level = rocksdb_db_options->statistics->get_stats_level();
+  rocksdb_rpc_log(
+      1115,
+      "rocksdb_set_rocksdb_stats_level: rocksdb_DBOptions__GetStatsLevel");
   rocksdb_stats_level = rocksdb_DBOptions__GetStatsLevel(rocksdb_db_options);
   RDB_MUTEX_UNLOCK_CHECK(rdb_sysvars_mutex);
 }
@@ -1122,6 +1132,8 @@ static void rocksdb_set_reset_stats(
   *static_cast<bool *>(var_ptr) = *static_cast<const bool *>(save);
 
   if (rocksdb_reset_stats) {
+    rocksdb_rpc_log(
+        1136, "rocksdb_set_reset_stats: rocksdb_TransactionDB__ResetStats");
     rocksdb::Status s = rocksdb_TransactionDB__ResetStats(rdb);
 
     // RocksDB will always return success. Let's document this assumption here
@@ -1130,6 +1142,7 @@ static void rocksdb_set_reset_stats(
 
     // ALTER
     // s = rocksdb_stats->Reset();
+    rocksdb_rpc_log(1147, "rocksdb_set_reset_stats: rocksdb_Statistics__Reset");
     s = rocksdb_Statistics__Reset(rocksdb_stats);
 
     DBUG_ASSERT(s == rocksdb::Status::OK());
