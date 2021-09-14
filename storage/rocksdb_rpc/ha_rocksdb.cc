@@ -133,6 +133,7 @@ class Rdb_explicit_snapshot : public explicit_snapshot {
       const rocksdb::Snapshot *snapshot) {
     std::lock_guard<std::mutex> lock(explicit_snapshot_mutex);
 
+    rocksdb_rpc_log(140, "Rdb_explicit_snapshot: rocksdb_NewManagedSnapshot");
     // ALTER
     // auto s = std::unique_ptr<rocksdb::ManagedSnapshot>(
     //     new rocksdb::ManagedSnapshot(db, snapshot));
@@ -142,6 +143,8 @@ class Rdb_explicit_snapshot : public explicit_snapshot {
     }
     ss_info->snapshot_id = ++explicit_snapshot_counter;
 
+    rocksdb_rpc_log(
+        150, "Rdb_explicit_snapshot: make_shared<Rdb_explicit_snapshot>");
     // ALTER
     // auto ret = std::make_shared<Rdb_explicit_snapshot>(*ss_info,
     // std::move(s));
@@ -1019,7 +1022,7 @@ static rocksdb::BlockBasedTableOptions *rocksdb_tbl_options =
 // ALTER
 // static std::unique_ptr<rocksdb::DBOptions> rocksdb_db_options =
 //     rdb_init_rocksdb_db_options();
-rocksdb_rpc_log(1023, "rdb_init_rocksdb_db_options");
+rpc_logger l_1(1023, "rdb_init_rocksdb_db_options");
 static rocksdb::DBOptions *rocksdb_db_options = rdb_init_rocksdb_db_options();
 
 // ALTER
@@ -1064,7 +1067,7 @@ static TYPELIB info_log_level_typelib = {
 static const char *bottommost_level_compaction_names[] = {
     "kSkip", "kIfHaveCompactionFilter", "kForce", "kForceOptimized", NullS};
 
-rocksdb_rpc_log(1067, "init static variables");
+rpc_logger l_2(1067, "init static variables");
 
 static TYPELIB bottommost_level_compaction_typelib = {
     array_elements(bottommost_level_compaction_names) - 1,
