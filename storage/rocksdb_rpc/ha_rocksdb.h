@@ -689,7 +689,9 @@ class ha_rocksdb : public my_core::handler {
   rocksdb::Slice *mrr_keys;
   rocksdb::Status *mrr_statuses;
   char **mrr_range_ptrs;
-  rocksdb::PinnableSlice *mrr_values;
+
+  // ALTER
+  rocksdb::PinnableSlice **mrr_values;
 
   ssize_t mrr_n_elements;  // Number of elements in the above arrays
   ssize_t mrr_read_index;  // Number of the element we will return next

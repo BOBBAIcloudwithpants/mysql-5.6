@@ -752,7 +752,7 @@ static my_bool rocksdb_strict_collation_check = 1;
 static my_bool rocksdb_ignore_unknown_options = 1;
 static my_bool rocksdb_enable_2pc = 0;
 static char *rocksdb_strict_collation_exceptions;
-static my_bool rocksdb_collect_sst_properties = 1;
+static my_bool rocksdb_collect_sst_properties = 0;
 static my_bool rocksdb_force_flush_memtable_now_var = 0;
 static my_bool rocksdb_force_flush_memtable_and_lzero_now_var = 0;
 static my_bool rocksdb_cancel_manual_compactions_var = 0;
@@ -4938,22 +4938,26 @@ static int rocksdb_commit_by_xid(handlerton *const hton, XID *const xid) {
   DBUG_ASSERT(commit_latency_stats != nullptr);
 
   // ALTER
-  // auto clock = rocksdb::Env::Default()->GetSystemClock().get();
-  auto clock = rocksdb_Env__GetSystemClock_get(rocksdb_Env_Default());
+  auto clock = rocksdb::Env::Default()->GetSystemClock().get();
+  // auto clock = rocksdb_Env__GetSystemClock_get(rocksdb_Env_Default());
 
-  // TODO: ALTER
   rocksdb::StopWatchNano timer(clock, true);
 
   const auto name = rdb_xid_to_string(*xid);
   DBUG_ASSERT(!name.empty());
 
-  rocksdb::Transaction *const trx = rdb->GetTransactionByName(name);
+  // ALTER
+  // rocksdb::Transaction *const trx = rdb->GetTransactionByName(name);
+  rocksdb::Transaction *const trx =
+      rocksdb_TransactionDB__GetTransactionByName(rdb, name);
 
   if (trx == nullptr) {
     DBUG_RETURN(HA_EXIT_FAILURE);
   }
 
-  const rocksdb::Status s = trx->Commit();
+  // ALTER
+  // const rocksdb::Status s = trx->Commit();
+  const rocksdb::Status s = rocksdb_Transaction__Commit(trx);
 
   if (!s.ok()) {
     rdb_log_status_error(s);
@@ -5090,9 +5094,9 @@ static int rocksdb_commit(handlerton *const hton, THD *const thd,
   DBUG_ASSERT(thd != nullptr);
   DBUG_ASSERT(commit_latency_stats != nullptr);
 
-  // TODO: ALTER
-  // auto clock = rocksdb::Env::Default()->GetSystemClock().get();
-  auto clock = rocksdb_Env__GetSystemClock_get(rocksdb_Env_Default());
+  // ALTER
+  auto clock = rocksdb::Env::Default()->GetSystemClock().get();
+  // auto clock = rocksdb_Env__GetSystemClock_get(rocksdb_Env_Default());
 
   rocksdb::StopWatchNano timer(clock, true);
 
@@ -5565,24 +5569,23 @@ static bool rocksdb_show_status(handlerton *const hton, THD *const thd,
       // sure that output will look unified.
       DBUG_ASSERT(commit_latency_stats != nullptr);
 
-      // ALTER
-      // snprintf(buf, sizeof(buf),
-      //          "rocksdb.commit_latency statistics "
-      //          "Percentiles :=> 50 : %.2f 95 : %.2f "
-      //          "99 : %.2f 100 : %.2f\n",
-      //          commit_latency_stats->Percentile(50),
-      //          commit_latency_stats->Percentile(95),
-      //          commit_latency_stats->Percentile(99),
-      //          commit_latency_stats->Percentile(100));
-
       snprintf(buf, sizeof(buf),
                "rocksdb.commit_latency statistics "
                "Percentiles :=> 50 : %.2f 95 : %.2f "
                "99 : %.2f 100 : %.2f\n",
-               rocksdb_HistogramImpl__Percentile(commit_latency_stats, 50),
-               rocksdb_HistogramImpl__Percentile(commit_latency_stats, 95),
-               rocksdb_HistogramImpl__Percentile(commit_latency_stats, 99),
-               rocksdb_HistogramImpl__Percentile(commit_latency_stats, 100));
+               commit_latency_stats->Percentile(50),
+               commit_latency_stats->Percentile(95),
+               commit_latency_stats->Percentile(99),
+               commit_latency_stats->Percentile(100));
+
+      // snprintf(buf, sizeof(buf),
+      //          "rocksdb.commit_latency statistics "
+      //          "Percentiles :=> 50 : %.2f 95 : %.2f "
+      //          "99 : %.2f 100 : %.2f\n",
+      //          rocksdb_HistogramImpl__Percentile(commit_latency_stats, 50),
+      //          rocksdb_HistogramImpl__Percentile(commit_latency_stats, 95),
+      //          rocksdb_HistogramImpl__Percentile(commit_latency_stats, 99),
+      //          rocksdb_HistogramImpl__Percentile(commit_latency_stats, 100));
       str.append(buf);
 
       uint64_t v = 0;
@@ -6393,7 +6396,8 @@ static int rocksdb_init_func(void *const p) {
         rocksdb_DBOptions__GetLoggerPtr(rocksdb_db_options));
   }
 
-  // TODO: ALTER
+  // ALTER
+  // not set the logger
   // rocksdb_db_options->info_log = myrocks_logger;
 
   myrocks_logger->SetInfoLogLevel(
@@ -6686,6 +6690,7 @@ static int rocksdb_init_func(void *const p) {
   }
 
   // TODO: ALTER
+  // not enable the rocksdb_persistent_cache
   // if (rocksdb_persistent_cache_size_mb > 0) {
   //   // ALTER
   //   // std::shared_ptr<rocksdb::PersistentCache> pcache;
@@ -6712,6 +6717,7 @@ static int rocksdb_init_func(void *const p) {
   std::unique_ptr<Rdb_cf_options> cf_options_map(new Rdb_cf_options());
 
   // TODO: ALTER
+  // not set this properties_collector_factory
   // if (!cf_options_map->init(*rocksdb_tbl_options,
   // properties_collector_factory,
   //                           rocksdb_default_cf_options,
@@ -6799,6 +6805,7 @@ static int rocksdb_init_func(void *const p) {
       2000, static_cast<rocksdb::TxnDBWritePolicy>(rocksdb_write_policy));
 
   // TODO: ALTER
+  // temperarily not check the compatibility
   // status =
   //     check_rocksdb_options_compatibility(rocksdb_datadir, main_opts,
   //     cf_descr);
@@ -6971,9 +6978,8 @@ static int rocksdb_init_func(void *const p) {
   // Creating an instance of HistogramImpl should only happen after RocksDB
   // has been successfully initialized.
 
-  // ALTER
-  // commit_latency_stats = new rocksdb::HistogramImpl();
-  commit_latency_stats = rocksdb_HistogramImpl__HistogramImpl();
+  commit_latency_stats = new rocksdb::HistogramImpl();
+  // commit_latency_stats = rocksdb_HistogramImpl__HistogramImpl();
 
   // Construct a list of directories which will be monitored by I/O watchdog
   // to make sure that we won't lose write access to them.
@@ -7108,23 +7114,23 @@ static int rocksdb_done_func(void *const p) {
   rocksdb_TransactionDB__delete(rdb);
   rdb = nullptr;
 
-  // ALTER
-  // delete commit_latency_stats;
-  rocksdb_HistogramImpl__delete(commit_latency_stats);
+  delete commit_latency_stats;
+  // rocksdb_HistogramImpl__delete(commit_latency_stats);
   commit_latency_stats = nullptr;
 
   delete io_watchdog;
   io_watchdog = nullptr;
 
-// Disown the cache data since we're shutting down.
-// This results in memory leaks but it improved the shutdown time.
-// Don't disown when running under valgrind
+  // Disown the cache data since we're shutting down.
+  // This results in memory leaks but it improved the shutdown time.
+  // Don't disown when running under valgrind
 
-// TODO: ALTER
 #ifndef HAVE_purify
-  if (rocksdb_tbl_options->block_cache) {
-    rocksdb_tbl_options->block_cache->DisownData();
-  }
+  // ALTER
+  // if (rocksdb_tbl_options->block_cache) {
+  //   rocksdb_tbl_options->block_cache->DisownData();
+  // }
+  rocksdb_BlockBasedTableOptions__DisdownData(rocksdb_tbl_options);
 #endif /* HAVE_purify */
 
   rocksdb_db_options = nullptr;
@@ -13136,9 +13142,14 @@ void Rdb_drop_index_thread::run() {
         rocksdb::Range range = get_range(d.index_id, buf, is_reverse_cf ? 1 : 0,
                                          is_reverse_cf ? 0 : 1);
 
-        // TODO: ALTER
-        rocksdb::Status status = DeleteFilesInRange(rdb->GetBaseDB(), cfh,
-                                                    &range.start, &range.limit);
+        // ALTER
+        // rocksdb::Status status = DeleteFilesInRange(rdb->GetBaseDB(), cfh,
+        //                                             &range.start,
+        //                                             &range.limit);
+        rocksdb::Status status =
+            rocksdb_DeleteFilesInRange(rocksdb_TransactionDB__GetBaseDB(rdb),
+                                       cfh, range.start, range.limit);
+
         if (!status.ok()) {
           if (status.IsIncomplete()) {
             continue;
@@ -13148,9 +13159,13 @@ void Rdb_drop_index_thread::run() {
           rdb_handle_io_error(status, RDB_IO_ERROR_BG_THREAD);
         }
 
-        // TODO: ALTER
-        status = rdb->CompactRange(getCompactRangeOptions(), cfh, &range.start,
-                                   &range.limit);
+        // ALTER
+        // status = rdb->CompactRange(getCompactRangeOptions(), cfh,
+        // &range.start,
+        //                            &range.limit);
+        status = rocksdb_TransactionDB__CompactRange(
+            rdb, getCompactRangeOptions(), cfh, range.start, range.limit);
+
         if (!status.ok()) {
           if (status.IsIncomplete()) {
             continue;
@@ -13365,12 +13380,17 @@ int ha_rocksdb::remove_rows(Rdb_tbl_def *const tbl) {
                             lower_bound_buf, upper_bound_buf,
                             &lower_bound_slice, &upper_bound_slice);
 
-      // TODO: ALTER
+      // ALTER
       // opts.iterate_lower_bound = &lower_bound_slice;
       // opts.iterate_upper_bound = &upper_bound_slice;
+      rocksdb_ReadOptions__SetBound(opts, lower_bound_slice, false, false);
+      rocksdb_ReadOptions__SetBound(opts, upper_bound_slice, true, false);
     } else {
+      // ALTER
       // opts.iterate_lower_bound = nullptr;
       // opts.iterate_upper_bound = nullptr;
+      rocksdb_ReadOptions__SetBound(opts, lower_bound_slice, false, true);
+      rocksdb_ReadOptions__SetBound(opts, upper_bound_slice, true, true);
     }
     // ALTER
     // std::unique_ptr<rocksdb::Iterator> it(rdb->NewIterator(opts, cf));
@@ -16053,7 +16073,9 @@ void Rdb_manual_compaction_thread::run() {
           rocksdb_ColumnFamilyHandle__GetName(mcr.cf).c_str());
       set_state(mcr, Manual_compaction_request::SUCCESS);
     } else {
-      if (!cf_manager.get_cf(mcr.cf->GetID())) {
+      // ALTER
+      // if (!cf_manager.get_cf(mcr.cf->GetID())) {
+      if (!cf_manager.get_cf(rocksdb_ColumnFamilyHandle__GetID(mcr.cf))) {
         // NO_LINT_DEBUG
         // ALTER
         // sql_print_information("cf %s has been dropped",
@@ -16156,7 +16178,7 @@ bool Rdb_manual_compaction_thread::cancel_manual_compaction_request(
       // background may take time)
 
       // TODO: ALTER
-      mcr.option.canceled->store(true, std::memory_order_release);
+      // mcr.option.canceled->store(true, std::memory_order_release);
       state = mcr.state;
     }
   }
@@ -17756,9 +17778,13 @@ int ha_rocksdb::mrr_fill_buffer() {
   mrr_statuses = (rocksdb::Status *)buf;
   buf += sizeof(rocksdb::Status) * n_elements;
 
-  align_ptr<rocksdb::PinnableSlice>(&buf);
-  mrr_values = (rocksdb::PinnableSlice *)buf;
-  buf += sizeof(rocksdb::PinnableSlice) * n_elements;
+  // ALTER
+  // align_ptr<rocksdb::PinnableSlice>(&buf);
+  // mrr_values = (rocksdb::PinnableSlice *)buf;
+  // buf += sizeof(rocksdb::PinnableSlice) * n_elements;
+  align_ptr<rocksdb::PinnableSlice *>(&buf);
+  mrr_values = (rocksdb::PinnableSlice **)buf;
+  buf += sizeof(rocksdb::PinnableSlice *) * n_elements;
 
   align_ptr<char *>(&buf);
   mrr_range_ptrs = (char **)buf;
@@ -17787,7 +17813,9 @@ int ha_rocksdb::mrr_fill_buffer() {
 
     new (&mrr_keys[elem]) rocksdb::Slice(buf, key_size);
     new (&mrr_statuses[elem]) rocksdb::Status;
-    new (&mrr_values[elem]) rocksdb::PinnableSlice;
+    // ALTER
+    // new (&mrr_values[elem]) rocksdb::PinnableSlice;
+    new (&mrr_values[elem]) rocksdb::PinnableSlice *;
     mrr_range_ptrs[elem] = range_ptr;
     buf += key_size;
 
@@ -17810,9 +17838,8 @@ int ha_rocksdb::mrr_fill_buffer() {
   if (active_index == table->s->primary_key)
     stats.rows_requested += mrr_n_elements;
 
-  // TODO: ALTER
-  // tx->multi_get(m_pk_descr->get_cf(), mrr_n_elements, mrr_keys, mrr_values,
-  //               mrr_statuses, active_index == table->s->primary_key);
+  tx->multi_get(m_pk_descr->get_cf(), mrr_n_elements, mrr_keys, mrr_values,
+                mrr_statuses, active_index == table->s->primary_key);
 
   return 0;
 }
@@ -17904,8 +17931,10 @@ int ha_rocksdb::multi_range_read_next(char **range_info) {
     // m_retrieved_record.Reset();
     rocksdb_PinnableSlice__Reset(m_retrieved_record);
 
-    // TODO: ALTER
+    // ALTER
     // m_retrieved_record.PinSlice(mrr_values[cur_key], &mrr_values[cur_key]);
+    rocksdb_PinnableSlice__PinSlice(m_retrieved_record, mrr_values[cur_key],
+                                    mrr_values[cur_key]);
 
     /* If we found the record, but it's expired, pretend we didn't find it.  */
 
