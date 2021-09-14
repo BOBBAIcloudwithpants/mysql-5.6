@@ -1905,12 +1905,13 @@ static MYSQL_SYSVAR_UINT(
 //     "allow_mmap_reads"));
 
 // TODO: ALTER
-static MYSQL_SYSVAR_BOOL(
-    allow_mmap_writes,
-    *reinterpret_cast<my_bool *>(&rocksdb_db_options->allow_mmap_writes),
-    PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-    "DBOptions::allow_mmap_writes for RocksDB", nullptr, nullptr,
-    rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options, "allow_mmap_writes"));
+// static MYSQL_SYSVAR_BOOL(
+//     allow_mmap_writes,
+//     *reinterpret_cast<my_bool *>(&rocksdb_db_options->allow_mmap_writes),
+//     PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
+//     "DBOptions::allow_mmap_writes for RocksDB", nullptr, nullptr,
+//     rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
+//     "allow_mmap_writes"));
 
 // TODO: ALTER
 // static MYSQL_SYSVAR_BOOL(
@@ -4859,7 +4860,8 @@ static bool rocksdb_flush_wal(handlerton *const hton MY_ATTRIBUTE((__unused__)),
   /*
     target_lsn is set to 0 when MySQL wants to sync the wal files
   */
-  if ((target_lsn == 0 && !rocksdb_db_options->allow_mmap_writes) ||
+  if ((target_lsn == 0 && !rocksdb_DBOptions__GetBoolOptions(
+                              rocksdb_db_options, "allow_mmap_writes")) ||
       rocksdb_flush_log_at_trx_commit != FLUSH_LOG_NEVER) {
     rocksdb_wal_group_syncs++;
 
