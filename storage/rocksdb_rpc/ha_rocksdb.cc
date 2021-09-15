@@ -1430,7 +1430,7 @@ static MYSQL_SYSVAR_STR(
     rocksdb_validate_read_free_rpl_tables, rocksdb_update_read_free_rpl_tables,
     DEFAULT_READ_FREE_RPL_TABLES);
 
-rpc_logger l_6(1433, "init read_free_rpl_tables");
+rpc_logger l_7(1433, "init read_free_rpl_tables");
 
 static MYSQL_SYSVAR_ENUM(
     read_free_rpl, rocksdb_read_free_rpl,
@@ -1485,7 +1485,7 @@ static MYSQL_THDVAR_ULONGLONG(
     /* min (100B) */ RDB_MIN_MERGE_BUF_SIZE,
     /* max */ SIZE_T_MAX, 1);
 
-rpc_logger l_7(1489, "init merge_buf_size");
+rpc_logger l_70(1489, "init merge_buf_size");
 
 static MYSQL_THDVAR_ULONGLONG(
     merge_combine_read_size, PLUGIN_VAR_RQCMDARG,
@@ -4383,6 +4383,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
     transaction locking. The writes WILL be visible to the transaction.
   */
   rocksdb::WriteBatchBase *get_indexed_write_batch() override {
+    rocksdb_rpc_log(4386, "get_indexed_write_batch: start");
     ++m_write_count;
     // ALTER
     // return m_rocksdb_tx->GetWriteBatch();
@@ -4393,6 +4394,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
   rocksdb::Status get(rocksdb::ColumnFamilyHandle *const column_family,
                       const rocksdb::Slice &key,
                       rocksdb::PinnableSlice *const value) const override {
+    rocksdb_rpc_log(4386, "get: start");
     // clean PinnableSlice right begfore Get() for multiple gets per statement
     // the resources after the last Get in a statement are cleared in
     // handler::reset call
@@ -4405,6 +4407,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
 
     // ALTER
     // return m_rocksdb_tx->Get(m_read_opts, column_family, key, value);
+    rocksdb_rpc_log(4410, "get: rocksdb_Transaction__Get");
     return rocksdb_Transaction__Get(m_rocksdb_tx, m_read_opts, column_family,
                                     key, value);
   }
@@ -4413,6 +4416,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
                  const size_t num_keys, const rocksdb::Slice *keys,
                  rocksdb::PinnableSlice **values, rocksdb::Status *statuses,
                  const bool sorted_input) const override {
+    rocksdb_rpc_log(4424, "get: begin");
     // ALTER
     // m_rocksdb_tx->MultiGet(m_read_opts, column_family, num_keys, keys,
     // values,
@@ -4427,6 +4431,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
                                  rocksdb::PinnableSlice *const value,
                                  bool exclusive,
                                  const bool do_validate) override {
+    rocksdb_rpc_log(4434, "get_for_update: begin");
     rocksdb::ColumnFamilyHandle *const column_family = key_descr.get_cf();
     /* check row lock limit in a trx */
     if (get_row_lock_count() >= get_max_row_lock_count()) {
@@ -4436,6 +4441,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
     if (value != nullptr) {
       // ALTER
       // value->Reset();
+      rocksdb_rpc_log(4445, "get_for_update: rocksdb_PinnableSlice__Reset");
       rocksdb_PinnableSlice__Reset(value);
     }
     rocksdb::Status s;
@@ -4448,6 +4454,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
       // s = m_rocksdb_tx->GetForUpdate(
       //     m_read_opts, column_family, key, value, exclusive,
       //     m_read_opts.snapshot ? do_validate : false);
+      rocksdb_rpc_log(4457, "get_for_update: rocksdb_Transaction__GetForUpdate");
       s = rocksdb_Transaction__GetForUpdate(
           m_rocksdb_tx, m_read_opts, column_family, key, value, exclusive,
           rocksdb_ReadOptions__GetSnapshot(m_read_opts) ? do_validate : false);
