@@ -6845,8 +6845,7 @@ static int rocksdb_init_func(void *const p) {
   // rocksdb_db_options->wal_dir = rocksdb_wal_dir;
   rocksdb_rpc_log(
       6841, "rocksdb_init_func: rocksdb_DBOptions__SetStringOptions waldir");
-  rocksdb_DBOptions__SetStringOptions(rocksdb_db_options, "wal_dir",
-                                      rocksdb_wal_dir);
+  rocksdb_DBOptions__SetStringOptions(rocksdb_db_options, "wal_dir", "");
 
   // ALTER
   // rocksdb_db_options->wal_recovery_mode =
