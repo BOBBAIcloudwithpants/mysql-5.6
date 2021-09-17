@@ -17276,7 +17276,7 @@ void Rdb_background_thread::run() {
     // background thread.
     if (rdb && (rocksdb_flush_log_at_trx_commit != FLUSH_LOG_SYNC) &&
         !rocksdb_DBOptions__GetBoolOptions(rocksdb_db_options,
-                                        "allow_mmap_writes") {
+                                           "allow_mmap_writes")) {
       rocksdb_rpc_log(
           17284, "Rdb_background_thread::run: rocksdb_TransactionDB__FlushWAL");
 
