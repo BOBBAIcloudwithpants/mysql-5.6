@@ -8769,6 +8769,8 @@ static const char *rdb_error_messages[] = {
     "RocksDB status: try again.",
 };
 
+rpc_logger l_26(8772, "static_assert");
+
 static_assert((sizeof(rdb_error_messages) / sizeof(rdb_error_messages[0])) ==
                   ((HA_ERR_ROCKSDB_LAST - HA_ERR_ROCKSDB_FIRST) + 1),
               "Number of error messages doesn't match number of error codes");
@@ -19851,6 +19853,7 @@ int ha_rocksdb::multi_range_read_next(char **range_info) {
   so that mysql_declare_plugin does not get confused when it does
   its name generation.
 */
+rpc_logger l_27(19856, "rocksdb_rpc_storage_engine");
 
 struct st_mysql_storage_engine rocksdb_rpc_storage_engine = {
     MYSQL_HANDLERTON_INTERFACE_VERSION};
