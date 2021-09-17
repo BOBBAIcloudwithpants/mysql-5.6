@@ -1433,7 +1433,7 @@ int plugin_init(int *argc, char **argv, int flags)
         tmp.state = PLUGIN_IS_UNINITIALIZED;
       if (register_builtin(plugin, &tmp, &plugin_ptr))
       {
-        std::cout << "1436: register_builtin error" << std::endl;
+        std::cout << "1436: register_builtin error: " << plugin->name << std::endl;
         goto err_unlock;
       }
       /* only initialize MyISAM and CSV at this stage */
@@ -1559,7 +1559,10 @@ static bool register_builtin(struct st_mysql_plugin *plugin,
   tmp->plugin_dl = 0;
 
   if (insert_dynamic(&plugin_array, &tmp))
+  {
+    std::cout << "1562 insert_dynamic" << std::endl;
     DBUG_RETURN(1);
+  }
 
   *ptr = *dynamic_element(&plugin_array, plugin_array.elements - 1,
                           struct st_plugin_int **) =
@@ -1567,8 +1570,10 @@ static bool register_builtin(struct st_mysql_plugin *plugin,
                                           sizeof(struct st_plugin_int));
 
   if (my_hash_insert(&plugin_hash[plugin->type], (uchar *)*ptr))
+  {
+    std::cout << "1574 my_hash_insert" << std::endl;
     DBUG_RETURN(1);
-
+  }
   DBUG_RETURN(0);
 }
 
