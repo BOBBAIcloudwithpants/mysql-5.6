@@ -7658,29 +7658,29 @@ static int rocksdb_done_func(void *const p) {
   mysql_mutex_destroy(&rdb_collation_data_mutex);
   mysql_mutex_destroy(&rdb_mem_cmp_space_mutex);
 
-  rocksdb_rpc_log(7661, "rocksdb_done_func: Rdb_transaction::term_mutex")
-      Rdb_transaction::term_mutex();
+  rocksdb_rpc_log(7661, "rocksdb_done_func: Rdb_transaction::term_mutex");
+  Rdb_transaction::term_mutex();
 
-  rocksdb_rpc_log(7664, "rocksdb_done_func: delete it")
+  rocksdb_rpc_log(7664, "rocksdb_done_func: delete it");
 
-      for (auto &it : rdb_collation_data) {
+  for (auto &it : rdb_collation_data) {
     delete it;
     it = nullptr;
   }
 
-  rocksdb_rpc_log(7671, "rocksdb_done_func: ddl_manager.cleanup();")
-      ddl_manager.cleanup();
-  rocksdb_rpc_log(7673, "rocksdb_done_func: binlog_manager.cleanup();")
-      binlog_manager.cleanup();
-  rocksdb_rpc_log(7675, "rocksdb_done_func: dict_manager.cleanup();")
-      dict_manager.cleanup();
-  rocksdb_rpc_log(7677, "rocksdb_done_func: cf_manager.cleanup();")
-      cf_manager.cleanup();
+  rocksdb_rpc_log(7671, "rocksdb_done_func: ddl_manager.cleanup();");
+  ddl_manager.cleanup();
+  rocksdb_rpc_log(7673, "rocksdb_done_func: binlog_manager.cleanup();");
+  binlog_manager.cleanup();
+  rocksdb_rpc_log(7675, "rocksdb_done_func: dict_manager.cleanup();");
+  dict_manager.cleanup();
+  rocksdb_rpc_log(7677, "rocksdb_done_func: cf_manager.cleanup();");
+  cf_manager.cleanup();
 
   // ALTER
   // delete rdb;
-  rocksdb_rpc_log(7682, "rocksdb_done_func: rocksdb_TransactionDB__delete;")
-      rocksdb_TransactionDB__delete(rdb);
+  rocksdb_rpc_log(7682, "rocksdb_done_func: rocksdb_TransactionDB__delete;");
+  rocksdb_TransactionDB__delete(rdb);
   rdb = nullptr;
 
   delete commit_latency_stats;
@@ -7700,8 +7700,8 @@ static int rocksdb_done_func(void *const p) {
   //   rocksdb_tbl_options->block_cache->DisownData();
   // }
   rocksdb_rpc_log(
-      7702, "rocksdb_done_func: rocksdb_BlockBasedTableOptions__DisdownData;")
-      rocksdb_BlockBasedTableOptions__DisdownData(rocksdb_tbl_options);
+      7702, "rocksdb_done_func: rocksdb_BlockBasedTableOptions__DisdownData;");
+  rocksdb_BlockBasedTableOptions__DisdownData(rocksdb_tbl_options);
 #endif /* HAVE_purify */
 
   rocksdb_db_options = nullptr;
@@ -7711,26 +7711,26 @@ static int rocksdb_done_func(void *const p) {
   my_error_unregister(HA_ERR_ROCKSDB_FIRST, HA_ERR_ROCKSDB_LAST);
 
   DBUG_RETURN(error);
-  rocksdb_rpc_log(7713, "rocksdb_done_func: end;")
+  rocksdb_rpc_log(7713, "rocksdb_done_func: end;");
 }
 
 // If the iterator is not valid it might be because of EOF but might be due
 // to IOError or corruption. The good practice is always check it.
 // https://github.com/facebook/rocksdb/wiki/Iterator#error-handling
 inline bool is_valid_iterator(rocksdb::Iterator *scan_it) {
-  rocksdb_rpc_log(7720, "is_valid_iterator: start")
+  rocksdb_rpc_log(7720, "is_valid_iterator: start");
 
-      rocksdb_rpc_log(7725, "is_valid_iterator: rocksdb_Iterator__Valid")
-      // ALTER
-      // if (scan_it->Valid()) {
-      if (rocksdb_Iterator__Valid(scan_it)) {
-    rocksdb_rpc_log(7726, "is_valid_iterator: begin") return true;
-  }
-  else {
+  rocksdb_rpc_log(7725, "is_valid_iterator: rocksdb_Iterator__Valid");
+  // ALTER
+  // if (scan_it->Valid()) {
+  if (rocksdb_Iterator__Valid(scan_it)) {
+    rocksdb_rpc_log(7726, "is_valid_iterator: begin");
+    return true;
+  } else {
     // ALTER
     // rocksdb::Status s = scan_it->status();
-    rocksdb_rpc_log(7732, "is_valid_iterator: rocksdb_Iterator__status")
-        rocksdb::Status s = rocksdb_Iterator__status(scan_it);
+    rocksdb_rpc_log(7732, "is_valid_iterator: rocksdb_Iterator__status");
+    rocksdb::Status s = rocksdb_Iterator__status(scan_it);
     DBUG_EXECUTE_IF("rocksdb_return_status_corrupted",
                     dbug_change_status_to_corrupted(&s););
     if (s.IsIOError() || s.IsCorruption()) {
@@ -8739,7 +8739,7 @@ int ha_rocksdb::close(void) {
   DBUG_RETURN(HA_EXIT_SUCCESS);
 }
 
-rocksdb_rpc_log(8742, "init rdb_error_messages");
+rpc_logger l_25(8742, "init rdb_error_messages");
 static const char *rdb_error_messages[] = {
     "Table must have a PRIMARY KEY.",
     "Specifying DATA DIRECTORY for an individual table is not supported.",
