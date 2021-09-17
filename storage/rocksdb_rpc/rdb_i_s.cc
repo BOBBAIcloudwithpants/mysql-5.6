@@ -1952,11 +1952,11 @@ static int rdb_i_s_deinit(void *p MY_ATTRIBUTE((__unused__))) {
 static struct st_mysql_information_schema rdb_i_s_info = {
     MYSQL_INFORMATION_SCHEMA_INTERFACE_VERSION};
 
-struct st_mysql_plugin rdb_i_s_cfstats = {
+struct st_mysql_plugin rdb_rpc_i_s_cfstats = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_CFSTATS",
-    "Facebook",
+    "ROCKSDB_RPC_CFSTATS",
+    "BobBai",
     "RocksDB column family stats",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_cfstats_init,
@@ -1968,11 +1968,11 @@ struct st_mysql_plugin rdb_i_s_cfstats = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_dbstats = {
+struct st_mysql_plugin rdb_rpc_i_s_dbstats = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_DBSTATS",
-    "Facebook",
+    "ROCKSDB_RPC_DBSTATS",
+    "BobBai",
     "RocksDB database stats",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_dbstats_init,
@@ -1984,11 +1984,11 @@ struct st_mysql_plugin rdb_i_s_dbstats = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_perf_context = {
+struct st_mysql_plugin rdb_rpc_i_s_perf_context = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_PERF_CONTEXT",
-    "Facebook",
+    "ROCKSDB_RPC_PERF_CONTEXT",
+    "BobBai",
     "RocksDB perf context stats",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_perf_context_init,
@@ -2000,11 +2000,11 @@ struct st_mysql_plugin rdb_i_s_perf_context = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_perf_context_global = {
+struct st_mysql_plugin rdb_rpc_i_s_perf_context_global = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_PERF_CONTEXT_GLOBAL",
-    "Facebook",
+    "ROCKSDB_RPC_PERF_CONTEXT_GLOBAL",
+    "BobBai",
     "RocksDB perf context stats (all)",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_perf_context_global_init,
@@ -2016,11 +2016,11 @@ struct st_mysql_plugin rdb_i_s_perf_context_global = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_cfoptions = {
+struct st_mysql_plugin rdb_rpc_i_s_cfoptions = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_CF_OPTIONS",
-    "Facebook",
+    "ROCKSDB_RPC_CF_OPTIONS",
+    "BobBai",
     "RocksDB column family options",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_cfoptions_init,
@@ -2032,11 +2032,11 @@ struct st_mysql_plugin rdb_i_s_cfoptions = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_global_info = {
+struct st_mysql_plugin rdb_rpc_i_s_global_info = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_GLOBAL_INFO",
-    "Facebook",
+    "ROCKSDB_RPC_GLOBAL_INFO",
+    "BobBai",
     "RocksDB global info",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_global_info_init,
@@ -2048,11 +2048,11 @@ struct st_mysql_plugin rdb_i_s_global_info = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_compact_stats = {
+struct st_mysql_plugin rdb_rpc_i_s_compact_stats = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_COMPACTION_STATS",
-    "Facebook",
+    "ROCKSDB_RPC_COMPACTION_STATS",
+    "BobBai",
     "RocksDB compaction stats",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_compact_stats_init,
@@ -2064,11 +2064,11 @@ struct st_mysql_plugin rdb_i_s_compact_stats = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_ddl = {
+struct st_mysql_plugin rdb_rpc_i_s_ddl = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_DDL",
-    "Facebook",
+    "ROCKSDB_RPC_DDL",
+    "BobBai",
     "RocksDB Data Dictionary",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_ddl_init,
@@ -2080,11 +2080,11 @@ struct st_mysql_plugin rdb_i_s_ddl = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_sst_props = {
+struct st_mysql_plugin rdb_rpc_i_s_sst_props = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_SST_PROPS",
-    "Facebook",
+    "ROCKSDB_RPC_SST_PROPS",
+    "BobBai",
     "RocksDB SST Properties",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_sst_props_init,
@@ -2096,11 +2096,11 @@ struct st_mysql_plugin rdb_i_s_sst_props = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_index_file_map = {
+struct st_mysql_plugin rdb_rpc_i_s_index_file_map = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_INDEX_FILE_MAP",
-    "Facebook",
+    "ROCKSDB_RPC_INDEX_FILE_MAP",
+    "BobBai",
     "RocksDB index file map",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_index_file_map_init,
@@ -2112,11 +2112,11 @@ struct st_mysql_plugin rdb_i_s_index_file_map = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_lock_info = {
+struct st_mysql_plugin rdb_rpc_i_s_lock_info = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_LOCKS",
-    "Facebook",
+    "ROCKSDB_RPC_LOCKS",
+    "BobBai",
     "RocksDB lock information",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_lock_info_init,
@@ -2128,11 +2128,11 @@ struct st_mysql_plugin rdb_i_s_lock_info = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_trx_info = {
+struct st_mysql_plugin rdb_rpc_i_s_trx_info = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_TRX",
-    "Facebook",
+    "ROCKSDB_RPC_TRX",
+    "BobBai",
     "RocksDB transaction information",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_trx_info_init,
@@ -2144,11 +2144,11 @@ struct st_mysql_plugin rdb_i_s_trx_info = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_deadlock_info = {
+struct st_mysql_plugin rdb_rpc_i_s_deadlock_info = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_DEADLOCK",
-    "Facebook",
+    "ROCKSDB_RPC_DEADLOCK",
+    "BobBai",
     "RocksDB transaction information",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_deadlock_info_init,
@@ -2160,11 +2160,11 @@ struct st_mysql_plugin rdb_i_s_deadlock_info = {
     0,       /* flags */
 };
 
-struct st_mysql_plugin rdb_i_s_bypass_rejected_query_history = {
+struct st_mysql_plugin rdb_rpc_i_s_bypass_rejected_query_history = {
     MYSQL_INFORMATION_SCHEMA_PLUGIN,
     &rdb_i_s_info,
-    "ROCKSDB_BYPASS_REJECTED_QUERY_HISTORY",
-    "Facebook",
+    "ROCKSDB_RPC_BYPASS_REJECTED_QUERY_HISTORY",
+    "BobBai",
     "RocksDB history size of rejected bypass queries",
     PLUGIN_LICENSE_GPL,
     rdb_i_s_bypass_rejected_query_history_init,
