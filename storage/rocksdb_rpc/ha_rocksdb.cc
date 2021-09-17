@@ -8895,6 +8895,8 @@ int ha_rocksdb::rdb_error_to_mysql(const rocksdb::Status &s,
   return err;
 }
 
+rpc_logger l_28(8892, "RDB_INDEX_COLLATIONS");
+
 /* MyRocks supports only the following collations for indexed columns */
 static const std::set<const my_core::CHARSET_INFO *> RDB_INDEX_COLLATIONS = {
     &my_charset_bin, &my_charset_utf8_bin, &my_charset_latin1_bin};
