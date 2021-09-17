@@ -49,6 +49,7 @@ bool Rdb_cf_options::init(
   DBUG_ASSERT(default_cf_options != nullptr);
   DBUG_ASSERT(override_cf_options != nullptr);
 
+  m_default_cf_opts = rocksdb_ColumnFamilyOptions();
   // ALTER
   // m_default_cf_opts.comparator = &s_pk_comparator;
   rocksdb::Comparator *cmp = myrocks_SPkComparator();
