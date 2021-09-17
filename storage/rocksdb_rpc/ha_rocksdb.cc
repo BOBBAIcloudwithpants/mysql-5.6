@@ -6828,16 +6828,18 @@ static int rocksdb_init_func(void *const p) {
     // myrocks_logger->SetRocksDBLogger(rocksdb_db_options->info_log);
 
     rocksdb_rpc_log(6826, "rocksdb_init_func: SetRocksDBLogger");
-    myrocks_logger->SetRocksDBLogger(
-        rocksdb_DBOptions__GetLoggerPtr(rocksdb_db_options));
+    // ALTER
+    // myrocks_logger->SetRocksDBLogger(
+    //     rocksdb_DBOptions__GetLoggerPtr(rocksdb_db_options));
   }
 
   // ALTER
   // not set the logger
   // rocksdb_db_options->info_log = myrocks_logger;
 
-  myrocks_logger->SetInfoLogLevel(
-      static_cast<rocksdb::InfoLogLevel>(rocksdb_info_log_level));
+  // ALTER
+  // myrocks_logger->SetInfoLogLevel(
+  //     static_cast<rocksdb::InfoLogLevel>(rocksdb_info_log_level));
 
   // ALTER
   // rocksdb_db_options->wal_dir = rocksdb_wal_dir;
