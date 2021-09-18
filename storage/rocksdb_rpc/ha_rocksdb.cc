@@ -7310,8 +7310,9 @@ static int rocksdb_init_func(void *const p) {
 
   // TODO: ALTER
   // temperarily not check the compatibility
-  status =
-      check_rocksdb_options_compatibility(rocksdb_datadir, main_opts, cf_descr);
+  // status =
+  //     check_rocksdb_options_compatibility(rocksdb_datadir, main_opts,
+  //     cf_descr);
   // // We won't start if we'll determine that there's a chance of data
   // corruption
   // // because of incompatible options.
