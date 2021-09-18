@@ -5247,6 +5247,8 @@ void Rdb_dict_manager::get_all_dropped_cfs(
 void Rdb_dict_manager::get_ongoing_index_operation(
     std::unordered_set<GL_INDEX_ID> *gl_index_ids,
     Rdb_key_def::DATA_DICT_TYPE dd_type) const {
+  rocksdb_rpc_log(5251, "get_ongoing_index_operation: start");
+
   DBUG_ASSERT(dd_type == Rdb_key_def::DDL_DROP_INDEX_ONGOING ||
               dd_type == Rdb_key_def::DDL_CREATE_INDEX_ONGOING);
 
@@ -5260,9 +5262,14 @@ void Rdb_dict_manager::get_ongoing_index_operation(
   // for (it->Seek(index_slice); it->Valid(); it->Next()) {
   for (rocksdb_Iterator__Seek(it, index_slice); rocksdb_Iterator__Valid(it);
        rocksdb_Iterator__Next(it)) {
+    rocksdb_rpc_log(5265, "get_ongoing_index_operation: rocksdb_Iterator__key");
+
     // ALTER
     // rocksdb::Slice key = it->key();
     rocksdb::Slice key = rocksdb_Iterator__key(it);
+
+    rocksdb_rpc_log(5271, "get_ongoing_index_operation: key.data()");
+
     const uchar *const ptr = (const uchar *)key.data();
 
     /*
@@ -5272,6 +5279,8 @@ void Rdb_dict_manager::get_ongoing_index_operation(
       This may need to be changed in the future if we want to process a new
       ddl_type with different format.
     */
+    rocksdb_rpc_log(5282, "get_ongoing_index_operation: rdb_netbuf_to_uint32");
+
     if (key.size() != Rdb_key_def::INDEX_NUMBER_SIZE * 3 ||
         rdb_netbuf_to_uint32(ptr) != dd_type) {
       break;
@@ -5280,6 +5289,8 @@ void Rdb_dict_manager::get_ongoing_index_operation(
     // We don't check version right now since currently we always store only
     // Rdb_key_def::DDL_DROP_INDEX_ONGOING_VERSION = 1 as a value.
     // If increasing version number, we need to add version check logic here.
+    rocksdb_rpc_log(5294, "get_ongoing_index_operation: rdb_netbuf_to_uint32");
+
     GL_INDEX_ID gl_index_id;
     gl_index_id.cf_id =
         rdb_netbuf_to_uint32(ptr + Rdb_key_def::INDEX_NUMBER_SIZE);
@@ -5290,6 +5301,7 @@ void Rdb_dict_manager::get_ongoing_index_operation(
   // ALTER
   // delete it;
   rocksdb_Iterator__delete(it);
+  rocksdb_rpc_log(5295, "get_ongoing_index_operation: end");
 }
 
 /*
