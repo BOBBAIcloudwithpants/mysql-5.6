@@ -11167,7 +11167,9 @@ void dbug_dump_database(rocksdb::DB *const db) {
     fprintf(out, "\n");
   }
 
-  delete it;
+  // delete it;
+  rocksdb_Iterator__delete(it);
+
   fclose(out);
   rocksdb_rpc_log(11163, "dbug_dump_database: end");
 }

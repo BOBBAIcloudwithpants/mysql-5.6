@@ -4840,7 +4840,7 @@ bool Rdb_dict_manager::init(rocksdb::TransactionDB *const rdb_dict,
                      Rdb_key_def::INDEX_NUMBER_SIZE);
   std::cout << "m_key_slice_max_index_id: " << m_key_slice_max_index_id.data()
             << std::endl;
-  rocksdb_rpc_log(4839, "Rdb_dict_manager::init: HA_EXIT_FAILURE");
+  rocksdb_rpc_log(4839, "Rdb_dict_manager::init: resume_drop_indexes");
 
   resume_drop_indexes();
   rollback_ongoing_index_creation();
@@ -5260,7 +5260,9 @@ void Rdb_dict_manager::get_ongoing_index_operation(
   // for (it->Seek(index_slice); it->Valid(); it->Next()) {
   for (rocksdb_Iterator__Seek(it, index_slice); rocksdb_Iterator__Valid(it);
        rocksdb_Iterator__Next(it)) {
-    rocksdb::Slice key = it->key();
+    // ALTER
+    // rocksdb::Slice key = it->key();
+    rocksdb::Slice key = rocksdb_Iterator__key(it);
     const uchar *const ptr = (const uchar *)key.data();
 
     /*
@@ -5285,7 +5287,9 @@ void Rdb_dict_manager::get_ongoing_index_operation(
         rdb_netbuf_to_uint32(ptr + 2 * Rdb_key_def::INDEX_NUMBER_SIZE);
     gl_index_ids->insert(gl_index_id);
   }
-  delete it;
+  // ALTER
+  // delete it;
+  rocksdb_Iterator__delete(it);
 }
 
 /*
