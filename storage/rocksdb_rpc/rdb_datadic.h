@@ -1547,6 +1547,8 @@ class Rdb_dict_manager {
   }
   inline void get_ongoing_create_indexes(
       std::unordered_set<GL_INDEX_ID> *gl_index_ids) const {
+    rocksdb_rpc_log(1550, "get_ongoing_create_indexes: start");
+
     get_ongoing_index_operation(gl_index_ids,
                                 Rdb_key_def::DDL_CREATE_INDEX_ONGOING);
   }

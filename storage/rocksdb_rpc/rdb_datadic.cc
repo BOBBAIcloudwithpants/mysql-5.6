@@ -5543,12 +5543,19 @@ void Rdb_dict_manager::rollback_ongoing_index_creation() const {
 
   std::unordered_set<GL_INDEX_ID> gl_index_ids;
 
+  rocksdb_rpc_log(
+      5546, "rollback_ongoing_index_creation: get_ongoing_create_indexes");
   get_ongoing_create_indexes(&gl_index_ids);
+
+  rocksdb_rpc_log(
+      5551, "rollback_ongoing_index_creation: rollback_ongoing_index_creation");
   rollback_ongoing_index_creation(gl_index_ids);
+  rocksdb_rpc_log(5554, "rollback_ongoing_index_creation: end");
 }
 
 void Rdb_dict_manager::rollback_ongoing_index_creation(
     const std::unordered_set<GL_INDEX_ID> &gl_index_ids) const {
+  rocksdb_rpc_log(5558, "rollback_ongoing_index_creation: start");
   // ALTER
   // const std::unique_ptr<rocksdb::WriteBatch> wb = begin();
   // rocksdb::WriteBatch *const batch = wb.get();
@@ -5558,11 +5565,11 @@ void Rdb_dict_manager::rollback_ongoing_index_creation(
     // NO_LINT_DEBUG
     sql_print_information("RocksDB: Removing incomplete create index (%u,%u)",
                           gl_index_id.cf_id, gl_index_id.index_id);
-
+    rocksdb_rpc_log(5568, "rollback_ongoing_index_creation: start_drop_index");
     start_drop_index(batch, gl_index_id);
   }
-
   commit(batch);
+  rocksdb_rpc_log(5568, "rollback_ongoing_index_creation: end");
 }
 
 void Rdb_dict_manager::log_start_drop_table(
