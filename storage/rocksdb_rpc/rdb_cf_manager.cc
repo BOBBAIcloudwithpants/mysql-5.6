@@ -111,6 +111,8 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
     // ALTER
     // rocksdb::ColumnFamilyOptions opts;
     // m_cf_options->get_cf_options(cf_name, &opts);
+    rocksdb_rpc_log(
+        115, "Rdb_cf_manager::get_or_create_cf rocksdb_ColumnFamilyOptions");
     rocksdb::ColumnFamilyOptions *opts = rocksdb_ColumnFamilyOptions();
     m_cf_options->get_cf_options(cf_name, opts);
 
