@@ -5230,7 +5230,10 @@ void Rdb_dict_manager::get_all_dropped_cfs(
   // for (it->Seek(dropped_cf_slice); it->Valid(); it->Next()) {
   for (rocksdb_Iterator__Seek(it, dropped_cf_slice);
        rocksdb_Iterator__Valid(it); rocksdb_Iterator__Next(it)) {
-    rocksdb::Slice key = it->key();
+        // ALTER
+    // rocksdb::Slice key = it->key();
+    rocksdb::Slice key = rocksdb_Iterator__key(it);
+
     const uchar *const ptr = (const uchar *)key.data();
 
     if (key.size() != Rdb_key_def::INDEX_NUMBER_SIZE * 2 ||
@@ -5349,15 +5352,29 @@ int Rdb_dict_manager::add_missing_cf_flags(
 int Rdb_dict_manager::remove_orphaned_dropped_cfs(
     Rdb_cf_manager *const cf_manager,
     const my_bool &enable_remove_orphaned_dropped_cfs) const {
+  rocksdb_rpc_log(5352, "Rdb_dict_manager::remove_orphaned_dropped_cfs: begin");
+
   // ALTER
   // const std::unique_ptr<rocksdb::WriteBatch> wb = begin();
   // rocksdb::WriteBatch *const batch = wb.get();
   rocksdb::WriteBatch *batch = begin();
 
   std::unordered_set<uint32> dropped_cf_ids;
+  rocksdb_rpc_log(
+      5360,
+      "Rdb_dict_manager::remove_orphaned_dropped_cfs: get_all_dropped_cfs");
+
   get_all_dropped_cfs(&dropped_cf_ids);
+
+  rocksdb_rpc_log(
+      5369,
+      "Rdb_dict_manager::remove_orphaned_dropped_cfs: cf_id : dropped_cf_ids");
+
   for (const auto cf_id : dropped_cf_ids) {
     if (!cf_manager->get_cf(cf_id)) {
+      rocksdb_rpc_log(5372,
+                      "Rdb_dict_manager::remove_orphaned_dropped_cfs: "
+                      "enable_remove_orphaned_dropped_cfs");
       // NO_LINT_DEBUG
       sql_print_warning(
           "RocksDB: Column family with id %u doesn't exist in "
@@ -5370,6 +5387,8 @@ int Rdb_dict_manager::remove_orphaned_dropped_cfs(
     }
   }
 
+  rocksdb_rpc_log(
+      5388, "Rdb_dict_manager::remove_orphaned_dropped_cfs: commit(batch)");
   commit(batch);
   return HA_EXIT_SUCCESS;
 }
