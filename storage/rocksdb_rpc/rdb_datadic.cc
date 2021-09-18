@@ -5219,8 +5219,11 @@ void Rdb_dict_manager::delete_dropped_cf(rocksdb::WriteBatch *const batch,
 
 void Rdb_dict_manager::get_all_dropped_cfs(
     std::unordered_set<uint32> *dropped_cf_ids) const {
+  rocksdb_rpc_log(5223, "Rdb_dict_manager::get_all_dropped_cfs: begin");
   uchar dropped_cf_buf[Rdb_key_def::INDEX_NUMBER_SIZE];
   rdb_netbuf_store_uint32(dropped_cf_buf, Rdb_key_def::DROPPED_CF);
+  rocksdb_rpc_log(5227,
+                  "Rdb_dict_manager::get_all_dropped_cfs: dropped_cf_slice");
   const rocksdb::Slice dropped_cf_slice(
       reinterpret_cast<char *>(dropped_cf_buf), Rdb_key_def::INDEX_NUMBER_SIZE);
 
@@ -5228,9 +5231,12 @@ void Rdb_dict_manager::get_all_dropped_cfs(
 
   // ALTER
   // for (it->Seek(dropped_cf_slice); it->Valid(); it->Next()) {
+  rocksdb_rpc_log(5234, "Rdb_dict_manager::get_all_dropped_cfs: new_iterator");
   for (rocksdb_Iterator__Seek(it, dropped_cf_slice);
        rocksdb_Iterator__Valid(it); rocksdb_Iterator__Next(it)) {
-        // ALTER
+    rocksdb_rpc_log(
+        5237, "Rdb_dict_manager::get_all_dropped_cfs: rocksdb_Iterator__key");
+    // ALTER
     // rocksdb::Slice key = it->key();
     rocksdb::Slice key = rocksdb_Iterator__key(it);
 
@@ -5245,7 +5251,10 @@ void Rdb_dict_manager::get_all_dropped_cfs(
     dropped_cf_ids->insert(cf_id);
   }
 
-  delete it;
+  // ALTER
+  // delete it;
+  rocksdb_Iterator__delete(it);
+  rocksdb_rpc_log(5257, "Rdb_dict_manager::get_all_dropped_cfs: end");
 }
 
 /*
