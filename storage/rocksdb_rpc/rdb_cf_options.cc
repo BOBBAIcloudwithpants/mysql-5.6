@@ -46,6 +46,7 @@ bool Rdb_cf_options::init(
     std::shared_ptr<rocksdb::TablePropertiesCollectorFactory> prop_coll_factory,
     const char *const default_cf_options,
     const char *const override_cf_options) {
+  rocksdb_rpc_log(50, "Rdb_cf_options::init: start");
   DBUG_ASSERT(default_cf_options != nullptr);
   DBUG_ASSERT(override_cf_options != nullptr);
 
@@ -62,8 +63,14 @@ bool Rdb_cf_options::init(
   // ALTER
   // m_default_cf_opts.table_factory.reset(
   //     rocksdb::NewBlockBasedTableFactory(table_options));
+  rocksdb_rpc_log(
+      67, "Rdb_cf_options::init: rocksdb_NewBlockBasedTableFactoryWithOption");
+
   std::shared_ptr<rocksdb::TableFactory> *tf =
       rocksdb_NewBlockBasedTableFactoryWithOption(table_options);
+
+  rocksdb_rpc_log(
+      73, "Rdb_cf_options::init: rocksdb_ColumnFamilyOptions__SetTableFactory");
   rocksdb_ColumnFamilyOptions__SetTableFactory(m_default_cf_opts, tf);
 
   // TODO: ALTER
