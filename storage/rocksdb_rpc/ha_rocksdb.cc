@@ -7347,10 +7347,12 @@ static int rocksdb_init_func(void *const p) {
   sql_print_information("RocksDB: Initializing data dictionary...");
 
   rocksdb_rpc_log(7349, "rocksdb_init_func: Initializing data dictionary...");
-  if (st_rdb_exec_time.exec("Rdb_dict_manager::init", [&]() {
-        return dict_manager.init(rdb, &cf_manager,
-                                 rocksdb_enable_remove_orphaned_dropped_cfs);
-      })) {
+  // if (st_rdb_exec_time.exec("Rdb_dict_manager::init", [&]() {
+  //       return dict_manager.init(rdb, &cf_manager,
+  //                                rocksdb_enable_remove_orphaned_dropped_cfs);
+  //     })) {
+  if (dict_manager.init(rdb, &cf_manager,
+                        rocksdb_enable_remove_orphaned_dropped_cfs)) {
     // NO_LINT_DEBUG
     sql_print_error("RocksDB: Failed to initialize data dictionary.");
     rocksdb_rpc_log(7357,
@@ -7363,9 +7365,10 @@ static int rocksdb_init_func(void *const p) {
   rocksdb_rpc_log(7363, "rocksdb_init_func: Initializing binlog manager...");
   sql_print_information("RocksDB: Initializing binlog manager...");
 
-  if (st_rdb_exec_time.exec("Rdb_binlog_manager::init", [&]() {
-        return binlog_manager.init(&dict_manager);
-      })) {
+  // if (st_rdb_exec_time.exec("Rdb_binlog_manager::init", [&]() {
+  //       return binlog_manager.init(&dict_manager);
+  //     })) {
+  if (binlog_manager.init(&dict_manager)) {
     // NO_LINT_DEBUG
     sql_print_error("RocksDB: Failed to initialize binlog manager.");
     rocksdb_rpc_log(7370,
@@ -7377,10 +7380,11 @@ static int rocksdb_init_func(void *const p) {
   // NO_LINT_DEBUG
   sql_print_information("RocksDB: Initializing DDL Manager...");
 
-  if (st_rdb_exec_time.exec("Rdb_ddl_manager::init", [&]() {
-        return ddl_manager.init(&dict_manager, &cf_manager,
-                                rocksdb_validate_tables);
-      })) {
+  // if (st_rdb_exec_time.exec("Rdb_ddl_manager::init", [&]() {
+  //       return ddl_manager.init(&dict_manager, &cf_manager,
+  //                               rocksdb_validate_tables);
+  //     })) {
+  if (ddl_manager.init(&dict_manager, &cf_manager, rocksdb_validate_tables)) {
     // NO_LINT_DEBUG
     rocksdb_rpc_log(7385,
                     "rocksdb_init_func: Failed to initialize DDL manager.");
