@@ -4851,17 +4851,23 @@ bool Rdb_dict_manager::init(rocksdb::TransactionDB *const rdb_dict,
   // const std::unique_ptr<rocksdb::WriteBatch> wb = begin();
   // rocksdb::WriteBatch *const batch = wb.get();
   rocksdb::WriteBatch *batch = begin();
+  rocksdb_rpc_log(4854, "Rdb_dict_manager::init: begin");
 
   // ALTER
   // add_cf_flags(batch, m_system_cfh->GetID(), 0);
   // add_cf_flags(batch, default_cfh->GetID(), 0);
+  rocksdb_rpc_log(4860,
+                  "Rdb_dict_manager::init: rocksdb_ColumnFamilyHandle__GetID");
   add_cf_flags(batch, rocksdb_ColumnFamilyHandle__GetID(m_system_cfh), 0);
   add_cf_flags(batch, rocksdb_ColumnFamilyHandle__GetID(default_cfh), 0);
   commit(batch);
+  rocksdb_rpc_log(4866, "Rdb_dict_manager::init: add_missing_cf_flags");
 
   if (add_missing_cf_flags(cf_manager)) {
     return HA_EXIT_FAILURE;
   }
+
+  rocksdb_rpc_log(4871, "Rdb_dict_manager::init: remove_orphaned_dropped_cfs");
 
   if (remove_orphaned_dropped_cfs(cf_manager,
                                   enable_remove_orphaned_dropped_cfs)) {
@@ -5311,17 +5317,24 @@ void Rdb_dict_manager::get_ongoing_index_operation(
  */
 int Rdb_dict_manager::add_missing_cf_flags(
     Rdb_cf_manager *const cf_manager) const {
+  rocksdb_rpc_log(5320, "Rdb_dict_manager::add_missing_cf_flags: start");
+
   for (const auto &cf_name : cf_manager->get_cf_names()) {
     // ALTER
     // std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
     //     cf_manager->get_cf(cf_name);
     auto cfh = cf_manager->get_cf(cf_name);
 
+    rocksdb_rpc_log(
+        5328,
+        "Rdb_dict_manager::add_missing_cf_flags: create_cf_flags_if_needed");
+
     if (cf_manager->create_cf_flags_if_needed(
             this, rocksdb_ColumnFamilyHandle__GetID(cfh), cf_name)) {
       return HA_EXIT_FAILURE;
     }
   }
+  rocksdb_rpc_log(5338, "Rdb_dict_manager::add_missing_cf_flags: end");
 
   return HA_EXIT_SUCCESS;
 }
