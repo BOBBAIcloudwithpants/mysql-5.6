@@ -4802,6 +4802,7 @@ void Rdb_binlog_manager::update_slave_gtid_info(
 bool Rdb_dict_manager::init(rocksdb::TransactionDB *const rdb_dict,
                             Rdb_cf_manager *const cf_manager,
                             const my_bool enable_remove_orphaned_dropped_cfs) {
+  std::cout << "aaaaaaaaaaaa" << std::endl;
   DBUG_ASSERT(rdb_dict != nullptr);
   DBUG_ASSERT(cf_manager != nullptr);
   rocksdb_rpc_log(4806, "Rdb_dict_manager::init start");
