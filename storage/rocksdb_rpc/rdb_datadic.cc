@@ -4803,6 +4803,7 @@ bool Rdb_dict_manager::init(rocksdb::TransactionDB *const rdb_dict,
                             const my_bool enable_remove_orphaned_dropped_cfs) {
   DBUG_ASSERT(rdb_dict != nullptr);
   DBUG_ASSERT(cf_manager != nullptr);
+  rocksdb_rpc_log(4806, "Rdb_dict_manager::init start");
 
   mysql_mutex_init(0, &m_mutex, MY_MUTEX_INIT_FAST);
 
@@ -4817,12 +4818,16 @@ bool Rdb_dict_manager::init(rocksdb::TransactionDB *const rdb_dict,
   //     cf_manager->get_or_create_cf(m_db, DEFAULT_SYSTEM_CF_NAME).get();
   // rocksdb::ColumnFamilyHandle *default_cfh =
   //     cf_manager->get_cf(DEFAULT_CF_NAME).get();
+
+  rocksdb_rpc_log(4806, "Rdb_dict_manager::init: get_or_create_cf");
   m_system_cfh = cf_manager->get_or_create_cf(m_db, DEFAULT_SYSTEM_CF_NAME);
   rocksdb::ColumnFamilyHandle *default_cfh =
       cf_manager->get_cf(DEFAULT_CF_NAME);
 
   // System CF and default CF should be initialized
   if (m_system_cfh == nullptr || default_cfh == nullptr) {
+    rocksdb_rpc_log(4831, "Rdb_dict_manager::init: HA_EXIT_FAILURE");
+
     return HA_EXIT_FAILURE;
   }
 
@@ -4831,6 +4836,9 @@ bool Rdb_dict_manager::init(rocksdb::TransactionDB *const rdb_dict,
   m_key_slice_max_index_id =
       rocksdb::Slice(reinterpret_cast<char *>(m_key_buf_max_index_id),
                      Rdb_key_def::INDEX_NUMBER_SIZE);
+  std::cout << "m_key_slice_max_index_id: " << m_key_slice_max_index_id.data()
+            << std::endl;
+  rocksdb_rpc_log(4839, "Rdb_dict_manager::init: HA_EXIT_FAILURE");
 
   resume_drop_indexes();
   rollback_ongoing_index_creation();
@@ -4862,7 +4870,9 @@ bool Rdb_dict_manager::init(rocksdb::TransactionDB *const rdb_dict,
 }
 
 rocksdb::WriteBatch *Rdb_dict_manager::begin() const {
-  return new rocksdb::WriteBatch;
+  // ALTER
+  // return new rocksdb::WriteBatch;
+  return rocksdb_WriteBatch__WriteBatch();
 }
 
 void Rdb_dict_manager::put_key(rocksdb::WriteBatchBase *const batch,
@@ -5499,6 +5509,8 @@ void Rdb_dict_manager::finish_indexes_operation(
   drop ongoing, printing out messages for diagnostics purposes.
  */
 void Rdb_dict_manager::resume_drop_indexes() const {
+  rocksdb_rpc_log(5511, "resume_drop_indexes: resume_drop_indexes");
+
   std::unordered_set<GL_INDEX_ID> gl_index_ids;
   get_ongoing_drop_indexes(&gl_index_ids);
 
@@ -5521,6 +5533,8 @@ void Rdb_dict_manager::resume_drop_indexes() const {
 }
 
 void Rdb_dict_manager::rollback_ongoing_index_creation() const {
+  rocksdb_rpc_log(5536, "rollback_ongoing_index_creation: start");
+
   std::unordered_set<GL_INDEX_ID> gl_index_ids;
 
   get_ongoing_create_indexes(&gl_index_ids);

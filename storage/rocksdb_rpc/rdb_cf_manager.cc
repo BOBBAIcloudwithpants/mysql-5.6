@@ -82,6 +82,9 @@ void Rdb_cf_manager::cleanup() {
 */
 rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
     rocksdb::DB *const rdb, const std::string &cf_name) {
+  rocksdb_rpc_log(85,
+                  "rocksdb_init_func: Rdb_cf_manager::get_or_create_cf start");
+
   DBUG_ASSERT(rdb != nullptr);
   DBUG_ASSERT(!cf_name.empty());
   std::shared_ptr<rocksdb::ColumnFamilyHandle> cf_handle;
@@ -128,6 +131,10 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
     // ALTER
     // const rocksdb::Status s =
     //     rdb->CreateColumnFamily(opts, cf_name, &cf_handle_ptr);
+    rocksdb_rpc_log(135,
+                    "rocksdb_init_func: Rdb_cf_manager::get_or_create_cf "
+                    "rocksdb_DB__CreateColumnFamilyWithPointer");
+
     const rocksdb::Status s = rocksdb_DB__CreateColumnFamilyWithPointer(
         rdb, opts, cf_name, cf_handle_ptr);
 
@@ -139,6 +146,8 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
       // m_cf_id_map[cf_handle_ptr->GetID()] = cf_handle;
       std::string name = rocksdb_ColumnFamilyHandle__GetName(cf_handle_ptr);
       auto id = rocksdb_ColumnFamilyHandle__GetID(cf_handle_ptr);
+      std::cout << "line 148 ******** cf id and name: " << name << " " << id
+                << std::endl;
       cf_handle_ = cf_handle_ptr;
       m_cf_name_map[name] = cf_handle_;
       m_cf_id_map[id] = cf_handle_;
