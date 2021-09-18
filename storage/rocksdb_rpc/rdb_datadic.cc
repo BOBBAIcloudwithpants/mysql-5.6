@@ -4035,6 +4035,7 @@ bool Rdb_ddl_manager::validate_schemas(void) {
 bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
                            Rdb_cf_manager *const cf_manager,
                            const uint32_t validate_tables) {
+  std::cout << "INIT Rdb_ddl_manager AAAAAAAAA" << std::endl;
   m_dict = dict_arg;
   m_cf_manager = cf_manager;
   mysql_rwlock_init(0, &m_rwlock);
