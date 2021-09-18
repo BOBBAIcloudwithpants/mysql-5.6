@@ -84,8 +84,11 @@ bool Rdb_cf_options::init(
 
 void Rdb_cf_options::get(const std::string &cf_name,
                          rocksdb::ColumnFamilyOptions *const opts) {
+  rocksdb_rpc_log(87, "Rdb_cf_options::get: start");
   DBUG_ASSERT(opts != nullptr);
 
+  rocksdb_rpc_log(
+      90, "Rdb_cf_options::get: rocksdb_GetColumnFamilyOptionsFromString");
   // ALTER
   // Get defaults.
   // rocksdb::GetColumnFamilyOptionsFromString(*opts, m_default_config, opts);
@@ -97,6 +100,9 @@ void Rdb_cf_options::get(const std::string &cf_name,
   if (it != m_name_map.end()) {
     // ALTER
     // rocksdb::GetColumnFamilyOptionsFromString(*opts, it->second, opts);
+    rocksdb_rpc_log(
+        103, "Rdb_cf_options::get: rocksdb_GetColumnFamilyOptionsFromString");
+
     rocksdb_GetColumnFamilyOptionsFromString(opts, it->second, opts);
   }
 }
