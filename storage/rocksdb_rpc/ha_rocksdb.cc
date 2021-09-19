@@ -2478,7 +2478,7 @@ static MYSQL_SYSVAR_UINT(
 static MYSQL_SYSVAR_STR(datadir, rocksdb_datadir,
                         PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
                         "RocksDB data directory", nullptr, nullptr,
-                        "./.rocksdb_test3");
+                        "./.rocksdb_test5");
 
 rpc_logger l_13(2489, "init datadir");
 
