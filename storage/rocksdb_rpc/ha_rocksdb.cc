@@ -7038,7 +7038,7 @@ static int rocksdb_init_func(void *const p) {
       and RocksDB doesn't provide any way to check what kind of error it was.
       Checking system errno happens to work right now.
     */
-    if (status.IsIOError() && errno == ENOENT) {
+    if (status.IsIOError()) {
       // NO_LINT_DEBUG
       sql_print_information("RocksDB: Got ENOENT when listing column families");
 
