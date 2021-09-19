@@ -7704,9 +7704,10 @@ static int rocksdb_done_func(void *const p) {
   // if (rocksdb_tbl_options->block_cache) {
   //   rocksdb_tbl_options->block_cache->DisownData();
   // }
-  rocksdb_rpc_log(
-      7702, "rocksdb_done_func: rocksdb_BlockBasedTableOptions__DisdownData;");
-  rocksdb_BlockBasedTableOptions__DisdownData(rocksdb_tbl_options);
+  // rocksdb_rpc_log(
+  //     7702, "rocksdb_done_func:
+  //     rocksdb_BlockBasedTableOptions__DisdownData;");
+  // rocksdb_BlockBasedTableOptions__DisdownData(rocksdb_tbl_options);
 #endif /* HAVE_purify */
 
   rocksdb_db_options = nullptr;

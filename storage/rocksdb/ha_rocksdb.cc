@@ -623,10 +623,9 @@ static void rocksdb_set_max_background_jobs(THD *thd,
                                             struct st_mysql_sys_var *const var,
                                             void *const var_ptr,
                                             const void *const save);
-static void rocksdb_set_max_background_compactions(THD *thd,
-                                                   struct st_mysql_sys_var *const var,
-                                                   void *const var_ptr,
-                                                   const void *const save);
+static void rocksdb_set_max_background_compactions(
+    THD *thd, struct st_mysql_sys_var *const var, void *const var_ptr,
+    const void *const save);
 
 static void rocksdb_set_bytes_per_sync(THD *thd,
                                        struct st_mysql_sys_var *const var,
@@ -710,7 +709,7 @@ static long long rocksdb_compaction_sequential_deletes_window = 0l;
 static long long rocksdb_compaction_sequential_deletes_file_size = 0l;
 static uint32_t rocksdb_validate_tables = 1;
 static char *rocksdb_datadir;
-static uint32_t rocksdb_max_bottom_pri_background_compactions=0;
+static uint32_t rocksdb_max_bottom_pri_background_compactions = 0;
 static uint32_t rocksdb_table_stats_sampling_pct;
 static uint32_t rocksdb_table_stats_recalc_threshold_pct = 10;
 static unsigned long long rocksdb_table_stats_recalc_threshold_count = 100ul;
@@ -1311,8 +1310,8 @@ static MYSQL_THDVAR_ULONGLONG(
 static MYSQL_THDVAR_ULONGLONG(
     write_batch_flush_threshold, PLUGIN_VAR_RQCMDARG,
     "Maximum size of write batch in bytes before flushing. Only valid if "
-    "rocksdb_write_policy is WRITE_UNPREPARED. 0 means no limit.", nullptr,
-    nullptr, /* default */ 0, /* min */ 0, /* max */ SIZE_T_MAX, 1);
+    "rocksdb_write_policy is WRITE_UNPREPARED. 0 means no limit.",
+    nullptr, nullptr, /* default */ 0, /* min */ 0, /* max */ SIZE_T_MAX, 1);
 
 static MYSQL_THDVAR_BOOL(
     lock_scanned_rows, PLUGIN_VAR_RQCMDARG,
@@ -1585,16 +1584,16 @@ static MYSQL_SYSVAR_INT(max_background_jobs,
 static MYSQL_SYSVAR_INT(max_background_flushes,
                         rocksdb_db_options->max_background_flushes,
                         PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-                        "DBOptions::max_background_flushes for RocksDB", nullptr,
-                        nullptr,
+                        "DBOptions::max_background_flushes for RocksDB",
+                        nullptr, nullptr,
                         rocksdb_db_options->max_background_flushes,
                         /* min */ -1, /* max */ 64, 0);
 
 static MYSQL_SYSVAR_INT(max_background_compactions,
                         rocksdb_db_options->max_background_compactions,
                         PLUGIN_VAR_RQCMDARG,
-                        "DBOptions::max_background_compactions for RocksDB", nullptr,
-                        rocksdb_set_max_background_compactions,
+                        "DBOptions::max_background_compactions for RocksDB",
+                        nullptr, rocksdb_set_max_background_compactions,
                         rocksdb_db_options->max_background_compactions,
                         /* min */ -1, /* max */ 64, 0);
 
@@ -2793,7 +2792,7 @@ class Rdb_transaction {
   bool m_is_delayed_snapshot = false;
   bool m_is_two_phase = false;
 
-  std::unordered_set<Rdb_tbl_def*> modified_tables;
+  std::unordered_set<Rdb_tbl_def *> modified_tables;
 
  private:
   /*
@@ -3502,13 +3501,10 @@ class Rdb_transaction {
     }
     modified_tables.clear();
   }
-  void on_rollback() {
-    modified_tables.clear();
-  }
+  void on_rollback() { modified_tables.clear(); }
+
  public:
-  void log_table_write_op(Rdb_tbl_def *tbl) {
-    modified_tables.insert(tbl);
-  }
+  void log_table_write_op(Rdb_tbl_def *tbl) { modified_tables.insert(tbl); }
 
   void set_initial_savepoint() {
     /*
@@ -3958,7 +3954,8 @@ class Rdb_transaction_impl : public Rdb_transaction {
     tx_opts.use_only_the_last_commit_time_batch_for_recovery =
         THDVAR(m_thd, commit_time_batch_for_recovery);
     tx_opts.max_write_batch_size = THDVAR(m_thd, write_batch_max_bytes);
-    tx_opts.write_batch_flush_threshold = THDVAR(m_thd, write_batch_flush_threshold);
+    tx_opts.write_batch_flush_threshold =
+        THDVAR(m_thd, write_batch_flush_threshold);
 
     write_opts.sync = (rocksdb_flush_log_at_trx_commit == FLUSH_LOG_SYNC);
     write_opts.disableWAL = THDVAR(m_thd, write_disable_wal);
@@ -5130,7 +5127,7 @@ static bool rocksdb_show_status(handlerton *const hton, THD *const thd,
 
         if (tf_name.find("BlockBasedTable") != std::string::npos) {
           const auto bbt_opt =
-            table_factory->GetOptions<rocksdb::BlockBasedTableOptions>();
+              table_factory->GetOptions<rocksdb::BlockBasedTableOptions>();
 
           if (bbt_opt != nullptr) {
             if (bbt_opt->block_cache.get() != nullptr) {
@@ -8683,7 +8680,8 @@ int ha_rocksdb::read_row_from_secondary_key(uchar *const buf,
 #endif
   DBUG_EXECUTE_IF("dbug.rocksdb.HA_EXTRA_KEYREAD", { m_keyread_only = true; });
 
-  bool covered_lookup = (m_keyread_only && kd.can_cover_lookup()) ||
+  bool covered_lookup =
+      (m_keyread_only && kd.can_cover_lookup()) ||
       kd.covers_lookup(&value, m_converter->get_lookup_bitmap());
 
 #ifndef DBUG_OFF
@@ -8933,8 +8931,9 @@ int ha_rocksdb::index_read_map_impl(uchar *const buf, const uchar *const key,
                                     const key_range *end_key) {
   DBUG_ENTER_FUNC();
 
-  DBUG_EXECUTE_IF("myrocks_busy_loop_on_row_read", int debug_i = 0;
-                  while (1) { debug_i++; });
+  DBUG_EXECUTE_IF(
+      "myrocks_busy_loop_on_row_read", int debug_i = 0;
+      while (1) { debug_i++; });
 
   int rc = 0;
 
@@ -10250,8 +10249,7 @@ int ha_rocksdb::check_and_lock_unique_pk(const uint key_id,
 #ifndef DBUG_OFF
     // save it for sanity checking later
     m_dup_key_retrieved_record.copy(m_retrieved_record.data(),
-                                    m_retrieved_record.size(),
-                                    &my_charset_bin);
+                                    m_retrieved_record.size(), &my_charset_bin);
 #endif
   }
 
@@ -10400,8 +10398,8 @@ int ha_rocksdb::check_and_lock_sk(const uint key_id,
 
   if (*found && m_insert_with_update) {
     const rocksdb::Slice &rkey = iter->key();
-    uint pk_size = kd.get_primary_key_tuple(table, *m_pk_descr, &rkey,
-                                            m_pk_packed_tuple);
+    uint pk_size =
+        kd.get_primary_key_tuple(table, *m_pk_descr, &rkey, m_pk_packed_tuple);
     if (pk_size == RDB_INVALID_KEY_LEN) {
       rc = HA_ERR_ROCKSDB_CORRUPT_DATA;
     } else {
@@ -11317,8 +11315,7 @@ int ha_rocksdb::index_end() {
   active_index = MAX_KEY;
   in_range_check_pushed_down = FALSE;
 
-  if (mrr_rowid_reader)
-    mrr_free();
+  if (mrr_rowid_reader) mrr_free();
 
   DBUG_RETURN(HA_EXIT_SUCCESS);
 }
@@ -12499,7 +12496,8 @@ ha_rows ha_rocksdb::records_in_range(uint inx, key_range *const min_key,
 
   ha_rows ret = THDVAR(ha_thd(), records_in_range);
   if (ret) {
-    DBUG_EXECUTE_IF("rocksdb_mrr_debug2", if (inx != 0) { ret /= 100; });
+    DBUG_EXECUTE_IF(
+        "rocksdb_mrr_debug2", if (inx != 0) { ret /= 100; });
     DBUG_RETURN(ret);
   }
   if (table->force_index) {
@@ -15670,10 +15668,9 @@ static void rocksdb_set_max_background_jobs(THD *thd,
   RDB_MUTEX_UNLOCK_CHECK(rdb_sysvars_mutex);
 }
 
-static void rocksdb_set_max_background_compactions(THD *thd,
-                                                   struct st_mysql_sys_var *const var,
-                                                   void *const var_ptr,
-                                                   const void *const save) {
+static void rocksdb_set_max_background_compactions(
+    THD *thd, struct st_mysql_sys_var *const var, void *const var_ptr,
+    const void *const save) {
   DBUG_ASSERT(save != nullptr);
   DBUG_ASSERT(rocksdb_db_options != nullptr);
   DBUG_ASSERT(rocksdb_db_options->env != nullptr);
@@ -15684,8 +15681,8 @@ static void rocksdb_set_max_background_compactions(THD *thd,
 
   if (rocksdb_db_options->max_background_compactions != new_val) {
     rocksdb_db_options->max_background_compactions = new_val;
-    rocksdb::Status s =
-        rdb->SetDBOptions({{"max_background_compactions", std::to_string(new_val)}});
+    rocksdb::Status s = rdb->SetDBOptions(
+        {{"max_background_compactions", std::to_string(new_val)}});
 
     if (!s.ok()) {
       /* NO_LINT_DEBUG */
@@ -16059,8 +16056,8 @@ bool ha_rocksdb::use_read_free_rpl() const {
   Whether the table or last access partition has TTL column
   Only used in replication error checking
 */
-bool ha_rocksdb::last_part_has_ttl_column() const { 
-  return m_tbl_def->has_ttl_col(); 
+bool ha_rocksdb::last_part_has_ttl_column() const {
+  return m_tbl_def->has_ttl_col();
 }
 
 double ha_rocksdb::read_time(uint index, uint ranges, ha_rows rows) {
@@ -16167,7 +16164,6 @@ void rdb_tx_multi_get(Rdb_transaction *tx,
   tx->multi_get(column_family, num_keys, keys, values, statuses, sorted_input);
 }
 
-
 /****************************************************************************
  * Multi-Range-Read implementation based on RocksDB's MultiGet() call
  ***************************************************************************/
@@ -16260,7 +16256,6 @@ ha_rows ha_rocksdb::multi_range_read_info_const(uint keyno, RANGE_SEQ_IF *seq,
   return res;
 }
 
-
 ha_rows ha_rocksdb::multi_range_read_info(uint keyno, uint n_ranges, uint keys,
                                           uint *bufsz, uint *flags,
                                           Cost_estimate *cost) {
@@ -16283,12 +16278,11 @@ ha_rows ha_rocksdb::multi_range_read_info(uint keyno, uint n_ranges, uint keys,
   if (keyno != table->s->primary_key && !(*flags & HA_MRR_INDEX_ONLY)) {
     *flags &= ~HA_MRR_USE_DEFAULT_IMPL;
     *flags |= HA_MRR_CONVERT_REF_TO_RANGE;
-    *flags &= ~HA_MRR_SUPPORT_SORTED; // Non-sorted mode
+    *flags &= ~HA_MRR_SUPPORT_SORTED;  // Non-sorted mode
   }
 
-  return 0; // "0" means ok, despite the ha_rows return type.
+  return 0;  // "0" means ok, despite the ha_rows return type.
 }
-
 
 //
 // Source of Rowids for the MRR scan
@@ -16302,28 +16296,26 @@ class Mrr_rowid_source {
   virtual ~Mrr_rowid_source() {}
 };
 
-
 //
 // Rowid source that produces rowids by enumerating a sequence of ranges
 //
 class Mrr_pk_scan_rowid_source : public Mrr_rowid_source {
   bool mrr_ranges_eof;  // true means we've got eof when enumerating the ranges.
   ha_rocksdb *self;
+
  public:
   Mrr_pk_scan_rowid_source(ha_rocksdb *self_arg, void *seq_init_param,
-                           uint n_ranges, uint mode) :
-    mrr_ranges_eof(false), self(self_arg) {
-    self->mrr_iter= self->mrr_funcs.init(seq_init_param, n_ranges, mode);
+                           uint n_ranges, uint mode)
+      : mrr_ranges_eof(false), self(self_arg) {
+    self->mrr_iter = self->mrr_funcs.init(seq_init_param, n_ranges, mode);
   }
 
   int get_next_rowid(uchar *buf, int *size, char **range_ptr) override {
-
-    if (mrr_ranges_eof)
-      return HA_ERR_END_OF_FILE; //  At eof already
+    if (mrr_ranges_eof) return HA_ERR_END_OF_FILE;  //  At eof already
 
     KEY_MULTI_RANGE range;
     if ((mrr_ranges_eof = self->mrr_funcs.next(self->mrr_iter, &range)))
-      return HA_ERR_END_OF_FILE; //  Got eof now
+      return HA_ERR_END_OF_FILE;  //  Got eof now
 
     key_part_map all_parts_map =
         (key_part_map(1) << self->m_pk_descr->get_key_parts()) - 1;
@@ -16333,8 +16325,7 @@ class Mrr_pk_scan_rowid_source : public Mrr_rowid_source {
     DBUG_ASSERT(range.end_key.flag == HA_READ_AFTER_KEY);
 
     *range_ptr = range.ptr;
-    *size = self->m_pk_descr->pack_index_tuple(self->table,
-                                               self->m_pack_buffer,
+    *size = self->m_pk_descr->pack_index_tuple(self->table, self->m_pack_buffer,
                                                buf, range.start_key.key,
                                                all_parts_map);
     return 0;
@@ -16343,7 +16334,6 @@ class Mrr_pk_scan_rowid_source : public Mrr_rowid_source {
   virtual bool eof() override { return mrr_ranges_eof; }
 };
 
-
 //
 // Rowid source that produces rowids by doing an index-only scan on a
 // secondary index and returning rowids from the index records
@@ -16351,12 +16341,11 @@ class Mrr_pk_scan_rowid_source : public Mrr_rowid_source {
 class Mrr_sec_key_rowid_source : public Mrr_rowid_source {
   ha_rocksdb *self;
   int err;
- public:
-  Mrr_sec_key_rowid_source(ha_rocksdb *self_arg) : self(self_arg), err(0) {
-  }
 
-  int init(RANGE_SEQ_IF *seq, void *seq_init_param,
-           uint n_ranges, uint mode) {
+ public:
+  Mrr_sec_key_rowid_source(ha_rocksdb *self_arg) : self(self_arg), err(0) {}
+
+  int init(RANGE_SEQ_IF *seq, void *seq_init_param, uint n_ranges, uint mode) {
     self->m_keyread_only = true;
     self->mrr_enabled_keyread = true;
     return self->handler::multi_range_read_init(seq, seq_init_param, n_ranges,
@@ -16364,11 +16353,9 @@ class Mrr_sec_key_rowid_source : public Mrr_rowid_source {
   }
 
   int get_next_rowid(uchar *buf, int *size, char **range_ptr) override {
-    if (err)
-      return err;
+    if (err) return err;
 
     while (!(err = self->handler::multi_range_read_next(range_ptr))) {
-
       if (self->mrr_funcs.skip_index_tuple &&
           self->mrr_funcs.skip_index_tuple(self->mrr_iter, *range_ptr)) {
         // BKA's variant of "Index Condition Pushdown" check failed
@@ -16377,7 +16364,7 @@ class Mrr_sec_key_rowid_source : public Mrr_rowid_source {
 
       if (self->mrr_funcs.skip_record &&
           self->mrr_funcs.skip_record(self->mrr_iter, *range_ptr,
-                                      (uchar*)self->m_last_rowkey.ptr())) {
+                                      (uchar *)self->m_last_rowkey.ptr())) {
         continue;
       }
 
@@ -16389,7 +16376,6 @@ class Mrr_sec_key_rowid_source : public Mrr_rowid_source {
   }
   virtual bool eof() override { return err != 0; }
 };
-
 
 // Initialize an MRR scan
 int ha_rocksdb::multi_range_read_init(RANGE_SEQ_IF *seq, void *seq_init_param,
@@ -16430,7 +16416,7 @@ int ha_rocksdb::multi_range_read_init(RANGE_SEQ_IF *seq, void *seq_init_param,
     DBUG_ASSERT(!mrr_funcs.skip_index_tuple);
     mrr_used_cpk = true;
     mrr_rowid_reader =
-      new Mrr_pk_scan_rowid_source(this, seq_init_param, n_ranges, mode);
+        new Mrr_pk_scan_rowid_source(this, seq_init_param, n_ranges, mode);
   } else {
     mrr_used_cpk = false;
     auto reader = new Mrr_sec_key_rowid_source(this);
@@ -16457,8 +16443,8 @@ uint ha_rocksdb::mrr_get_length_per_rec() {
          m_pk_descr->max_storage_fmt_length();
 }
 
-
-template <typename T> void align_ptr(char **p) {
+template <typename T>
+void align_ptr(char **p) {
   if (((size_t)p) % alignof(T)) {
     *p += alignof(T) - ((size_t)p) % alignof(T);
   }
@@ -16495,7 +16481,6 @@ template <typename T> void align_ptr(char **p) {
 */
 
 int ha_rocksdb::mrr_fill_buffer() {
-
   mrr_free_rows();
   mrr_read_index = 0;
 
@@ -16522,22 +16507,23 @@ int ha_rocksdb::mrr_fill_buffer() {
   char *buf = (char *)mrr_buf.buffer;
 
   align_ptr<rocksdb::Slice>(&buf);
-  mrr_keys = (rocksdb::Slice*)buf;
+  mrr_keys = (rocksdb::Slice *)buf;
   buf += sizeof(rocksdb::Slice) * n_elements;
 
   align_ptr<rocksdb::Status>(&buf);
-  mrr_statuses = (rocksdb::Status*)buf;
+  mrr_statuses = (rocksdb::Status *)buf;
   buf += sizeof(rocksdb::Status) * n_elements;
 
   align_ptr<rocksdb::PinnableSlice>(&buf);
-  mrr_values = (rocksdb::PinnableSlice*)buf;
+  mrr_values = (rocksdb::PinnableSlice *)buf;
   buf += sizeof(rocksdb::PinnableSlice) * n_elements;
 
-  align_ptr<char*>(&buf);
+  align_ptr<char *>(&buf);
   mrr_range_ptrs = (char **)buf;
   buf += sizeof(char *) * n_elements;
 
-  if (buf + m_pk_descr->max_storage_fmt_length() >= (char*)mrr_buf.buffer_end) {
+  if (buf + m_pk_descr->max_storage_fmt_length() >=
+      (char *)mrr_buf.buffer_end) {
     // a VERY unlikely scenario:  we were given a really small buffer,
     // (probably for just one rowid), and also we had to use some bytes for
     // alignment. As a result, there's no buffer space left to hold even one
@@ -16552,7 +16538,7 @@ int ha_rocksdb::mrr_fill_buffer() {
   int key_size;
   char *range_ptr;
   int err;
-  while (!(err = mrr_rowid_reader->get_next_rowid((uchar*)buf, &key_size,
+  while (!(err = mrr_rowid_reader->get_next_rowid((uchar *)buf, &key_size,
                                                   &range_ptr))) {
     DEBUG_SYNC(table->in_use, "rocksdb.mrr_fill_buffer.loop");
     if (table->in_use->killed) return HA_ERR_QUERY_INTERRUPTED;
@@ -16564,10 +16550,10 @@ int ha_rocksdb::mrr_fill_buffer() {
     buf += key_size;
 
     elem++;
-    mrr_n_elements= elem;
+    mrr_n_elements = elem;
 
     if ((elem == n_elements) || (buf + m_pk_descr->max_storage_fmt_length() >=
-                                 (char*)mrr_buf.buffer_end)) {
+                                 (char *)mrr_buf.buffer_end)) {
       // No more buffer space
       break;
     }
@@ -16661,7 +16647,7 @@ int ha_rocksdb::multi_range_read_next(char **range_info) {
 
     if (mrr_funcs.skip_record &&
         mrr_funcs.skip_record(mrr_iter, mrr_range_ptrs[cur_key],
-                              (uchar*)rowkey.data())) {
+                              (uchar *)rowkey.data())) {
       rc = HA_ERR_END_OF_FILE;
       continue;
     }
