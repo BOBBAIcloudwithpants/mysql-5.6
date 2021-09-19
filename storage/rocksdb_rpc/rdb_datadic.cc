@@ -4035,7 +4035,6 @@ bool Rdb_ddl_manager::validate_schemas(void) {
 bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
                            Rdb_cf_manager *const cf_manager,
                            const uint32_t validate_tables) {
-  std::cout << "INIT Rdb_ddl_manager AAAAAAAAA" << std::endl;
   m_dict = dict_arg;
   m_cf_manager = cf_manager;
   mysql_rwlock_init(0, &m_rwlock);
@@ -4053,6 +4052,8 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
   uint max_index_id_in_dict = 0;
   m_dict->get_max_index_id(&max_index_id_in_dict);
 
+  rocksdb_rpc_log(4055, "Rdb_ddl_manager::init: rocksdb_Iterator__Seek");
+
   // ALTER
   // for (it->Seek(ddl_entry_slice); it->Valid(); it->Next()) {
   for (rocksdb_Iterator__Seek(it, ddl_entry_slice); rocksdb_Iterator__Valid(it);
@@ -4063,7 +4064,10 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
     // ALTER
     // const rocksdb::Slice key = it->key();
     // const rocksdb::Slice val = it->value();
+    rocksdb_rpc_log(4069, "Rdb_ddl_manager::init: rocksdb_Iterator__key");
+
     const rocksdb::Slice key = rocksdb_Iterator__key(it);
+    rocksdb_rpc_log(4071, "Rdb_ddl_manager::init: rocksdb_Iterator__value");
     const rocksdb::Slice val = rocksdb_Iterator__value(it);
 
     if (key.size() >= Rdb_key_def::INDEX_NUMBER_SIZE &&
@@ -4077,11 +4081,14 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
                       (int)key.size());
       return true;
     }
+    rocksdb_rpc_log(4086, "Rdb_ddl_manager::init: Rdb_tbl_def");
 
     Rdb_tbl_def *const tdef =
         new Rdb_tbl_def(key, Rdb_key_def::INDEX_NUMBER_SIZE);
 
     // Now, read the DDLs.
+    rocksdb_rpc_log(4092, "Rdb_ddl_manager::init: real_val_size");
+
     const int real_val_size = val.size() - Rdb_key_def::VERSION_SIZE;
     if (real_val_size % Rdb_key_def::PACKED_SIZE * 2 > 0) {
       // NO_LINT_DEBUG
@@ -4092,6 +4099,8 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
     tdef->m_key_count = real_val_size / (Rdb_key_def::PACKED_SIZE * 2);
     tdef->m_key_descr_arr = new std::shared_ptr<Rdb_key_def>[tdef->m_key_count];
 
+    rocksdb_rpc_log(4102,
+                    "Rdb_ddl_manager::init: reinterpret_cast<const uchar *>");
     ptr = reinterpret_cast<const uchar *>(val.data());
     const int version = rdb_netbuf_read_uint16(&ptr);
     if (version != Rdb_key_def::DDL_ENTRY_INDEX_VERSION) {
@@ -4102,12 +4111,17 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
           Rdb_key_def::DDL_ENTRY_INDEX_VERSION, version);
       return true;
     }
+    rocksdb_rpc_log(4114, "Rdb_ddl_manager::init: ptr + real_val_size");
     ptr_end = ptr + real_val_size;
     for (uint keyno = 0; ptr < ptr_end; keyno++) {
+      rocksdb_rpc_log(4120, "Rdb_ddl_manager::init: rdb_netbuf_read_gl_index");
+
       GL_INDEX_ID gl_index_id;
       rdb_netbuf_read_gl_index(&ptr, &gl_index_id);
       uint flags = 0;
       struct Rdb_index_info index_info;
+      rocksdb_rpc_log(4125, "Rdb_ddl_manager::init: get_index_info");
+
       if (!m_dict->get_index_info(gl_index_id, &index_info)) {
         // NO_LINT_DEBUG
         sql_print_error(
@@ -4117,6 +4131,8 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
             tdef->full_tablename().c_str());
         return true;
       }
+
+      rocksdb_rpc_log(4125, "Rdb_ddl_manager::init: gl_index_id.index_id");
       if (max_index_id_in_dict < gl_index_id.index_id) {
         // NO_LINT_DEBUG
         sql_print_error(
@@ -4126,6 +4142,8 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
             max_index_id_in_dict, gl_index_id.index_id);
         return true;
       }
+      rocksdb_rpc_log(4145, "Rdb_ddl_manager::init: get_cf_flags");
+
       if (!m_dict->get_cf_flags(gl_index_id.cf_id, &flags)) {
         // NO_LINT_DEBUG
         sql_print_error(
@@ -4148,6 +4166,8 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
       // ALTER
       // std::shared_ptr<rocksdb::ColumnFamilyHandle> cfh =
       //     cf_manager->get_cf(gl_index_id.cf_id);
+      rocksdb_rpc_log(4145, "Rdb_ddl_manager::init: cf_manager->get_cf");
+
       rocksdb::ColumnFamilyHandle *cfh = cf_manager->get_cf(gl_index_id.cf_id);
       DBUG_ASSERT(cfh);
 
@@ -4163,6 +4183,9 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
         initialization requires that there is an open TABLE* where we could
         look at Field* objects and set max_length and other attributes
       */
+      rocksdb_rpc_log(4186,
+                      "Rdb_ddl_manager::init: std::make_shared<Rdb_key_def>");
+
       tdef->m_key_descr_arr[keyno] = std::make_shared<Rdb_key_def>(
           gl_index_id.index_id, keyno, cfh, index_info.m_index_dict_version,
           index_info.m_index_type, index_info.m_kv_version,
@@ -4176,6 +4199,7 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
     tdef->m_tbl_stats.set(
         tdef->m_key_count > 0 ? tdef->m_key_descr_arr[0]->m_stats.m_rows : 0, 0,
         0);
+    rocksdb_rpc_log(4186, "Rdb_ddl_manager::init: put(tdef)");
 
     put(tdef);
     i++;
@@ -4203,6 +4227,8 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
     }
   }
 
+  rocksdb_rpc_log(4230,
+                  "Rdb_ddl_manager::init: Rdb_key_def::END_DICT_INDEX_ID");
   // index ids used by applications should not conflict with
   // data dictionary index ids
   if (max_index_id_in_dict < Rdb_key_def::END_DICT_INDEX_ID) {
@@ -4218,7 +4244,10 @@ bool Rdb_ddl_manager::init(Rdb_dict_manager *const dict_arg,
                          "Table_store load error");
     return true;
   }
-  delete it;
+  // ALTER
+  // delete it;
+  rocksdb_Iterator__delete(it);
+
   // NO_LINT_DEBUG
   sql_print_information("RocksDB: Table_store: loaded DDL data for %d tables",
                         i);
