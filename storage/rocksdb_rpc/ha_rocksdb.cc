@@ -2478,7 +2478,7 @@ static MYSQL_SYSVAR_UINT(
 static MYSQL_SYSVAR_STR(datadir, rocksdb_datadir,
                         PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
                         "RocksDB data directory", nullptr, nullptr,
-                        "./.rocksdb_test2");
+                        "./.rocksdb_test3");
 
 rpc_logger l_13(2489, "init datadir");
 
@@ -7685,7 +7685,7 @@ static int rocksdb_done_func(void *const p) {
   // ALTER
   // delete rdb;
   rocksdb_rpc_log(7682, "rocksdb_done_func: rocksdb_TransactionDB__delete;");
-  // rocksdb_TransactionDB__delete(rdb);
+  rocksdb_TransactionDB__delete(rdb);
   rdb = nullptr;
 
   delete commit_latency_stats;
