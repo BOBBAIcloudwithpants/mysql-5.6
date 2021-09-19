@@ -137,6 +137,7 @@ rocksdb::ColumnFamilyHandle *Rdb_cf_manager::get_or_create_cf(
                     "rocksdb_init_func: Rdb_cf_manager::get_or_create_cf "
                     "rocksdb_DB__CreateColumnFamilyWithPointer");
 
+    assert(rdb != nullptr);
     const rocksdb::Status s = rocksdb_DB__CreateColumnFamilyWithPointer(
         rdb, opts, cf_name, cf_handle_ptr);
 
