@@ -12101,9 +12101,10 @@ int ha_rocksdb::check_and_lock_unique_pk(const uint key_id,
 
   rocksdb_rpc_log(12093, "check_and_lock_unique_pk: get_for_update");
 
+  rocksdb::PinnableSlice *ps = nullptr;
   const rocksdb::Status s =
       get_for_update(row_info.tx, *m_pk_descr, row_info.new_pk_slice,
-                     ignore_pk_unique_check ? nullptr : m_retrieved_record);
+                     ignore_pk_unique_check ? ps : m_retrieved_record);
 
   if (!s.ok() && !s.IsNotFound()) {
     return row_info.tx->set_status_error(
@@ -12238,8 +12239,8 @@ int ha_rocksdb::check_and_lock_sk(const uint key_id,
     const rocksdb::Slice old_slice =
         rocksdb::Slice((const char *)m_sk_packed_tuple_old, size);
 
-    const rocksdb::Status s =
-        get_for_update(row_info.tx, kd, old_slice, nullptr);
+    rocksdb::PinnableSlice *ps = nullptr;
+    const rocksdb::Status s = get_for_update(row_info.tx, kd, old_slice, ps);
     if (!s.ok()) {
       rocksdb_rpc_log(12233, "check_and_lock_sk: end");
 
@@ -12287,9 +12288,9 @@ int ha_rocksdb::check_and_lock_sk(const uint key_id,
       ha_thd(), kd, new_slice, all_parts_used, Rdb_key_def::INDEX_NUMBER_SIZE,
       lower_bound_buf, upper_bound_buf, &lower_bound_slice, &upper_bound_slice);
   const bool fill_cache = !THDVAR(ha_thd(), skip_fill_cache);
-
+  rocksdb::PinnableSlice *ps = nullptr;
   rocksdb_rpc_log(12281, "check_and_lock_sk: get_for_update");
-  const rocksdb::Status s = get_for_update(row_info.tx, kd, new_slice, nullptr);
+  const rocksdb::Status s = get_for_update(row_info.tx, kd, new_slice, ps);
   if (!s.ok() && !s.IsNotFound()) {
     rocksdb_rpc_log(12283, "check_and_lock_sk: end");
     return row_info.tx->set_status_error(table->in_use, s, kd, m_tbl_def,
@@ -13527,7 +13528,8 @@ int ha_rocksdb::delete_row(const uchar *const buf) {
               reinterpret_cast<const char *>(m_sk_packed_tuple), packed_size);
           rocksdb_rpc_log(13519, "delete_row: get_for_update");
 
-          const rocksdb::Status s = get_for_update(tx, kd, sk_slice, nullptr);
+          rocksdb::PinnableSlice *ps = nullptr;
+          const rocksdb::Status s = get_for_update(tx, kd, sk_slice, ps);
           if (!s.ok()) {
             DBUG_RETURN(tx->set_status_error(table->in_use, s, kd, m_tbl_def,
                                              m_table_handler));
