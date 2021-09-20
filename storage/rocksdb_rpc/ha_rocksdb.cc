@@ -8407,9 +8407,8 @@ int ha_rocksdb::convert_record_from_storage_format(
       8394,
       "convert_record_from_storage_format: convert_record_from_storage_format");
   // ALTER
-  rocksdb::Slice s = rocksdb_PinnableSlice__Slice(
-      m_retrieved_record) return convert_record_from_storage_format(key, &s,
-                                                                    buf);
+  rocksdb::Slice s = rocksdb_PinnableSlice__Slice(m_retrieved_record);
+  return convert_record_from_storage_format(key, &s, buf);
 }
 
 /*
