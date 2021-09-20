@@ -1,3 +1,8 @@
+create database test_rpc;
+
+use test_rpc;
+
+
 CREATE TABLE `test` (
 	`id1` bigint(20) NOT NULL default '0',
 	`name` varchar(255) NOT NULL default '',
@@ -5,3 +10,9 @@ CREATE TABLE `test` (
     ) ENGINE=ROCKSDB_RPC DEFAULT COLLATE=latin1_bin;
 
 insert into `test` (id1, name) values (1, 'testtest'); 
+
+select * from test;
+
+insert into `test` (id1, name) values (2, 'testtest1'); 
+
+update test set name = 'testtest2' where id1 = 2;
