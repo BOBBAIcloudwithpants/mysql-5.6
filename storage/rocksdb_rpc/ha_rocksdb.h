@@ -331,7 +331,7 @@ class ha_rocksdb : public my_core::handler {
   rocksdb::Status get_for_update(Rdb_transaction *const tx,
                                  const Rdb_key_def &kd,
                                  const rocksdb::Slice &key,
-                                 rocksdb::PinnableSlice *value) const;
+                                 rocksdb::PinnableSlice *&value) const;
 
   int get_row_by_rowid(uchar *const buf, const char *const rowid,
                        const uint rowid_size, const bool skip_lookup = false,
@@ -1154,7 +1154,7 @@ rocksdb::Iterator *rdb_tx_get_iterator(
 rocksdb::Status rdb_tx_get(Rdb_transaction *tx,
                            rocksdb::ColumnFamilyHandle *const column_family,
                            const rocksdb::Slice &key,
-                           rocksdb::PinnableSlice *const value);
+                           rocksdb::PinnableSlice *&value);
 
 void rdb_tx_multi_get(Rdb_transaction *tx,
                       rocksdb::ColumnFamilyHandle *const column_family,

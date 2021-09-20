@@ -3780,11 +3780,11 @@ class Rdb_transaction {
 
   virtual rocksdb::Status get(rocksdb::ColumnFamilyHandle *const column_family,
                               const rocksdb::Slice &key,
-                              rocksdb::PinnableSlice *const value) const = 0;
+                              rocksdb::PinnableSlice *&value) const = 0;
 
   virtual rocksdb::Status get_for_update(const Rdb_key_def &key_descr,
                                          const rocksdb::Slice &key,
-                                         rocksdb::PinnableSlice *const value,
+                                         rocksdb::PinnableSlice *&value,
                                          bool exclusive,
                                          const bool do_validate) = 0;
 
@@ -4393,7 +4393,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
   // ALTER
   rocksdb::Status get(rocksdb::ColumnFamilyHandle *const column_family,
                       const rocksdb::Slice &key,
-                      rocksdb::PinnableSlice *const value) const override {
+                      rocksdb::PinnableSlice *&value) const override {
     rocksdb_rpc_log(4386, "get: start");
     // clean PinnableSlice right begfore Get() for multiple gets per statement
     // the resources after the last Get in a statement are cleared in
@@ -4428,8 +4428,7 @@ class Rdb_transaction_impl : public Rdb_transaction {
 
   rocksdb::Status get_for_update(const Rdb_key_def &key_descr,
                                  const rocksdb::Slice &key,
-                                 rocksdb::PinnableSlice *const value,
-                                 bool exclusive,
+                                 rocksdb::PinnableSlice *&value, bool exclusive,
                                  const bool do_validate) override {
     rocksdb_rpc_log(4434, "get_for_update: begin");
     rocksdb::ColumnFamilyHandle *const column_family = key_descr.get_cf();
@@ -4929,7 +4928,7 @@ class Rdb_writebatch_impl : public Rdb_transaction {
 
   rocksdb::Status get_for_update(const Rdb_key_def &key_descr,
                                  const rocksdb::Slice &key,
-                                 rocksdb::PinnableSlice *const value,
+                                 rocksdb::PinnableSlice *&value,
                                  bool /* exclusive */,
                                  const bool /* do_validate */) override {
     rocksdb_rpc_log(4923, "get_for_update: begin");
@@ -11177,7 +11176,7 @@ void dbug_dump_database(rocksdb::DB *const db) {
 
 rocksdb::Status ha_rocksdb::get_for_update(
     Rdb_transaction *const tx, const Rdb_key_def &key_descr,
-    const rocksdb::Slice &key, rocksdb::PinnableSlice *const value) const {
+    const rocksdb::Slice &key, rocksdb::PinnableSlice *&value) const {
   rocksdb_rpc_log(11169, "get_for_update: start");
   DBUG_ASSERT(m_lock_rows != RDB_LOCK_NONE);
 
@@ -19255,7 +19254,7 @@ bool rdb_tx_started(Rdb_transaction *tx) { return tx->is_tx_started(); }
 rocksdb::Status rdb_tx_get(Rdb_transaction *tx,
                            rocksdb::ColumnFamilyHandle *const column_family,
                            const rocksdb::Slice &key,
-                           rocksdb::PinnableSlice *const value) {
+                           rocksdb::PinnableSlice *&value) {
   rocksdb_rpc_log(19248, "rdb_tx_get: start");
 
   return tx->get(column_family, key, value);

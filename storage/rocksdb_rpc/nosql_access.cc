@@ -676,7 +676,7 @@ class select_exec {
 
     rocksdb::Status get(rocksdb::ColumnFamilyHandle *cf,
                         const rocksdb::Slice &key_slice,
-                        rocksdb::PinnableSlice *value_slice) {
+                        rocksdb::PinnableSlice *&value_slice) {
       rocksdb::Status s;
       return rdb_tx_get(m_tx, cf, key_slice, value_slice);
     }
@@ -829,7 +829,7 @@ class select_exec {
   std::vector<std::pair<size_t, size_t>> m_send_mapping;
 
   // Temporary buffer for storing value
-  rocksdb::PinnableSlice m_pk_value;
+  rocksdb::PinnableSlice *m_pk_value;
 
   // Artificial delays for kill testing
   uint32_t m_debug_row_delay;
@@ -1686,15 +1686,23 @@ bool INLINE_ATTR select_exec::unpack_for_sk(txn_wrapper *txn,
 
   rocksdb::Slice pk_key(reinterpret_cast<const char *>(m_pk_tuple_buf.data()),
                         pk_tuple_size);
+  // ALTER
+  // m_pk_value.Reset();
+  rocksdb_PinnableSlice__Reset(m_pk_value);
+  // rocksdb::Status s = txn->get(m_pk_def->get_cf(), pk_key, &m_pk_value);
+  rocksdb::Status s = txn->get(m_pk_def->get_cf(), pk_key, m_pk_value);
 
-  m_pk_value.Reset();
-  rocksdb::Status s = txn->get(m_pk_def->get_cf(), pk_key, &m_pk_value);
   if (!s.ok()) {
     txn->report_error(s);
     return true;
   }
+  // ALTER
+  // rc = m_converter->decode(m_pk_def, m_table->record[0], &pk_key,
+  // &m_pk_value);
+  rocksdb::Slice pk_key_slice = rocksdb_PinnableSlice__Slice(m_pk_value);
+  rc =
+      m_converter->decode(m_pk_def, m_table->record[0], &pk_key, &pk_key_slice);
 
-  rc = m_converter->decode(m_pk_def, m_table->record[0], &pk_key, &m_pk_value);
   if (rc) {
     m_handler->print_error(rc, 0);
     return true;

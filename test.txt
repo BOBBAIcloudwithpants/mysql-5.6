@@ -1,0 +1,7 @@
+CREATE TABLE `test` (
+	`id1` bigint(20) NOT NULL default '0',
+	`name` varchar(255) NOT NULL default '',
+	PRIMARY KEY (`id1`)
+    ) ENGINE=ROCKSDB_RPC DEFAULT COLLATE=latin1_bin;
+
+insert into `test` (id1, name) values (1, 'testtest'); 
