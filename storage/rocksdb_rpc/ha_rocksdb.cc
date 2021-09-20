@@ -4913,7 +4913,7 @@ class Rdb_writebatch_impl : public Rdb_transaction {
 
   rocksdb::Status get(rocksdb::ColumnFamilyHandle *const column_family,
                       const rocksdb::Slice &key,
-                      rocksdb::PinnableSlice *value) const override {
+                      rocksdb::PinnableSlice *&value) const override {
     // ALTER
     // value->Reset();
     // return m_batch->GetFromBatchAndDB(rdb, m_read_opts, column_family, key,
