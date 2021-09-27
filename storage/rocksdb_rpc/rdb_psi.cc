@@ -21,6 +21,7 @@
 
 /* The C++ file's header */
 #include "./rdb_psi.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

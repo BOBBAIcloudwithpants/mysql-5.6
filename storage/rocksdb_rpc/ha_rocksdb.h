@@ -65,6 +65,7 @@
   http://dev.mysql.com/doc/internals/en/coding-guidelines.html, with several
   refinements (@see /storage/rocksdb/README file).
 */
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

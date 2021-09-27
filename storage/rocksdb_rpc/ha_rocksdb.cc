@@ -83,6 +83,8 @@
 #include "./rdb_psi.h"
 #include "./rdb_threads.h"
 
+using namespace rocksdb_rpc;
+
 // Internal MySQL APIs not exposed in any header.
 extern "C" {
 /**

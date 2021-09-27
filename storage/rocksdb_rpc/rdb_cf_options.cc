@@ -34,6 +34,7 @@
 #include "./ha_rocksdb.h"
 #include "./rdb_cf_manager.h"
 #include "./rdb_compact_filter.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

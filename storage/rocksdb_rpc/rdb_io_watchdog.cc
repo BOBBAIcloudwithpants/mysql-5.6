@@ -20,6 +20,7 @@
 /* C++ standard header files */
 #include <string>
 #include <vector>
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

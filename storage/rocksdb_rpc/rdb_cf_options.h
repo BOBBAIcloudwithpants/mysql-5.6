@@ -29,6 +29,7 @@
 #include "./rdb_global.h"
 
 #include "rpcclient.hpp"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

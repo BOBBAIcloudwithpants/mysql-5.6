@@ -31,6 +31,8 @@
 #include "./properties_collector.h"
 #include "./rdb_datadic.h"
 
+using namespace rocksdb_rpc;
+
 namespace myrocks_rpc {
 
 static std::vector<Rdb_index_stats> extract_index_stats(

@@ -30,6 +30,7 @@
 #include "./ha_rocksdb.h"
 #include "./rdb_datadic.h"
 #include "rpcclient.hpp"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 class Rdb_field_encoder;

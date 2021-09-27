@@ -29,6 +29,7 @@
 #include "./ha_rocksdb_proto.h"
 
 #include "rpcclient.hpp"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

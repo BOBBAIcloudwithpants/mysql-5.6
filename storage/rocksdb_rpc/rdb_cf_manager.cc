@@ -33,6 +33,7 @@
 #include "./rdb_psi.h"
 
 #include "rpcclient.hpp"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

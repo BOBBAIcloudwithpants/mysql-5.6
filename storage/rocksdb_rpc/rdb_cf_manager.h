@@ -31,6 +31,7 @@
 #include "./rdb_cf_options.h"
 #include "./rdb_datadic.h"
 #include "./rdb_global.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

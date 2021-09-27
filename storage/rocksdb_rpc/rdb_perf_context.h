@@ -25,6 +25,7 @@
 #include <my_global.h>
 #include "./handler.h"
 #include "rpcclient.hpp"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

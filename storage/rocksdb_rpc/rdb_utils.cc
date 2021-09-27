@@ -28,6 +28,7 @@
 
 /* MyRocks header files */
 #include "./ha_rocksdb.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

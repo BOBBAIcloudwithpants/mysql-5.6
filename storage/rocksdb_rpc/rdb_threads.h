@@ -34,6 +34,7 @@
 #include "./sql_class.h"
 #include "rocksdb/db.h"
 #include "rpcclient.hpp"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

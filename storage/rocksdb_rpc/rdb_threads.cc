@@ -22,6 +22,7 @@
 /* The C++ file's header */
 #include "./rdb_threads.h"
 #include "./sql_class.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

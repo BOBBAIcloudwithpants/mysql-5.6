@@ -33,6 +33,7 @@
 #include "./ha_rocksdb_proto.h"
 #include "./rdb_datadic.h"
 #include "./rdb_utils.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 
@@ -510,7 +511,7 @@ int Rdb_converter::decode(const std::shared_ptr<Rdb_key_def> &key_def,
                           const rocksdb::Slice *key_slice,
                           const rocksdb::Slice *value_slice,
                           bool decode_value) {
-    // Currently only support decode primary key, Will add decode secondary
+  // Currently only support decode primary key, Will add decode secondary
   // later
   DBUG_ASSERT(key_def->m_index_type == Rdb_key_def::INDEX_TYPE_PRIMARY ||
               key_def->m_index_type == Rdb_key_def::INDEX_TYPE_HIDDEN_PRIMARY);

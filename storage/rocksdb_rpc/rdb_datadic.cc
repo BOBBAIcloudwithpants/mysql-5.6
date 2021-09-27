@@ -46,6 +46,7 @@
 #include "./rdb_cf_manager.h"
 #include "./rdb_psi.h"
 #include "./rdb_utils.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

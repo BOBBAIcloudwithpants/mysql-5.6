@@ -55,6 +55,7 @@ static const size_t MAX_SIZE = std::numeric_limits<size_t>::max();
 // A soft max for key writers used for initial vector allocation and
 // for stack allocation
 static const size_t KEY_WRITER_DEFAULT_SIZE = 16;
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 

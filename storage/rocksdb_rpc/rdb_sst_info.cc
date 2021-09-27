@@ -36,6 +36,7 @@
 #include "./ha_rocksdb_proto.h"
 #include "./rdb_cf_options.h"
 #include "./rdb_psi.h"
+using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 
