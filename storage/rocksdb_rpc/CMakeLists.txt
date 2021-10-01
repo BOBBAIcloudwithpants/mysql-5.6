@@ -172,6 +172,7 @@ IF (WITH_TBB)
   ADD_DEFINITIONS(-DTBB)
 ENDIF()
 
+set ( Protobuf_USE_STATIC_LIBS ON )
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIR})
