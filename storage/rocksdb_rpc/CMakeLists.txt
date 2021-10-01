@@ -178,29 +178,29 @@ FIND_LIBRARY(
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
 
-FIND_LIBRARY(
-  PARAMETER_LIBRARY 
-  NAMES libparameter.a parameter 
-  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-SET(rocksdb_static_libs ${rocksdb_static_libs} ${PARAMETER_LIBRARY})
+# FIND_LIBRARY(
+#   PARAMETER_LIBRARY 
+#   NAMES libparameter.a parameter 
+#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+# SET(rocksdb_static_libs ${rocksdb_static_libs} ${PARAMETER_LIBRARY})
 
-FIND_LIBRARY(
-  REQUEST_LIBRARY 
-  NAMES librequest.a request 
-  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-SET(rocksdb_static_libs ${rocksdb_static_libs} ${REQUEST_LIBRARY})
+# FIND_LIBRARY(
+#   REQUEST_LIBRARY 
+#   NAMES librequest.a request 
+#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+# SET(rocksdb_static_libs ${rocksdb_static_libs} ${REQUEST_LIBRARY})
 
-FIND_LIBRARY(
-  RESPONSE_LIBRARY 
-  NAMES libresponse.a response 
-  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-SET(rocksdb_static_libs ${rocksdb_static_libs} ${RESPONSE_LIBRARY})
+# FIND_LIBRARY(
+#   RESPONSE_LIBRARY 
+#   NAMES libresponse.a response 
+#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+# SET(rocksdb_static_libs ${rocksdb_static_libs} ${RESPONSE_LIBRARY})
 
-FIND_LIBRARY(
-  HELPER_LIBRARY 
-  NAMES libhelper.a helper 
-  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-SET(rocksdb_static_libs ${rocksdb_static_libs} ${HELPER_LIBRARY})
+# FIND_LIBRARY(
+#   HELPER_LIBRARY 
+#   NAMES libhelper.a helper 
+#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+# SET(rocksdb_static_libs ${rocksdb_static_libs} ${HELPER_LIBRARY})
 
 FIND_LIBRARY(
   VARIABLE_LIBRARY 
