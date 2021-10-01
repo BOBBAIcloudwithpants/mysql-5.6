@@ -192,6 +192,12 @@ FIND_LIBRARY(
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${BASIC_LIBRARY})
 
 FIND_LIBRARY(
+  CONVERTER_LIBRARY 
+  NAMES libconverter.a converter 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${CONVERTER_LIBRARY})
+
+FIND_LIBRARY(
   UTILITY_LIBRARY 
   NAMES libutility.pb.a utility.pb 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
