@@ -185,35 +185,29 @@ SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${PROTOBUF_LIBRARY})
 
 
-# FIND_LIBRARY(
-#   PARAMETER_LIBRARY 
-#   NAMES libparameter.a parameter 
-#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-# SET(rocksdb_static_libs ${rocksdb_static_libs} ${PARAMETER_LIBRARY})
+FIND_LIBRARY(
+  BASIC_LIBRARY 
+  NAMES libbasic.pb.a basic.pb 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${BASIC_LIBRARY})
 
-# FIND_LIBRARY(
-#   REQUEST_LIBRARY 
-#   NAMES librequest.a request 
-#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-# SET(rocksdb_static_libs ${rocksdb_static_libs} ${REQUEST_LIBRARY})
+FIND_LIBRARY(
+  UTILITY_LIBRARY 
+  NAMES libutility.pb.a utility.pb 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${UTILITY_LIBRARY})
 
-# FIND_LIBRARY(
-#   RESPONSE_LIBRARY 
-#   NAMES libresponse.a response 
-#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-# SET(rocksdb_static_libs ${rocksdb_static_libs} ${RESPONSE_LIBRARY})
+FIND_LIBRARY(
+  ROCKSDB_LIBRARY 
+  NAMES librocksdb.pb.a rocksdb.pb 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${ROCKSDB_LIBRARY})
 
-# FIND_LIBRARY(
-#   HELPER_LIBRARY 
-#   NAMES libhelper.a helper 
-#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-# SET(rocksdb_static_libs ${rocksdb_static_libs} ${HELPER_LIBRARY})
-
-# FIND_LIBRARY(
-#   VARIABLE_LIBRARY 
-#   NAMES libvariable.a variable 
-#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-# SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
+FIND_LIBRARY(
+  VARIABLE_LIBRARY 
+  NAMES libvariable.a variable 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
 
 CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
 
