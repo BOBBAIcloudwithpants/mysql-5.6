@@ -172,11 +172,18 @@ IF (WITH_TBB)
   ADD_DEFINITIONS(-DTBB)
 ENDIF()
 
+include(FindProtobuf)
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIR})
+
 FIND_LIBRARY(
   RPCCLIENT_LIBRARY 
   NAMES librpcclient.a rpcclient 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
+
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${PROTOBUF_LIBRARY})
+
 
 # FIND_LIBRARY(
 #   PARAMETER_LIBRARY 
@@ -202,11 +209,11 @@ SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
 #   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 # SET(rocksdb_static_libs ${rocksdb_static_libs} ${HELPER_LIBRARY})
 
-FIND_LIBRARY(
-  VARIABLE_LIBRARY 
-  NAMES libvariable.a variable 
-  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
+# FIND_LIBRARY(
+#   VARIABLE_LIBRARY 
+#   NAMES libvariable.a variable 
+#   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+# SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
 
 CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
 
