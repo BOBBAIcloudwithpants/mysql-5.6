@@ -35,7 +35,6 @@
   profiling easier
  */
 #define INLINE_ATTR
-using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 /*

@@ -35,7 +35,6 @@
 #ifdef HAVE_JEMALLOC
 #include <jemalloc/jemalloc.h>
 #endif
-using namespace rocksdb_rpc;
 
 namespace myrocks_rpc {
 
