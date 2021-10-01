@@ -30,7 +30,6 @@
 #include "./sql_string.h"
 
 #pragma once
-using namespace rocksdb_rpc;
 
 struct REJECTED_ITEM {
   // Timestamp of rejected query

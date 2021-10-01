@@ -28,7 +28,7 @@
 #include "./my_global.h" /* ulonglong */
 #include "./sql_string.h"
 #include "./ut0counter.h"
-
+#include "rpcclient.hpp"
 /*
   When taking measurements, replace this with __attribute__ ((noinline))
   This is used in performance critical functions to make doing CPU
