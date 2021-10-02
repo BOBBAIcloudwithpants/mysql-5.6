@@ -44,7 +44,12 @@ ELSE()
   )
 ENDIF()
 
+set ( Protobuf_USE_STATIC_LIBS ON )
+include(FindProtobuf)
+find_package(Protobuf REQUIRED)
+
 INCLUDE_DIRECTORIES(
+  ${PROTOBUF_INCLUDE_DIR}
   ${ROCKSDB_ROOT}
   ${ROCKSDB_ROOT}/include
   ${ROCKSDB_ROOT}/third-party/gtest-1.8.1/fused-src
@@ -54,7 +59,9 @@ INCLUDE_DIRECTORIES(
   ${ROCKSDB_ROOT}/../rocksdb-rpc-client/cpp-httplib
 )
 
-MESSAGE(STATUS "lalalalalalalalal: ${ROCKSDB_ROOT}/include")
+MESSAGE(STATUS "lalalalalalalalal:" )
+MESSAGE(STATUS ${PROTOBUF_INCLUDE_DIR})
+
 
 IF(UNIX)
   IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -172,19 +179,7 @@ IF (WITH_TBB)
   ADD_DEFINITIONS(-DTBB)
 ENDIF()
 
-set ( Protobuf_USE_STATIC_LIBS ON )
-include(FindProtobuf)
-find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIR})
-
-FIND_LIBRARY(
-  RPCCLIENT_LIBRARY 
-  NAMES librpcclient.a rpcclient 
-  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
-
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${PROTOBUF_LIBRARY})
-
 
 FIND_LIBRARY(
   BASIC_LIBRARY 
@@ -215,6 +210,12 @@ FIND_LIBRARY(
   NAMES libvariable.a variable 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
+
+FIND_LIBRARY(
+  RPCCLIENT_LIBRARY 
+  NAMES librpcclient.a rpcclient 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
 
 CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
 
