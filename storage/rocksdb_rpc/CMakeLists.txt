@@ -60,7 +60,7 @@ INCLUDE_DIRECTORIES(
 )
 
 MESSAGE(STATUS "lalalalalalalalal:" )
-MESSAGE(STATUS ${PROTOBUF_INCLUDE_DIR})
+MESSAGE(STATUS ${PROTOBUF_LIBRARY} ${ROCKSDB_ROOT})
 
 
 IF(UNIX)
@@ -179,7 +179,13 @@ IF (WITH_TBB)
   ADD_DEFINITIONS(-DTBB)
 ENDIF()
 
-SET(rocksdb_static_libs ${rocksdb_static_libs} ${PROTOBUF_LIBRARY})
+# SET(rocksdb_static_libs ${rocksdb_static_libs} ${PROTOBUF_LIBRARY})
+
+FIND_LIBRARY(
+  PT_LIBRARY 
+  NAMES libprotobuf.a protobuf 
+  HINTS /usr/local/lib)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${PT_LIBRARY})
 
 FIND_LIBRARY(
   BASIC_LIBRARY 
