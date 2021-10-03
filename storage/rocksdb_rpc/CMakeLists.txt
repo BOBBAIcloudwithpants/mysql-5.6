@@ -187,11 +187,15 @@ FIND_LIBRARY(
   HINTS /usr/local/lib)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${PT_LIBRARY})
 
+MESSAGE(STATUS "PT_LIBRARY: " ${PT_LIBRARY})
+
 FIND_LIBRARY(
   BASIC_LIBRARY 
   NAMES libbasic.pb.a basic.pb 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${BASIC_LIBRARY})
+
+MESSAGE(STATUS "BASIC_LIBRARY: " ${BASIC_LIBRARY})
 
 FIND_LIBRARY(
   UTILITY_LIBRARY 
@@ -199,11 +203,15 @@ FIND_LIBRARY(
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${UTILITY_LIBRARY})
 
+MESSAGE(STATUS "UTILITY_LIBRARY: " ${UTILITY_LIBRARY})
+
 FIND_LIBRARY(
   ROCKSDB_VAR_LIBRARY 
   NAMES librocksdb.pb.a rocksdb.pb 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${ROCKSDB_VAR_LIBRARY})
+
+MESSAGE(STATUS "ROCKSDB_VAR_LIBRARY: " ${ROCKSDB_VAR_LIBRARY})
 
 FIND_LIBRARY(
   CONVERTER_LIBRARY 
@@ -211,17 +219,23 @@ FIND_LIBRARY(
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${CONVERTER_LIBRARY})
 
+MESSAGE(STATUS "CONVERTER_LIBRARY: " ${CONVERTER_LIBRARY})
+
 FIND_LIBRARY(
   VARIABLE_LIBRARY 
   NAMES libvariable.a variable 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
 
+MESSAGE(STATUS "VARIABLE_LIBRARY: " ${VARIABLE_LIBRARY})
+
 FIND_LIBRARY(
   RPCCLIENT_LIBRARY 
   NAMES librpcclient.a rpcclient 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 SET(rocksdb_static_libs ${rocksdb_static_libs} ${RPCCLIENT_LIBRARY})
+
+MESSAGE(STATUS "RPCCLIENT_LIBRARY: " ${RPCCLIENT_LIBRARY})
 
 CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
 
