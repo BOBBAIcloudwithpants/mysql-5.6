@@ -376,7 +376,38 @@ FIND_LIBRARY(
   PT_LIBRARY 
   NAMES libprotobuf.a protobuf 
   HINTS /usr/local/lib)
-TARGET_LINK_LIBRARIES(mysqld ${PT_LIBRARY})
+
+FIND_LIBRARY(
+  BASIC_LIBRARY 
+  NAMES libbasic.pb.a basic.pb 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+    UTILITY_LIBRARY 
+    NAMES libutility.pb.a utility.pb 
+    HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+      ROCKSDB_VAR_LIBRARY 
+      NAMES librocksdb.pb.a rocksdb.pb 
+      HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+        CONVERTER_LIBRARY 
+        NAMES libconverter.a converter 
+        HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+          VARIABLE_LIBRARY 
+          NAMES libvariable.a variable 
+          HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+            RPCCLIENT_LIBRARY 
+            NAMES librpcclient.a rpcclient 
+            HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+TARGET_LINK_LIBRARIES(mysqld ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY})
 
 # Provide plugins with minimal set of libraries
 SET(INTERFACE_LIBS ${LIBRT})
