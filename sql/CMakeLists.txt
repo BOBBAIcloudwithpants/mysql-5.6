@@ -371,6 +371,13 @@ ENDIF()
 SET_TARGET_PROPERTIES(mysqld PROPERTIES ENABLE_EXPORTS TRUE)
 TARGET_LINK_LIBRARIES(mysqld sql binlog rpl master slave sql mysys mysys_ssl)
 
+# link protobuf
+FIND_LIBRARY(
+  PT_LIBRARY 
+  NAMES libprotobuf.a protobuf 
+  HINTS /usr/local/lib)
+TARGET_LINK_LIBRARIES(mysqld ${PT_LIBRARY})
+
 # Provide plugins with minimal set of libraries
 SET(INTERFACE_LIBS ${LIBRT})
 IF(INTERFACE_LIBS)
