@@ -156,6 +156,43 @@ IF(NOT INSTALL_LAYOUT MATCHES "SVR4")
   ENDIF()
 ENDIF()
 
+FIND_LIBRARY(
+  PT_LIBRARY 
+  NAMES libprotobuf.a protobuf 
+  HINTS /usr/local/lib)
+
+FIND_LIBRARY(
+  BASIC_LIBRARY 
+  NAMES libbasic.pb.a basic.pb 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+    UTILITY_LIBRARY 
+    NAMES libutility.pb.a utility.pb 
+    HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+      ROCKSDB_VAR_LIBRARY 
+      NAMES librocksdb.pb.a rocksdb.pb 
+      HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+        CONVERTER_LIBRARY 
+        NAMES libconverter.a converter 
+        HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+          VARIABLE_LIBRARY 
+          NAMES libvariable.a variable 
+          HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+FIND_LIBRARY(
+            RPCCLIENT_LIBRARY 
+            NAMES librpcclient.a rpcclient 
+            HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+
+TARGET_LINK_LIBRARIES(mysql_client_test_embedded ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY})
+
 #
 # Necessary to make sure that we can use the jemalloc API calls. We need to do
 # this for every binary which which will link to MyRocks. The trick here is to
