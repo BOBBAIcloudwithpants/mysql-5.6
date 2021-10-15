@@ -230,6 +230,12 @@ SET(rocksdb_static_libs ${rocksdb_static_libs} ${VARIABLE_LIBRARY})
 MESSAGE(STATUS "VARIABLE_LIBRARY: " ${VARIABLE_LIBRARY})
 
 FIND_LIBRARY(
+  RDMA_CLIENT_LIBRARY 
+  NAMES librdma_client.a rdma_client 
+  HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
+SET(rocksdb_static_libs ${rocksdb_static_libs} ${RDMA_CLIENT_LIBRARY})
+
+FIND_LIBRARY(
   RPCCLIENT_LIBRARY 
   NAMES librpcclient.a rpcclient 
   HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
