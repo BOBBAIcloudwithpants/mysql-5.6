@@ -250,7 +250,7 @@ IF (HAVE_ZLIB_H)
   SET(rocksdb_static_libs ${rocksdb_static_libs} ${ZLIB_LIBRARY})
 ENDIF()
 
-SET(rocksdb_static_libs ${rocksdb_static_libs} "-lrt" "-ldl" "-lpthread")
+SET(rocksdb_static_libs ${rocksdb_static_libs} "-lrt" "-ldl" "-lpthread" "-lrdmacm" "-libverbs")
 
 MYSQL_ADD_PLUGIN(rocksdb_rpc_se ${ROCKSDB_SOURCES} STORAGE_ENGINE DEFAULT STATIC_ONLY
   LINK_LIBRARIES ${rocksdb_static_libs}

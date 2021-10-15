@@ -63,14 +63,13 @@ FIND_LIBRARY(
             RDMA_CLIENT_LIBRARY 
             NAMES librdma_client.a rdma_client 
             HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
-          SET(rocksdb_static_libs ${rocksdb_static_libs} ${RDMA_CLIENT_LIBRARY})
 
 FIND_LIBRARY(
             RPCCLIENT_LIBRARY 
             NAMES librpcclient.a rpcclient 
             HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 
-TARGET_LINK_LIBRARIES(mysql_embedded ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY})
+TARGET_LINK_LIBRARIES(mysql_embedded ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY} ${RDMA_CLIENT_LIBRARY} "-lpthread" "-lrdmacm" "-libverbs")
 
 IF(UNIX)
   TARGET_LINK_LIBRARIES(mysql_embedded ${READLINE_LIBRARY})
@@ -133,7 +132,7 @@ FIND_LIBRARY(
             NAMES librpcclient.a rpcclient 
             HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 
-TARGET_LINK_LIBRARIES(mysqltest_embedded ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY})
+TARGET_LINK_LIBRARIES(mysqltest_embedded ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY} ${RDMA_CLIENT_LIBRARY} "-lpthread" "-lrdmacm" "-libverbs")
 
 IF(CMAKE_GENERATOR MATCHES "Xcode")
 # It does not seem possible to tell Xcode the resulting target might need
@@ -198,7 +197,7 @@ FIND_LIBRARY(
           NAMES libvariable.a variable 
           HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 
-          FIND_LIBRARY(
+FIND_LIBRARY(
             RDMA_CLIENT_LIBRARY 
             NAMES librdma_client.a rdma_client 
             HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
@@ -209,7 +208,7 @@ FIND_LIBRARY(
             NAMES librpcclient.a rpcclient 
             HINTS ${ROCKSDB_ROOT}/../rocksdb-rpc-client/build)
 
-TARGET_LINK_LIBRARIES(mysql_client_test_embedded ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY})
+TARGET_LINK_LIBRARIES(mysql_client_test_embedded ${PT_LIBRARY} ${BASIC_LIBRARY} ${UTILITY_LIBRARY} ${ROCKSDB_VAR_LIBRARY} ${CONVERTER_LIBRARY} ${VARIABLE_LIBRARY} ${RPCCLIENT_LIBRARY} ${RDMA_CLIENT_LIBRARY} "-lpthread" "-lrdmacm" "-libverbs")
 
 #
 # Necessary to make sure that we can use the jemalloc API calls. We need to do
