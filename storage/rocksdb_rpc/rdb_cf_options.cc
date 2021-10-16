@@ -51,11 +51,12 @@ bool Rdb_cf_options::init(
   DBUG_ASSERT(default_cf_options != nullptr);
   DBUG_ASSERT(override_cf_options != nullptr);
 
-  m_default_cf_opts = rocksdb_ColumnFamilyOptions();
+  // m_default_cf_opts = rocksdb_ColumnFamilyOptions();
   // ALTER
   // m_default_cf_opts.comparator = &s_pk_comparator;
-  rocksdb::Comparator *cmp = myrocks_SPkComparator();
-  rocksdb_ColumnFamilyOptions__SetComparator(m_default_cf_opts, cmp);
+
+  // rocksdb::Comparator *cmp = myrocks_SPkComparator();
+  // rocksdb_ColumnFamilyOptions__SetComparator(m_default_cf_opts, cmp);
 
   // TODO: ALTER
   // m_default_cf_opts.compaction_filter_factory.reset(
@@ -67,13 +68,13 @@ bool Rdb_cf_options::init(
   rocksdb_rpc_log(
       67, "Rdb_cf_options::init: rocksdb_NewBlockBasedTableFactoryWithOption");
 
-  std::shared_ptr<rocksdb::TableFactory> *tf =
-      rocksdb_NewBlockBasedTableFactoryWithOption(table_options);
+  // std::shared_ptr<rocksdb::TableFactory> *tf =
+  //     rocksdb_NewBlockBasedTableFactoryWithOption(table_options);
 
   rocksdb_rpc_log(
       73, "Rdb_cf_options::init: rocksdb_ColumnFamilyOptions__SetTableFactory");
   rocksdb_ColumnFamilyOptions__SetTableFactory(m_default_cf_opts, tf);
-
+  m_default_cf_opts = myrocks_RdbCFInit(table_options);
   // TODO: ALTER
   if (prop_coll_factory) {
     // m_default_cf_opts.table_properties_collector_factories.push_back(
