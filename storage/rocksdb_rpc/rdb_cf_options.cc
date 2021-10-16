@@ -73,7 +73,7 @@ bool Rdb_cf_options::init(
 
   rocksdb_rpc_log(
       73, "Rdb_cf_options::init: rocksdb_ColumnFamilyOptions__SetTableFactory");
-  rocksdb_ColumnFamilyOptions__SetTableFactory(m_default_cf_opts, tf);
+  // rocksdb_ColumnFamilyOptions__SetTableFactory(m_default_cf_opts, tf);
   m_default_cf_opts = myrocks_RdbCFInit(table_options);
   // TODO: ALTER
   if (prop_coll_factory) {
